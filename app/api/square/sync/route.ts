@@ -182,6 +182,14 @@ export async function POST(request: NextRequest) {
       updated_at: new Date().toISOString(),
     }).eq('id', merchantId)
 
+    // Fire RFV scoring automatically after sync completes
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL!
+    fetch(`${baseUrl}/api/rfv/score`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ merchantId }),
+    }).catch(console.error) // fire-and-forget
+
     return NextResponse.json({ ok: true, customers: totalCustomers, orders: totalOrders })
 
   } catch (err) {
