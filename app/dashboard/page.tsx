@@ -166,6 +166,23 @@ export default async function DashboardPage({
           </div>
         )}
 
+        {/* Win-back CTA */}
+        {hasScores && ((segmentCounts['at_risk'] || 0) + (segmentCounts['lapsed'] || 0)) > 0 && (
+          <div style={{ backgroundColor: 'rgba(124,92,252,0.08)', border: '1px solid rgba(124,92,252,0.3)', borderRadius: '14px', padding: '1.25rem 1.5rem', marginBottom: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+            <div>
+              <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, marginBottom: '0.25rem' }}>
+                {(segmentCounts['at_risk'] || 0) + (segmentCounts['lapsed'] || 0)} customers are drifting away
+              </div>
+              <div style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+                Yara can send them a personalised win-back email today.
+              </div>
+            </div>
+            <Link href="/campaigns" style={{ display: 'inline-block', backgroundColor: 'var(--violet)', color: '#fff', borderRadius: '10px', fontWeight: 700, padding: '0.75rem 1.5rem', fontSize: '0.9375rem', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+              Launch win-back →
+            </Link>
+          </div>
+        )}
+
         {/* Segment breakdown */}
         {hasScores && (
           <div className="mb-8">
