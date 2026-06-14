@@ -90,7 +90,6 @@ export async function POST(request: NextRequest) {
         query: {
           filter: {
             date_time_filter: { created_at: { start_at: sinceISO } },
-            state_filter: { states: ['COMPLETED'] },
           },
           sort: { sort_field: 'CREATED_AT', sort_order: 'ASC' },
         },
