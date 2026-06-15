@@ -1,7 +1,3 @@
-import { Resend } from 'resend'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 export interface WinBackEmailOptions {
   to: string
   customerName: string
@@ -11,13 +7,24 @@ export interface WinBackEmailOptions {
 }
 
 export async function sendWinBackEmail(opts: WinBackEmailOptions) {
-  const { data, error } = await resend.emails.send({
-    from: `Yara from ${opts.businessName} <onboarding@resend.dev>`,
-    to: opts.to,
-    subject: opts.subject,
-    html: opts.bodyHtml,
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: `Yara from ${opts.businessName} <onboarding@resend.dev>`,
+      to: opts.to,
+      subject: opts.subject,
+      html: opts.bodyHtml,
+    }),
   })
 
-  if (error) throw new Error(error.message)
-  return data
+  if (!res.ok) {
+    const err = await res.json()
+    throw new Error(err.message || `Resend error ${res.status}`)
+  }
+
+  return res.json()
 }
