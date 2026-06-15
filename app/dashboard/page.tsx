@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { logout } from '@/app/actions/auth'
 import Link from 'next/link'
+import OnboardingBanner from '@/app/components/OnboardingBanner'
 
 const SEGMENT_META: Record<string, { label: string; color: string; bg: string; description: string }> = {
   loyal:   { label: 'Loyal',    color: '#a78bfa', bg: 'rgba(167,139,250,0.1)',  description: 'High-value regulars' },
@@ -72,6 +73,16 @@ export default async function DashboardPage({
 
   const totalPages = Math.ceil((totalCustomers || 0) / PAGE_SIZE)
   const hasScores = (segmentRows?.length || 0) > 0
+
+  // Onboarding state
+  const hasSynced = syncStatus === 'complete' && hasScores
+  const { count: campaignCount } = await service
+    .from('campaigns')
+    .select('*', { count: 'exact', head: true })
+    .eq('merchant_id', merchant.id)
+    .eq('status', 'sent')
+  const hasCampaign = (campaignCount ?? 0) > 0
+  const onboardingDone = isConnected && hasSynced && hasCampaign
 
   return (
     <div style={{ backgroundColor: 'var(--ink)', minHeight: '100vh', color: 'var(--text-primary)' }}>
@@ -221,6 +232,15 @@ export default async function DashboardPage({
           </div>
         )}
 
+        {/* Onboarding banner — hidden once all 3 steps done */}
+        {!onboardingDone && (
+          <OnboardingBanner
+            isConnected={isConnected}
+            hasSynced={hasSynced}
+            hasCampaign={hasCampaign}
+          />
+        )}
+
         {/* Win-back CTA */}
         {hasScores && ((segmentCounts['at_risk'] || 0) + (segmentCounts['lapsed'] || 0)) > 0 && (
           <div style={{ backgroundColor: 'rgba(124,92,252,0.08)', border: '1px solid rgba(124,92,252,0.3)', borderRadius: '14px', padding: '1.25rem 1.5rem', marginBottom: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
@@ -296,7 +316,9 @@ export default async function DashboardPage({
                     return (
                       <tr key={c.id} style={{ borderBottom: i < customers.length - 1 ? '1px solid var(--border)' : 'none' }}>
                         <td style={{ padding: '0.875rem 1rem' }}>
-                          <div style={{ fontWeight: 600, fontSize: '0.9375rem' }}>{c.name || 'Unknown'}</div>
+                          <Link href={`/customers/${c.id}`} style={{ fontWeight: 600, fontSize: '0.9375rem', color: 'inherit', textDecoration: 'none' }}>
+                            <span style={{ borderBottom: '1px solid rgba(124,92,252,0.4)' }}>{c.name || 'Unknown'}</span>
+                          </Link>
                           <div style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem' }}>{c.email || c.phone || '—'}</div>
                         </td>
                         <td style={{ padding: '0.875rem 1rem' }}>

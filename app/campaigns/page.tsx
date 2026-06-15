@@ -166,11 +166,13 @@ export default function CampaignsPage() {
       {/* Nav */}
       <nav style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
         <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
-          <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '1.125rem' }}>
+          <Link href="/dashboard" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '1.125rem', textDecoration: 'none', color: 'inherit' }}>
             Rev<span style={{ color: 'var(--violet)' }}>Overflow</span>
-          </span>
-          <div className="flex items-center gap-6">
-            <Link href="/dashboard" style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', textDecoration: 'none' }}>← Dashboard</Link>
+          </Link>
+          <div className="flex items-center gap-4">
+            <Link href="/dashboard" style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', textDecoration: 'none' }}>Dashboard</Link>
+            <Link href="/campaigns" style={{ color: 'var(--violet)', fontSize: '0.875rem', textDecoration: 'none', fontWeight: 600 }}>Campaigns</Link>
+            <Link href="/account" style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', textDecoration: 'none' }}>Account</Link>
           </div>
         </div>
       </nav>
@@ -186,6 +188,20 @@ export default function CampaignsPage() {
             Yara has identified {customers.length} customers to win back. {control.length} are in the control group and won't receive the email.
           </p>
         </div>
+
+        {/* Empty state — no eligible customers */}
+        {!result && customers.length === 0 && (
+          <div style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '3rem', textAlign: 'center', maxWidth: '480px' }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>✦</div>
+            <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.75rem' }}>No customers to win back right now</h2>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, fontSize: '0.9375rem', marginBottom: '1.5rem' }}>
+              Yara will flag customers as At Risk or Lapsed as your data grows. Check back after your next Square sync.
+            </p>
+            <Link href="/dashboard" style={{ display: 'inline-block', backgroundColor: 'var(--violet)', color: '#fff', borderRadius: '10px', fontWeight: 700, padding: '0.75rem 1.75rem', textDecoration: 'none', fontSize: '0.9375rem' }}>
+              Back to dashboard
+            </Link>
+          </div>
+        )}
 
         {result ? (
           /* Success state */
@@ -317,67 +333,68 @@ export default function CampaignsPage() {
               {pastCampaigns.length > 0 && (
                 <div className="flex flex-col gap-4">
                   <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1rem', fontWeight: 700 }}>Past campaigns</h2>
-                  {pastCampaigns.map(p => (
-                    <div key={p.id} style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '14px', padding: '1.25rem' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: p.attribution ? '1rem' : 0 }}>
-                        <div>
-                          <div style={{ fontWeight: 600, marginBottom: '0.2rem' }}>{p.name}</div>
-                          <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                            {p.sent_at ? new Date(p.sent_at).toLocaleDateString() : 'Draft'} · {p.total_sent} sent · {p.total_control} control
+                  {pastCampaigns.map(p => {
+                    const statusColor: Record<string, string> = { sent: '#4ade80', sending: '#fbbf24', draft: '#9899b0' }
+                    const sc = statusColor[p.status] || '#9899b0'
+                    const hasConversions = p.attribution && (p.attribution.sentConverted > 0 || p.attribution.controlConverted > 0)
+                    return (
+                      <div key={p.id} style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '14px', padding: '1.25rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+                          <div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                              <span style={{ fontWeight: 600 }}>{p.name}</span>
+                              <span style={{ backgroundColor: `${sc}18`, color: sc, border: `1px solid ${sc}40`, borderRadius: '100px', padding: '0.15rem 0.5rem', fontSize: '0.7rem', fontWeight: 700, textTransform: 'capitalize' }}>
+                                {p.status}
+                              </span>
+                            </div>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                              {p.sent_at ? new Date(p.sent_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Draft'} · {p.total_sent} sent · {p.total_control} control
+                            </div>
                           </div>
+                          {p.attribution?.lift != null && (
+                            <div style={{ background: 'rgba(74,222,128,0.1)', border: '1px solid rgba(74,222,128,0.3)', borderRadius: '8px', padding: '0.375rem 0.75rem', textAlign: 'center', flexShrink: 0 }}>
+                              <div style={{ fontSize: '0.65rem', color: '#4ade80', fontWeight: 600, textTransform: 'uppercase' }}>Lift</div>
+                              <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.125rem', fontWeight: 800, color: '#4ade80' }}>+{p.attribution.lift}%</div>
+                            </div>
+                          )}
                         </div>
-                        {p.attribution?.lift !== null && p.attribution?.lift !== undefined && (
-                          <div style={{ background: 'rgba(74,222,128,0.1)', border: '1px solid rgba(74,222,128,0.3)', borderRadius: '8px', padding: '0.375rem 0.75rem', textAlign: 'center' }}>
-                            <div style={{ fontSize: '0.7rem', color: '#4ade80', fontWeight: 600 }}>LIFT</div>
-                            <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.125rem', fontWeight: 800, color: '#4ade80' }}>+{p.attribution.lift}%</div>
+
+                        {hasConversions ? (
+                          <div className="grid grid-cols-2 gap-3">
+                            <div style={{ background: 'rgba(124,92,252,0.07)', border: '1px solid rgba(124,92,252,0.2)', borderRadius: '10px', padding: '0.875rem' }}>
+                              <div style={{ fontSize: '0.7rem', color: '#a78bfa', fontWeight: 600, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Received email</div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
+                                <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>Converted</span>
+                                <span style={{ fontSize: '0.8125rem', fontWeight: 600 }}>{p.attribution!.sentConverted}/{p.attribution!.sentCount} ({p.attribution!.sentRate}%)</span>
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
+                                <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>Revenue</span>
+                                <span style={{ fontSize: '0.8125rem', fontWeight: 600 }}>${p.attribution!.sentRevenue.toLocaleString()}</span>
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>Attributed to Yara</span>
+                                <span style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#4ade80' }}>${p.attribution!.attributedRevenue.toLocaleString()}</span>
+                              </div>
+                            </div>
+                            <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)', borderRadius: '10px', padding: '0.875rem' }}>
+                              <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Control group</div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
+                                <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>Converted</span>
+                                <span style={{ fontSize: '0.8125rem', fontWeight: 600 }}>{p.attribution!.controlConverted}/{p.attribution!.controlCount} ({p.attribution!.controlRate}%)</span>
+                              </div>
+                              <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>
+                                Bought without any nudge from Yara
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>
+                            No conversions yet — Yara tracks automatically as new orders come in.
                           </div>
                         )}
                       </div>
-
-                      {p.attribution && (p.attribution.sentConverted > 0 || p.attribution.controlConverted > 0) ? (
-                        <div className="grid grid-cols-2 gap-3">
-                          {/* Sent group */}
-                          <div style={{ background: 'rgba(124,92,252,0.07)', border: '1px solid rgba(124,92,252,0.2)', borderRadius: '10px', padding: '0.875rem' }}>
-                            <div style={{ fontSize: '0.7rem', color: '#a78bfa', fontWeight: 600, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Received email</div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-                              <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>Converted</span>
-                              <span style={{ fontSize: '0.8125rem', fontWeight: 600 }}>{p.attribution.sentConverted}/{p.attribution.sentCount} ({p.attribution.sentRate}%)</span>
-                            </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-                              <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>Revenue</span>
-                              <span style={{ fontSize: '0.8125rem', fontWeight: 600 }}>${p.attribution.sentRevenue.toLocaleString()}</span>
-                            </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                              <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>Attributed to Yara</span>
-                              <span style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#4ade80' }}>${p.attribution.attributedRevenue.toLocaleString()}</span>
-                            </div>
-                          </div>
-
-                          {/* Control group */}
-                          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)', borderRadius: '10px', padding: '0.875rem' }}>
-                            <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Control group</div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-                              <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>Converted</span>
-                              <span style={{ fontSize: '0.8125rem', fontWeight: 600 }}>{p.attribution.controlConverted}/{p.attribution.controlCount} ({p.attribution.controlRate}%)</span>
-                            </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                              <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>Revenue</span>
-                              <span style={{ fontSize: '0.8125rem', fontWeight: 600 }}>
-                                ${pastCampaigns.find(c => c.id === p.id)?.attribution?.controlConverted ? '—' : '—'}
-                              </span>
-                            </div>
-                            <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>
-                              Bought without any nudge from Yara
-                            </div>
-                          </div>
-                        </div>
-                      ) : p.attribution ? (
-                        <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>
-                          No conversions detected yet — Yara checks automatically as new orders come in.
-                        </div>
-                      ) : null}
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               )}
             </div>
