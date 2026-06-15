@@ -78,9 +78,9 @@ export default async function DashboardPage({
       {/* Nav */}
       <nav style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
         <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
-          <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '1.125rem' }}>
+          <Link href="/dashboard" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '1.125rem', textDecoration: 'none', color: 'inherit' }}>
             Rev<span style={{ color: 'var(--violet)' }}>Overflow</span>
-          </span>
+          </Link>
           <div className="flex items-center gap-4">
             <span style={{ backgroundColor: 'rgba(124,92,252,0.15)', color: 'var(--violet)', border: '1px solid rgba(124,92,252,0.35)', borderRadius: '100px', padding: '0.25rem 0.75rem', fontSize: '0.8125rem', fontWeight: 700, textTransform: 'capitalize' }}>
               {merchant.plan || 'free'} plan
@@ -88,7 +88,6 @@ export default async function DashboardPage({
             <Link href="/pricing" style={{ fontSize: '0.875rem', color: 'var(--violet)', fontWeight: 600, textDecoration: 'none' }}>Upgrade</Link>
             <Link href="/campaigns" style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', textDecoration: 'none' }}>Campaigns</Link>
             <Link href="/account" style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', textDecoration: 'none' }}>Account</Link>
-            <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>{merchant.business_name}</span>
             <form action={logout}>
               <button type="submit" style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
                 Log out
