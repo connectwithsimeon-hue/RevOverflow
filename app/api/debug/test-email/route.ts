@@ -1,19 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest) {
-  // List which of our expected env vars are present (values hidden)
-  const vars = [
-    'RESEND_API_KEY',
-    'NEXT_PUBLIC_SUPABASE_URL',
-    'SUPABASE_SERVICE_ROLE_KEY',
-    'ENCRYPTION_KEY',
-    'NEXT_PUBLIC_APP_URL',
-  ]
-
-  const present: Record<string, boolean> = {}
-  for (const v of vars) {
-    present[v] = !!process.env[v]
+  // Scan for any env var containing "resend" (case-insensitive)
+  const resendVars: string[] = []
+  for (const key of Object.keys(process.env)) {
+    if (key.toLowerCase().includes('resend')) {
+      resendVars.push(key) // name only, no value
+    }
   }
 
-  return NextResponse.json({ environmentVariablesPresent: present })
+  return NextResponse.json({
+    resendRelatedVarsFound: resendVars,
+    RESEND_API_KEY_present: !!process.env.RESEND_API_KEY,
+  })
 }
