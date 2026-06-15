@@ -79,13 +79,34 @@ export async function GET(request: NextRequest) {
     if (!error) ordersInserted++
   }
 
-  // Run attribution on this campaign
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL!
-  const attrRes = await fetch(`${baseUrl}/api/campaigns/${campaign.id}/attribute`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-  })
-  const attrData = await attrRes.json()
+  // Run attribution inline (no auth needed — we already verified merchant above)
+  const { data: allSends } = await service
+    .from('campaign_sends')
+    .select('id, customer_id, sent_at, is_control_group, converted_at')
+    .eq('campaign_id', campaign.id)
+
+  let conversions = 0
+  for (const send of allSends || []) {
+    const baseline = send.sent_at || campaign.sent_at
+    const { data: convOrders } = await service
+      .from('orders')
+      .select('id, total_amount, ordered_at')
+      .eq('customer_id', send.customer_id)
+      .eq('merchant_id', merchant.id)
+      .gt('ordered_at', baseline)
+      .order('ordered_at', { ascending: true })
+
+    if (!convOrders || convOrders.length === 0) continue
+
+    const conversionValue = convOrders.reduce((sum, o) => sum + parseFloat(o.total_amount), 0)
+    if (!send.converted_at) {
+      await service.from('campaign_sends').update({
+        converted_at: convOrders[0].ordered_at,
+        conversion_value: conversionValue.toFixed(2),
+      }).eq('id', send.id)
+      conversions++
+    }
+  }
 
   return NextResponse.json({
     ok: true,
@@ -93,6 +114,6 @@ export async function GET(request: NextRequest) {
     ordersInserted,
     sentConverters: sentConverters.length,
     controlConverters: controlConverters.length,
-    attribution: attrData,
+    conversionsAttributed: conversions,
   })
 }
