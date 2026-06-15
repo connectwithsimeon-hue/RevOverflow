@@ -30,25 +30,46 @@ export async function POST(request: NextRequest) {
   const service = createServiceClient()
 
   if (event.type === 'checkout.session.completed') {
-    const session = event.data.object
+    const session    = event.data.object
     const merchantId = session.metadata?.merchant_id
-    const plan = session.metadata?.plan
-    const customerId = session.customer
-    const subscriptionId = session.subscription
+    const type       = session.metadata?.type
 
-    if (merchantId && plan) {
-      const planCredits = PLAN_CREDITS[plan] ?? 0
+    // ── Credit pack purchase ──
+    if (type === 'credit_pack' && merchantId) {
+      const credits    = parseInt(session.metadata?.credits || '0')
+      const pack       = session.metadata?.pack || 'pack'
+      const customerId = session.customer
+
+      if (credits > 0) {
+        await service.from('merchants')
+          .update({ stripe_customer_id: customerId, updated_at: new Date().toISOString() })
+          .eq('id', merchantId)
+
+        await grantCredits(
+          merchantId,
+          credits,
+          'pack_purchase',
+          `Purchased ${credits.toLocaleString()} Yara credits (${pack})`
+        )
+      }
+    }
+
+    // ── Subscription signup ──
+    if (!type && merchantId) {
+      const plan           = session.metadata?.plan
+      const customerId     = session.customer
+      const subscriptionId = session.subscription
+      const planCredits    = PLAN_CREDITS[plan] ?? 0
 
       await service.from('merchants').update({
         plan,
-        stripe_customer_id:      customerId,
-        stripe_subscription_id:  subscriptionId,
-        subscription_status:     'active',
-        credits_included:        planCredits,
-        updated_at:              new Date().toISOString(),
+        stripe_customer_id:     customerId,
+        stripe_subscription_id: subscriptionId,
+        subscription_status:    'active',
+        credits_included:       planCredits,
+        updated_at:             new Date().toISOString(),
       }).eq('id', merchantId)
 
-      // Grant first month's credits
       if (planCredits > 0) {
         await grantCredits(
           merchantId,

@@ -73,10 +73,10 @@ const PLANS = [
 ]
 
 const CREDIT_PACKS = [
-  { credits: 1000,  price: 15,  perK: 15, tag: '' },
-  { credits: 5000,  price: 60,  perK: 12, tag: 'Save 20%' },
-  { credits: 15000, price: 150, perK: 10, tag: 'Save 33%' },
-  { credits: 50000, price: 400, perK: 8,  tag: 'Save 47%' },
+  { id: 'pack_1000',  credits: 1000,  price: 15,  perK: 15, tag: '' },
+  { id: 'pack_5000',  credits: 5000,  price: 60,  perK: 12, tag: 'Save 20%' },
+  { id: 'pack_15000', credits: 15000, price: 150, perK: 10, tag: 'Save 33%' },
+  { id: 'pack_50000', credits: 50000, price: 400, perK: 8,  tag: 'Save 47%' },
 ]
 
 const CREDIT_ACTIONS = [
@@ -101,6 +101,24 @@ export default function PricingPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ plan: planId }),
+      })
+      const data = await res.json()
+      if (!data.url) throw new Error(data.error || 'Could not create checkout session')
+      window.location.href = data.url
+    } catch (err: any) {
+      setError(err.message)
+      setLoading(null)
+    }
+  }
+
+  async function handleBuyCredits(packId: string) {
+    setLoading(packId)
+    setError('')
+    try {
+      const res  = await fetch('/api/billing/credits-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pack: packId }),
       })
       const data = await res.json()
       if (!data.url) throw new Error(data.error || 'Could not create checkout session')
@@ -264,8 +282,12 @@ export default function PricingPage() {
                     </div>
                   )}
                   {!pack.tag && <div style={{ marginBottom: '10px', height: '20px' }} />}
-                  <button style={{ width: '100%', backgroundColor: 'transparent', color: 'var(--text-primary)', border: '1px solid var(--border)', borderRadius: '8px', fontWeight: 600, padding: '0.45rem', fontSize: '0.8125rem', cursor: 'pointer', fontFamily: 'inherit' }}>
-                    Add credits
+                  <button
+                    onClick={() => handleBuyCredits(pack.id)}
+                    disabled={loading === pack.id}
+                    style={{ width: '100%', backgroundColor: loading === pack.id ? 'var(--violet)' : 'transparent', color: loading === pack.id ? '#fff' : 'var(--text-primary)', border: '1px solid var(--border)', borderRadius: '8px', fontWeight: 600, padding: '0.45rem', fontSize: '0.8125rem', cursor: loading === pack.id ? 'not-allowed' : 'pointer', fontFamily: 'inherit', opacity: loading === pack.id ? 0.7 : 1, transition: 'all 0.15s' }}
+                  >
+                    {loading === pack.id ? 'Redirecting…' : 'Buy credits'}
                   </button>
                 </div>
               ))}

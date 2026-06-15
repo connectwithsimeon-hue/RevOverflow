@@ -15,7 +15,7 @@ const SEGMENT_META: Record<string, { label: string; color: string; bg: string; d
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: { square_connected?: string; square_error?: string; page?: string; syncing?: string; billing?: string }
+  searchParams: { square_connected?: string; square_error?: string; page?: string; syncing?: string; billing?: string; credits?: string }
 }) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -99,6 +99,11 @@ export default async function DashboardPage({
         {searchParams.billing === 'success' && (
           <div style={{ backgroundColor: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: '10px', padding: '1rem 1.25rem', marginBottom: '2rem', color: '#4ade80', fontSize: '0.9375rem' }}>
             🎉 Welcome to RevOverflow! Your subscription is active. Yara is ready to work.
+          </div>
+        )}
+        {searchParams.credits === 'purchased' && (
+          <div style={{ backgroundColor: 'rgba(124,92,252,0.1)', border: '1px solid rgba(124,92,252,0.35)', borderRadius: '10px', padding: '1rem 1.25rem', marginBottom: '2rem', color: 'var(--violet)', fontSize: '0.9375rem' }}>
+            ✦ Credits added! Your new balance is {(merchant.credit_balance ?? 0).toLocaleString()} Yara credits.
           </div>
         )}
         {searchParams.syncing && (
