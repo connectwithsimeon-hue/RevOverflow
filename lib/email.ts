@@ -14,7 +14,7 @@ export async function sendWinBackEmail(opts: WinBackEmailOptions) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: `Yara from ${opts.businessName} <onboarding@resend.dev>`,
+      from: `Yara from ${opts.businessName} <yara@revoverflow.com>`,
       to: opts.to,
       subject: opts.subject,
       html: opts.bodyHtml,

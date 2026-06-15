@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: 'Yara <onboarding@resend.dev>',
+      from: 'Yara <yara@revoverflow.com>',
       to: 'simeonononobi@gmail.com',
       subject: 'RevOverflow — Yara test email',
       html: '<p>This is a test from Yara. If you see this, email sending works!</p>',
