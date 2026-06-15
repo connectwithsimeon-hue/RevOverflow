@@ -1,16 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest) {
-  // Scan for any env var containing "resend" (case-insensitive)
-  const resendVars: string[] = []
-  for (const key of Object.keys(process.env)) {
-    if (key.toLowerCase().includes('resend')) {
-      resendVars.push(key) // name only, no value
-    }
-  }
-
-  return NextResponse.json({
-    resendRelatedVarsFound: resendVars,
-    RESEND_API_KEY_present: !!process.env.RESEND_API_KEY,
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: 'Yara <onboarding@resend.dev>',
+      to: 'simeonononobi@gmail.com',
+      subject: 'RevOverflow — Yara test email',
+      html: '<p>This is a test from Yara. If you see this, email sending works!</p>',
+    }),
   })
+
+  const data = await res.json()
+  return NextResponse.json({ httpStatus: res.status, resendResponse: data })
 }
