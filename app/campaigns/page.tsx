@@ -89,7 +89,8 @@ export default function CampaignsPage() {
   const [sendingSms, setSendingSms] = useState(false)
   const [lastCampaignId, setLastCampaignId] = useState<string | null>(null)
   const [result, setResult] = useState<{ totalSent: number; totalControl: number } | null>(null)
-  const [smsResult, setSmsResult] = useState<{ sent: number; skipped: number } | null>(null)
+  const [smsResult, setSmsResult] = useState<{ sent: number; skipped: number; creditsRemaining?: number; errors?: string[] } | null>(null)
+  const [smsEligibleCount, setSmsEligibleCount] = useState<number | null>(null)
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -103,7 +104,15 @@ export default function CampaignsPage() {
       setBodyHtml(defaultBody(data.businessName || 'us'))
       setLoading(false)
     }
+    async function loadSmsCount() {
+      const res = await fetch('/api/sms/eligible-count')
+      if (res.ok) {
+        const data = await res.json()
+        setSmsEligibleCount(data.count ?? 0)
+      }
+    }
     load()
+    loadSmsCount()
   }, [router])
 
   const atRisk = customers.filter(c => c.segment === 'at_risk')
@@ -164,11 +173,12 @@ export default function CampaignsPage() {
       const res = await fetch('/api/sms/send', { method: 'POST' })
       const data = await res.json()
       if (data.error === 'insufficient_credits') {
-        setError(`Not enough Yara credits for SMS. Need 5 credits per message.`)
+        setError(`Not enough Yara credits for SMS. Need 5 credits per message. Go to Account → Buy Credits.`)
       } else if (!data.ok) {
         setError(data.error || 'SMS send failed')
       } else {
-        setSmsResult({ sent: data.sent, skipped: data.skipped })
+        setSmsResult({ sent: data.sent, skipped: data.skipped, creditsRemaining: data.creditsRemaining, errors: data.errors })
+        if (data.errors?.length) setError(`Some failed: ${data.errors.join(' · ')}`)
       }
     } catch (err: any) {
       setError(err.message)
@@ -361,21 +371,25 @@ export default function CampaignsPage() {
                 ) : (
                   <button
                     onClick={handleSendSms}
-                    disabled={sendingSms || customers.length === 0}
+                    disabled={sendingSms || smsEligibleCount === 0}
                     style={{
                       width: '100%',
                       backgroundColor: 'transparent',
-                      color: 'var(--text-primary)',
-                      border: '1px solid rgba(124,92,252,0.5)',
+                      color: smsEligibleCount === 0 ? 'var(--text-secondary)' : 'var(--text-primary)',
+                      border: `1px solid ${smsEligibleCount === 0 ? 'rgba(255,255,255,0.1)' : 'rgba(124,92,252,0.5)'}`,
                       borderRadius: '10px',
                       fontWeight: 600,
                       padding: '0.875rem',
                       fontSize: '0.9375rem',
-                      cursor: sendingSms ? 'not-allowed' : 'pointer',
+                      cursor: (sendingSms || smsEligibleCount === 0) ? 'not-allowed' : 'pointer',
                       fontFamily: 'inherit',
                     }}
                   >
-                    {sendingSms ? 'Sending SMS…' : `📱 Send SMS win-back (5 credits each)`}
+                    {sendingSms
+                      ? 'Sending SMS…'
+                      : smsEligibleCount === 0
+                        ? '📱 No customers with phone numbers'
+                        : `📱 Send SMS to ${smsEligibleCount ?? '…'} customers (5 credits each)`}
                   </button>
                 )}
               </div>
