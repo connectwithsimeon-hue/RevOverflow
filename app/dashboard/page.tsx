@@ -82,6 +82,9 @@ export default async function DashboardPage({
             Rev<span style={{ color: 'var(--violet)' }}>Overflow</span>
           </span>
           <div className="flex items-center gap-4">
+            <span style={{ backgroundColor: 'rgba(124,92,252,0.15)', color: 'var(--violet)', border: '1px solid rgba(124,92,252,0.35)', borderRadius: '100px', padding: '0.25rem 0.75rem', fontSize: '0.8125rem', fontWeight: 700, textTransform: 'capitalize' }}>
+              {merchant.plan || 'free'} plan
+            </span>
             <Link href="/pricing" style={{ fontSize: '0.875rem', color: 'var(--violet)', fontWeight: 600, textDecoration: 'none' }}>Upgrade</Link>
             <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>{merchant.business_name}</span>
             <form action={logout}>
@@ -190,6 +193,16 @@ export default async function DashboardPage({
                 ✦ Unlock Yara Autopilot <span style={{ color: 'var(--violet)', fontWeight: 600 }}>→ Brain plan</span>
               </Link>
             )}
+
+            {/* Debug: always-visible test button (session-authenticated, safe) */}
+            <a
+              href="/api/debug/trigger-yara"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: 'inline-block', backgroundColor: 'var(--surface)', border: '1px solid rgba(124,92,252,0.4)', color: 'var(--violet)', borderRadius: '8px', padding: '0.5rem 1rem', fontSize: '0.8125rem', fontWeight: 600, textDecoration: 'none' }}
+            >
+              ▶ Test Autopilot
+            </a>
           </div>
         )}
 
