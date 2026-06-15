@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 
 const PLANS: Record<string, { name: string; priceMonthly: number; description: string }> = {
-  capture: { name: 'Capture',  priceMonthly: 97,   description: 'Data Capture — RFV scoring and customer segmentation' },
-  core:    { name: 'Core',     priceMonthly: 297,  description: 'Core — Win-back campaigns + revenue attribution' },
-  brain:   { name: 'Brain',    priceMonthly: 597,  description: 'Brain — Automated triggers + multi-location' },
-  empire:  { name: 'Empire',   priceMonthly: 1197, description: 'Empire — White-glove onboarding + dedicated support' },
+  capture: { name: 'Capture',  priceMonthly: 147,  description: 'Capture — RFV scoring, segmentation, 500 Yara credits/mo' },
+  core:    { name: 'Core',     priceMonthly: 397,  description: 'Core — Win-back campaigns + attribution, 2,000 Yara credits/mo' },
+  brain:   { name: 'Brain',    priceMonthly: 697,  description: 'Brain — Autonomous Yara + multi-POS, 5,000 Yara credits/mo' },
+  empire:  { name: 'Empire',   priceMonthly: 1497, description: 'Empire — White-glove + unlimited POS, 15,000 Yara credits/mo' },
 }
 
 export async function POST(request: NextRequest) {
