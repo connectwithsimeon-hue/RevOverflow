@@ -227,14 +227,14 @@ export default function Home() {
             Simple, predictable pricing.
           </h2>
           <p style={{ color: 'var(--text-secondary)', textAlign: 'center', marginBottom: '4rem', fontSize: '1.0625rem' }}>
-            All plans include the full product — capacity and breadth differ, never features.
+            Every plan includes Yara credits. The more you use her, the more you grow — buy extra credits anytime.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
             {[
-              { name: 'Capture', price: 97, desc: 'Start collecting customer data and building your list.', highlight: false },
-              { name: 'Core', price: 297, desc: 'Win back lapsed customers with automated campaigns.', highlight: false },
-              { name: 'Brain', price: 597, desc: 'AI-powered targeting with full RFV scoring engine.', highlight: true },
-              { name: 'Empire', price: 1197, desc: 'Multiple locations, advanced analytics, priority support.', highlight: false },
+              { name: 'Capture', price: 147,  credits: 500,   desc: 'RFV scoring, customer segmentation, and your first 500 Yara credits.', highlight: false },
+              { name: 'Core',    price: 397,  credits: 2000,  desc: 'Win-back campaigns, revenue attribution, and 2,000 Yara credits/mo.', highlight: true },
+              { name: 'Brain',   price: 697,  credits: 5000,  desc: 'Autonomous Yara, multi-POS, SMS, and 5,000 Yara credits/mo.', highlight: false },
+              { name: 'Empire',  price: 1497, credits: 15000, desc: 'Unlimited locations, white-glove support, and 15,000 Yara credits/mo.', highlight: false },
             ].map((plan) => (
               <div key={plan.name} style={{ backgroundColor: plan.highlight ? 'rgba(124,92,252,0.08)' : 'var(--ink-light)', border: plan.highlight ? '1px solid rgba(124,92,252,0.45)' : '1px solid var(--border)', borderRadius: '16px', padding: '2rem', position: 'relative' }}>
                 {plan.highlight && (
@@ -247,8 +247,11 @@ export default function Home() {
                   ${plan.price}
                   <span style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem', fontWeight: 400 }}>/mo</span>
                 </div>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', lineHeight: 1.6, margin: '1rem 0 1.5rem' }}>{plan.desc}</p>
-                <Link href="/signup" style={{ display: 'block', textAlign: 'center', padding: '0.75rem', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 600, backgroundColor: plan.highlight ? 'var(--violet)' : 'transparent', color: plan.highlight ? '#fff' : 'var(--text-secondary)', border: plan.highlight ? 'none' : '1px solid var(--border)', textDecoration: 'none' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', backgroundColor: 'rgba(124,92,252,0.12)', color: 'var(--violet)', fontSize: '0.7rem', fontWeight: 700, padding: '2px 8px', borderRadius: '20px', margin: '0.625rem 0 0.875rem' }}>
+                  ✦ {plan.credits.toLocaleString()} credits / mo
+                </div>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', lineHeight: 1.6, margin: '0 0 1.5rem' }}>{plan.desc}</p>
+                <Link href="/pricing" style={{ display: 'block', textAlign: 'center', padding: '0.75rem', borderRadius: '8px', fontSize: '0.875rem', fontWeight: 600, backgroundColor: plan.highlight ? 'var(--violet)' : 'transparent', color: plan.highlight ? '#fff' : 'var(--text-secondary)', border: plan.highlight ? 'none' : '1px solid var(--border)', textDecoration: 'none' }}>
                   Get started
                 </Link>
               </div>
