@@ -9,7 +9,7 @@ rm -f .git/HEAD.lock .git/index.lock
 
 echo "Committing changes..."
 git add -A
-git commit -m "fix: SMS button uses phone-based count; add eligible-count + verbose debug endpoints"
+git commit -m "chore: push pending changes" 2>/dev/null || true
 
 echo "Pushing to GitHub..."
 git push origin main
