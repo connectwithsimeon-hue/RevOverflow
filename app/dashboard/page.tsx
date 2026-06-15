@@ -15,7 +15,7 @@ const SEGMENT_META: Record<string, { label: string; color: string; bg: string; d
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: { square_connected?: string; square_error?: string; page?: string; syncing?: string }
+  searchParams: { square_connected?: string; square_error?: string; page?: string; syncing?: string; billing?: string }
 }) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -82,6 +82,7 @@ export default async function DashboardPage({
             Rev<span style={{ color: 'var(--violet)' }}>Overflow</span>
           </span>
           <div className="flex items-center gap-4">
+            <Link href="/pricing" style={{ fontSize: '0.875rem', color: 'var(--violet)', fontWeight: 600, textDecoration: 'none' }}>Upgrade</Link>
             <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>{merchant.business_name}</span>
             <form action={logout}>
               <button type="submit" style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
@@ -95,6 +96,11 @@ export default async function DashboardPage({
       <div className="max-w-6xl mx-auto px-6 py-10">
 
         {/* Banners */}
+        {searchParams.billing === 'success' && (
+          <div style={{ backgroundColor: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: '10px', padding: '1rem 1.25rem', marginBottom: '2rem', color: '#4ade80', fontSize: '0.9375rem' }}>
+            🎉 Welcome to RevOverflow! Your subscription is active. Yara is ready to work.
+          </div>
+        )}
         {searchParams.syncing && (
           <div style={{ backgroundColor: 'rgba(124,92,252,0.1)', border: '1px solid rgba(124,92,252,0.35)', borderRadius: '10px', padding: '1rem 1.25rem', marginBottom: '2rem', color: 'var(--violet-light, #a78bfa)', fontSize: '0.9375rem' }}>
             ↻ Syncing Square data — this takes about 30 seconds. Refresh the page to see your customers.
