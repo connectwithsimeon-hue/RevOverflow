@@ -120,6 +120,10 @@ export default function CampaignsPage() {
       const sendData = await sendRes.json()
       if (!sendData.ok) throw new Error(sendData.error || 'Failed to send')
 
+      if (sendData.sendErrors?.length > 0) {
+        console.error('Send errors:', sendData.sendErrors)
+        setError(`Sent ${sendData.totalSent}, but ${sendData.sendErrors.length} failed: ${sendData.sendErrors[0]?.error}`)
+      }
       setResult({ totalSent: sendData.totalSent, totalControl: sendData.totalControl })
     } catch (err: any) {
       setError(err.message)

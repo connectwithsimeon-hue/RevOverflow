@@ -43,6 +43,7 @@ export async function POST(
 
   let totalSent = 0
   let totalControl = 0
+  const sendErrors: { email: string; error: string }[] = []
 
   for (const customer of customers) {
     const isControl = customer.control_group === true
@@ -77,8 +78,9 @@ export async function POST(
         bodyHtml: personalised,
       })
       totalSent++
-    } catch (err) {
-      console.error(`Failed to send to ${customer.email}:`, err)
+    } catch (err: any) {
+      console.error(`Failed to send to ${customer.email}:`, err?.message || err)
+      sendErrors.push({ email: customer.email, error: err?.message || String(err) })
     }
   }
 
@@ -91,5 +93,5 @@ export async function POST(
     updated_at: new Date().toISOString(),
   }).eq('id', campaign.id)
 
-  return NextResponse.json({ ok: true, totalSent, totalControl })
+  return NextResponse.json({ ok: true, totalSent, totalControl, sendErrors })
 }
