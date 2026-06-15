@@ -1,31 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest) {
-  const apiKey = process.env.RESEND_API_KEY
+  // List which of our expected env vars are present (values hidden)
+  const vars = [
+    'RESEND_API_KEY',
+    'NEXT_PUBLIC_SUPABASE_URL',
+    'SUPABASE_SERVICE_ROLE_KEY',
+    'ENCRYPTION_KEY',
+    'NEXT_PUBLIC_APP_URL',
+  ]
 
-  if (!apiKey) {
-    return NextResponse.json({ error: 'RESEND_API_KEY is not set in environment variables' })
+  const present: Record<string, boolean> = {}
+  for (const v of vars) {
+    present[v] = !!process.env[v]
   }
 
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from: 'Yara <onboarding@resend.dev>',
-      to: 'simeonononobi@gmail.com',
-      subject: 'RevOverflow test email',
-      html: '<p>This is a test from Yara. If you see this, email sending works!</p>',
-    }),
-  })
-
-  const data = await res.json()
-
-  return NextResponse.json({
-    httpStatus: res.status,
-    apiKeyPrefix: apiKey.slice(0, 8) + '...',
-    resendResponse: data,
-  })
+  return NextResponse.json({ environmentVariablesPresent: present })
 }
