@@ -28,6 +28,7 @@ export async function POST(request: NextRequest) {
     .eq('merchant_id', merchant.id)
     .in('segment', ['at_risk', 'lapsed'])
     .eq('control_group', false)
+    .eq('sms_opt_out', false)
     .not('phone', 'is', null)
 
   if (!customers || customers.length === 0) {
