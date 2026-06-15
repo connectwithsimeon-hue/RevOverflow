@@ -158,11 +158,10 @@ export default function CampaignsPage() {
   }
 
   async function handleSendSms() {
-    if (!lastCampaignId) { setError('Send the email campaign first, then follow up with SMS.'); return }
     setSendingSms(true)
     setError('')
     try {
-      const res = await fetch(`/api/campaigns/${lastCampaignId}/send-sms`, { method: 'POST' })
+      const res = await fetch('/api/sms/send', { method: 'POST' })
       const data = await res.json()
       if (data.error === 'insufficient_credits') {
         setError(`Not enough Yara credits for SMS. Need 5 credits per message.`)
@@ -353,32 +352,30 @@ export default function CampaignsPage() {
                   {sending ? 'Sending…' : `✉ Send email to ${willSend.length} customers`}
                 </button>
 
-                {/* SMS follow-up — available after email is sent */}
+                {/* SMS — standalone, no email required */}
                 {smsResult ? (
                   <div style={{ backgroundColor: 'rgba(74,222,128,0.08)', border: '1px solid rgba(74,222,128,0.3)', borderRadius: '10px', padding: '0.875rem', textAlign: 'center', fontSize: '0.9375rem' }}>
                     📱 SMS sent to <strong style={{ color: '#4ade80' }}>{smsResult.sent} customers</strong>
-                    {smsResult.skipped > 0 && <span style={{ color: 'var(--text-secondary)' }}> · {smsResult.skipped} skipped (no phone number)</span>}
+                    {smsResult.skipped > 0 && <span style={{ color: 'var(--text-secondary)' }}> · {smsResult.skipped} skipped (no phone)</span>}
                   </div>
                 ) : (
                   <button
                     onClick={handleSendSms}
-                    disabled={sendingSms || !lastCampaignId}
-                    title={!lastCampaignId ? 'Send the email campaign first' : 'Send SMS follow-up via Telnyx'}
+                    disabled={sendingSms || customers.length === 0}
                     style={{
                       width: '100%',
                       backgroundColor: 'transparent',
-                      color: lastCampaignId ? 'var(--text-primary)' : 'var(--text-secondary)',
-                      border: `1px solid ${lastCampaignId ? 'rgba(124,92,252,0.5)' : 'var(--border)'}`,
+                      color: 'var(--text-primary)',
+                      border: '1px solid rgba(124,92,252,0.5)',
                       borderRadius: '10px',
                       fontWeight: 600,
                       padding: '0.875rem',
                       fontSize: '0.9375rem',
-                      cursor: (sendingSms || !lastCampaignId) ? 'not-allowed' : 'pointer',
+                      cursor: sendingSms ? 'not-allowed' : 'pointer',
                       fontFamily: 'inherit',
-                      opacity: !lastCampaignId ? 0.5 : 1,
                     }}
                   >
-                    {sendingSms ? 'Sending SMS…' : '📱 Follow up with SMS (5 credits each)'}
+                    {sendingSms ? 'Sending SMS…' : `📱 Send SMS win-back (5 credits each)`}
                   </button>
                 )}
               </div>
