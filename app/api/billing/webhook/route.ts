@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
+import { grantCredits, PLAN_CREDITS } from '@/lib/credits'
 
 export async function POST(request: NextRequest) {
   const payload = await request.text()
@@ -36,13 +37,26 @@ export async function POST(request: NextRequest) {
     const subscriptionId = session.subscription
 
     if (merchantId && plan) {
+      const planCredits = PLAN_CREDITS[plan] ?? 0
+
       await service.from('merchants').update({
         plan,
-        stripe_customer_id: customerId,
-        stripe_subscription_id: subscriptionId,
-        subscription_status: 'active',
-        updated_at: new Date().toISOString(),
+        stripe_customer_id:      customerId,
+        stripe_subscription_id:  subscriptionId,
+        subscription_status:     'active',
+        credits_included:        planCredits,
+        updated_at:              new Date().toISOString(),
       }).eq('id', merchantId)
+
+      // Grant first month's credits
+      if (planCredits > 0) {
+        await grantCredits(
+          merchantId,
+          planCredits,
+          'plan_grant',
+          `${plan.charAt(0).toUpperCase() + plan.slice(1)} plan — monthly credit grant`
+        )
+      }
     }
   }
 

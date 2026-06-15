@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { sendWinBackEmail } from '@/lib/email'
+import { deductEmailBatch } from '@/lib/credits'
 
 export async function POST(
   request: NextRequest,
@@ -14,7 +15,7 @@ export async function POST(
 
   const { data: merchant } = await service
     .from('merchants')
-    .select('id, business_name')
+    .select('id, business_name, credit_balance')
     .eq('auth_user_id', user.id)
     .single()
   if (!merchant) return NextResponse.json({ error: 'No merchant' }, { status: 404 })
@@ -84,6 +85,15 @@ export async function POST(
     }
   }
 
+  // Deduct credits for emails actually sent
+  let creditsDeducted = 0
+  let creditsRemaining = merchant.credit_balance ?? 0
+  if (totalSent > 0) {
+    const creditResult = await deductEmailBatch(merchant.id, totalSent, campaign.id)
+    creditsDeducted  = totalSent * 2
+    creditsRemaining = creditResult.balance
+  }
+
   // Mark campaign as sent
   await service.from('campaigns').update({
     status: 'sent',
@@ -93,5 +103,5 @@ export async function POST(
     updated_at: new Date().toISOString(),
   }).eq('id', campaign.id)
 
-  return NextResponse.json({ ok: true, totalSent, totalControl, sendErrors })
+  return NextResponse.json({ ok: true, totalSent, totalControl, sendErrors, creditsDeducted, creditsRemaining })
 }

@@ -12,7 +12,7 @@ const PLANS = [
     description: 'Start knowing your customers',
     features: [
       'Square POS sync',
-      'RFV scoring & segmentation',
+      'Customer scoring & segmentation (Recency, Frequency, Value)',
       'Customer dashboard',
       'Up to 500 customers',
       '500 Yara credits / month',

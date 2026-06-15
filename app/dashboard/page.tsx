@@ -132,16 +132,21 @@ export default async function DashboardPage({
         </div>
 
         {/* Top stat cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
           {[
-            { label: 'Total customers', value: customerCount?.toLocaleString() ?? '—' },
-            { label: 'Total orders', value: orderCount?.toLocaleString() ?? '—' },
-            { label: 'Square', value: isConnected ? 'Connected' : 'Not connected' },
-            { label: 'Sync', value: syncStatus === 'complete' ? '✓ Done' : syncStatus === 'in_progress' ? `${syncProgress}%` : syncStatus.replace('_', ' ') },
+            { label: 'Total customers', value: customerCount?.toLocaleString() ?? '—', sub: null },
+            { label: 'Total orders',    value: orderCount?.toLocaleString() ?? '—',    sub: null },
+            { label: 'Square',          value: isConnected ? 'Connected' : 'Not connected', sub: null },
+            { label: 'Sync',            value: syncStatus === 'complete' ? '✓ Done' : syncStatus === 'in_progress' ? `${syncProgress}%` : syncStatus.replace('_', ' '), sub: null },
+            { label: 'Yara Credits',    value: (merchant.credit_balance ?? 0).toLocaleString(), sub: merchant.plan ? `${merchant.plan} plan` : null, isCredits: true },
           ].map(card => (
-            <div key={card.label} style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '1.25rem' }}>
+            <div key={card.label} style={{ backgroundColor: 'var(--surface)', border: (card as any).isCredits ? '1px solid rgba(124,92,252,0.4)' : '1px solid var(--border)', borderRadius: '12px', padding: '1.25rem' }}>
               <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.375rem' }}>{card.label}</div>
-              <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.5rem', fontWeight: 800 }}>{card.value}</div>
+              <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.5rem', fontWeight: 800, color: (card as any).isCredits ? 'var(--violet)' : 'inherit' }}>{card.value}</div>
+              {card.sub && <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', marginTop: '2px' }}>{card.sub}</div>}
+              {(card as any).isCredits && (
+                <Link href="/pricing" style={{ fontSize: '0.7rem', color: 'var(--violet)', textDecoration: 'none', fontWeight: 600 }}>Buy more →</Link>
+              )}
             </div>
           ))}
         </div>
@@ -220,7 +225,7 @@ export default async function DashboardPage({
           <div>
             <div className="flex items-center justify-between mb-4">
               <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.125rem', fontWeight: 700 }}>
-                Customers {hasScores ? '· ranked by RFV score' : ''}
+                Customers {hasScores ? '· ranked by Customer Score' : ''}
               </h2>
               <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
                 {totalCustomers?.toLocaleString()} total
@@ -231,7 +236,7 @@ export default async function DashboardPage({
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                    {['Customer', 'Segment', 'RFV Score', 'Last Purchase', 'Orders', 'LTV'].map(h => (
+                    {['Customer', 'Segment', 'Customer Score', 'Last Purchase', 'Orders', 'LTV'].map(h => (
                       <th key={h} style={{ padding: '0.875rem 1rem', textAlign: 'left', color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>
                         {h}
                       </th>

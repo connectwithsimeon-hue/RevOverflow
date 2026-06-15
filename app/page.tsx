@@ -192,7 +192,7 @@ export default function Home() {
                 If you&apos;ve been running Square for a while, your data is already there. Yara starts scoring and sending win-back campaigns immediately after you connect.
               </p>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                {['RFV scoring on all customers', 'Automated win-back SMS & email', 'Control-group revenue attribution', 'Segment-based targeting'].map(f => (
+                {['Customer scoring — Recency, Frequency & Value (RFV)', 'Automated win-back SMS & email', 'Control-group revenue attribution', 'Segment-based targeting'].map(f => (
                   <li key={f} className="flex items-center gap-2 mb-2" style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem' }}>
                     <span style={{ color: '#4ade80', fontWeight: 700 }}>✓</span> {f}
                   </li>
@@ -231,7 +231,7 @@ export default function Home() {
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
             {[
-              { name: 'Capture', price: 147,  credits: 500,   desc: 'RFV scoring, customer segmentation, and your first 500 Yara credits.', highlight: false },
+              { name: 'Capture', price: 147,  credits: 500,   desc: 'Customer scoring (Recency, Frequency, Value), segmentation, and your first 500 Yara credits.', highlight: false },
               { name: 'Core',    price: 397,  credits: 2000,  desc: 'Win-back campaigns, revenue attribution, and 2,000 Yara credits/mo.', highlight: true },
               { name: 'Brain',   price: 697,  credits: 5000,  desc: 'Autonomous Yara, multi-POS, SMS, and 5,000 Yara credits/mo.', highlight: false },
               { name: 'Empire',  price: 1497, credits: 15000, desc: 'Unlimited locations, white-glove support, and 15,000 Yara credits/mo.', highlight: false },
