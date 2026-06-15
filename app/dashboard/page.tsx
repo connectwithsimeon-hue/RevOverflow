@@ -156,15 +156,40 @@ export default async function DashboardPage({
           ))}
         </div>
 
-        {/* Re-sync button (if connected but sync not in progress) */}
+        {/* Re-sync + Yara Autopilot row */}
         {isConnected && syncStatus !== 'in_progress' && (
-          <div className="mb-8">
+          <div className="flex flex-wrap items-center gap-4 mb-8">
             <a
               href="/api/square/sync-trigger"
               style={{ display: 'inline-block', backgroundColor: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-secondary)', borderRadius: '8px', padding: '0.625rem 1.25rem', fontSize: '0.875rem', fontWeight: 500, textDecoration: 'none' }}
             >
               ↻ Re-sync Square data
             </a>
+
+            {/* Yara Autopilot toggle — Brain/Empire only */}
+            {['brain', 'empire'].includes(merchant.plan || '') ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', backgroundColor: merchant.auto_campaigns_enabled ? 'rgba(124,92,252,0.1)' : 'var(--surface)', border: merchant.auto_campaigns_enabled ? '1px solid rgba(124,92,252,0.4)' : '1px solid var(--border)', borderRadius: '8px', padding: '0.5rem 1rem' }}>
+                <span style={{ fontSize: '0.875rem', color: merchant.auto_campaigns_enabled ? 'var(--violet)' : 'var(--text-secondary)', fontWeight: 500 }}>
+                  ✦ Yara Autopilot {merchant.auto_campaigns_enabled ? 'ON' : 'OFF'}
+                </span>
+                <form action={async () => {
+                  'use server'
+                  const { createServiceClient: sc } = await import('@/lib/supabase/server')
+                  const s = sc()
+                  await s.from('merchants').update({ auto_campaigns_enabled: !merchant.auto_campaigns_enabled, updated_at: new Date().toISOString() }).eq('id', merchant.id)
+                  const { redirect: r } = await import('next/navigation')
+                  r('/dashboard')
+                }}>
+                  <button type="submit" style={{ backgroundColor: merchant.auto_campaigns_enabled ? 'var(--violet)' : 'transparent', color: merchant.auto_campaigns_enabled ? '#fff' : 'var(--text-secondary)', border: '1px solid var(--border)', borderRadius: '6px', padding: '0.3rem 0.75rem', fontSize: '0.8125rem', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+                    {merchant.auto_campaigns_enabled ? 'Turn off' : 'Turn on'}
+                  </button>
+                </form>
+              </div>
+            ) : (
+              <Link href="/pricing" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-secondary)', borderRadius: '8px', padding: '0.5rem 1rem', fontSize: '0.875rem', fontWeight: 500, textDecoration: 'none' }}>
+                ✦ Unlock Yara Autopilot <span style={{ color: 'var(--violet)', fontWeight: 600 }}>→ Brain plan</span>
+              </Link>
+            )}
           </div>
         )}
 

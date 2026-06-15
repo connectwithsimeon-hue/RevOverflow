@@ -131,6 +131,14 @@ export default function CampaignsPage() {
         method: 'POST',
       })
       const sendData = await sendRes.json()
+
+      // Credit gate — not enough credits
+      if (sendData.error === 'insufficient_credits') {
+        setError(`Not enough Yara credits. You have ${sendData.creditsAvailable} credits but need at least 2. Go to Pricing to buy more.`)
+        setSending(false)
+        return
+      }
+
       if (!sendData.ok) throw new Error(sendData.error || 'Failed to send')
 
       if (sendData.sendErrors?.length > 0) {

@@ -81,6 +81,31 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  // ── Monthly renewal — grant plan credits on every paid invoice ──
+  if (event.type === 'invoice.payment_succeeded') {
+    const invoice        = event.data.object
+    const subscriptionId = invoice.subscription
+    if (subscriptionId && invoice.billing_reason === 'subscription_cycle') {
+      const { data: merchant } = await service
+        .from('merchants')
+        .select('id, plan')
+        .eq('stripe_subscription_id', subscriptionId)
+        .single()
+
+      if (merchant?.plan) {
+        const planCredits = PLAN_CREDITS[merchant.plan] ?? 0
+        if (planCredits > 0) {
+          await grantCredits(
+            merchant.id,
+            planCredits,
+            'plan_renewal',
+            `${merchant.plan.charAt(0).toUpperCase() + merchant.plan.slice(1)} plan — monthly renewal`
+          )
+        }
+      }
+    }
+  }
+
   if (event.type === 'customer.subscription.deleted' || event.type === 'customer.subscription.paused') {
     const subscription = event.data.object
     await service.from('merchants')

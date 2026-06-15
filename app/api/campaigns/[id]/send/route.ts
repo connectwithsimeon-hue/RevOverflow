@@ -42,6 +42,20 @@ export async function POST(
     return NextResponse.json({ error: 'No eligible customers' }, { status: 400 })
   }
 
+  // ── Credit gate ──
+  const sendableCustomers = customers.filter(c => !c.control_group)
+  const creditsNeeded     = sendableCustomers.length * 2  // 2 credits per email
+  const creditsAvailable  = merchant.credit_balance ?? 0
+  if (creditsAvailable < 2) {
+    return NextResponse.json({
+      error:            'insufficient_credits',
+      message:          `You have ${creditsAvailable} Yara credits — you need at least 2 to send. Buy more credits to continue.`,
+      creditsAvailable,
+      creditsNeeded,
+      buyUrl:           '/pricing',
+    }, { status: 402 })
+  }
+
   let totalSent = 0
   let totalControl = 0
   const sendErrors: { email: string; error: string }[] = []
