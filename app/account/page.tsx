@@ -1,0 +1,355 @@
+import { redirect } from 'next/navigation'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { logout } from '@/app/actions/auth'
+import Link from 'next/link'
+
+const PLAN_META: Record<string, { label: string; price: number; credits: number; color: string; features: string[] }> = {
+  capture: { label: 'Capture', price: 147,  credits: 500,   color: '#60a5fa', features: ['Customer scoring (RFV)', 'Segmentation', '500 Yara credits/mo', 'Square POS'] },
+  core:    { label: 'Core',    price: 397,  credits: 2000,  color: '#4ade80', features: ['Everything in Capture', 'Win-back campaigns', 'Revenue attribution', '2,000 Yara credits/mo'] },
+  brain:   { label: 'Brain',   price: 697,  credits: 5000,  color: '#a78bfa', features: ['Everything in Core', 'Autonomous Yara Autopilot', 'Multi-POS connectors', '5,000 Yara credits/mo'] },
+  empire:  { label: 'Empire',  price: 1497, credits: 15000, color: '#f59e0b', features: ['Everything in Brain', 'White-glove onboarding', 'Unlimited POS', '15,000 Yara credits/mo'] },
+}
+
+const ACTION_LABELS: Record<string, string> = {
+  plan_grant:    'Monthly plan credits',
+  plan_renewal:  'Monthly renewal',
+  pack_purchase: 'Credit pack purchase',
+  email_sent:    'Emails sent',
+  sms_sent:      'SMS sent',
+  decision:      'AI decision',
+  analysis:      'Analysis',
+  extra_pos:     'Extra POS connector',
+  reply_handled: 'Reply handled',
+  import_100:    'Customer import',
+}
+
+export default async function AccountPage() {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  const service = createServiceClient()
+  const { data: merchant } = await service
+    .from('merchants')
+    .select('*')
+    .eq('auth_user_id', user.id)
+    .single()
+
+  if (!merchant) redirect('/login')
+
+  const { data: ledger } = await service
+    .from('credit_ledger')
+    .select('*')
+    .eq('merchant_id', merchant.id)
+    .order('created_at', { ascending: false })
+    .limit(20)
+
+  const plan = PLAN_META[merchant.plan || 'capture'] || PLAN_META['capture']
+  const isAutopilotPlan = ['brain', 'empire'].includes(merchant.plan || '')
+
+  return (
+    <div style={{ backgroundColor: 'var(--ink)', minHeight: '100vh', color: 'var(--text-primary)' }}>
+      {/* Nav */}
+      <nav style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
+        <div className="max-w-4xl mx-auto px-6 flex items-center justify-between h-16">
+          <Link href="/dashboard" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '1.125rem', textDecoration: 'none', color: 'inherit' }}>
+            Rev<span style={{ color: 'var(--violet)' }}>Overflow</span>
+          </Link>
+          <div className="flex items-center gap-4">
+            <span style={{ backgroundColor: 'rgba(124,92,252,0.15)', color: 'var(--violet)', border: '1px solid rgba(124,92,252,0.35)', borderRadius: '100px', padding: '0.25rem 0.75rem', fontSize: '0.8125rem', fontWeight: 700, textTransform: 'capitalize' }}>
+              {merchant.plan || 'free'} plan
+            </span>
+            <Link href="/dashboard" style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', textDecoration: 'none' }}>Dashboard</Link>
+            <Link href="/campaigns" style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', textDecoration: 'none' }}>Campaigns</Link>
+            <form action={logout}>
+              <button type="submit" style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
+                Log out
+              </button>
+            </form>
+          </div>
+        </div>
+      </nav>
+
+      <div className="max-w-4xl mx-auto px-6 py-10">
+        <div className="mb-8">
+          <h1 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.375rem' }}>
+            Account & Settings
+          </h1>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem' }}>
+            Manage your plan, credits, and Yara configuration.
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-6">
+
+          {/* ── Plan & Billing ── */}
+          <section style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.75rem' }}>
+            <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.125rem', fontWeight: 700, marginBottom: '1.25rem' }}>
+              Plan & Billing
+            </h2>
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-3 mb-3">
+                  <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.5rem', fontWeight: 800 }}>
+                    {plan.label}
+                  </span>
+                  <span style={{ backgroundColor: `${plan.color}20`, color: plan.color, border: `1px solid ${plan.color}40`, borderRadius: '100px', padding: '0.2rem 0.6rem', fontSize: '0.8125rem', fontWeight: 700 }}>
+                    {merchant.subscription_status === 'active' ? 'Active' : merchant.subscription_status || 'Inactive'}
+                  </span>
+                </div>
+                <div style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem', marginBottom: '1rem' }}>
+                  ${plan.price.toLocaleString()}/month · renews automatically
+                </div>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                  {plan.features.map(f => (
+                    <li key={f} style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <span style={{ color: plan.color }}>✓</span> {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="flex flex-col gap-2" style={{ minWidth: '160px' }}>
+                <Link href="/pricing" style={{ display: 'block', backgroundColor: 'var(--violet)', color: '#fff', borderRadius: '10px', fontWeight: 700, padding: '0.75rem 1.25rem', fontSize: '0.9375rem', textDecoration: 'none', textAlign: 'center' }}>
+                  Upgrade plan
+                </Link>
+                {merchant.stripe_customer_id && (
+                  <a
+                    href={`https://billing.stripe.com/p/login/test_00000`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ display: 'block', backgroundColor: 'transparent', color: 'var(--text-secondary)', border: '1px solid var(--border)', borderRadius: '10px', fontWeight: 500, padding: '0.75rem 1.25rem', fontSize: '0.875rem', textDecoration: 'none', textAlign: 'center' }}
+                  >
+                    Manage billing
+                  </a>
+                )}
+              </div>
+            </div>
+          </section>
+
+          {/* ── Yara Credits ── */}
+          <section style={{ backgroundColor: 'var(--surface)', border: '1px solid rgba(124,92,252,0.3)', borderRadius: '16px', padding: '1.75rem' }}>
+            <div className="flex items-center justify-between mb-1">
+              <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.125rem', fontWeight: 700 }}>
+                Yara Credits
+              </h2>
+              <Link href="/pricing" style={{ fontSize: '0.875rem', color: 'var(--violet)', fontWeight: 600, textDecoration: 'none' }}>
+                Buy more →
+              </Link>
+            </div>
+
+            <div className="flex flex-wrap gap-6 mb-6" style={{ marginTop: '1.25rem' }}>
+              <div>
+                <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.25rem' }}>Current balance</div>
+                <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '2.5rem', fontWeight: 800, color: 'var(--violet)', lineHeight: 1 }}>
+                  {(merchant.credit_balance ?? 0).toLocaleString()}
+                </div>
+                <div style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', marginTop: '0.25rem' }}>credits remaining</div>
+              </div>
+              <div style={{ borderLeft: '1px solid var(--border)', paddingLeft: '1.5rem' }}>
+                <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.25rem' }}>Included per month</div>
+                <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '2.5rem', fontWeight: 800, lineHeight: 1 }}>
+                  {(merchant.credits_included ?? plan.credits).toLocaleString()}
+                </div>
+                <div style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', marginTop: '0.25rem' }}>on {plan.label} plan</div>
+              </div>
+            </div>
+
+            {/* Credit cost reference */}
+            <div style={{ backgroundColor: 'rgba(124,92,252,0.06)', border: '1px solid rgba(124,92,252,0.15)', borderRadius: '10px', padding: '1rem', marginBottom: '1.5rem' }}>
+              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.625rem' }}>Credit costs</div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '0.4rem' }}>
+                {[
+                  { label: 'Email sent', cost: 2 },
+                  { label: 'SMS sent', cost: 5 },
+                  { label: 'AI decision', cost: 1 },
+                  { label: 'Analysis', cost: 10 },
+                  { label: 'Reply handled', cost: 3 },
+                  { label: 'Extra POS connector', cost: 50 },
+                ].map(item => (
+                  <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8125rem' }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>{item.label}</span>
+                    <span style={{ fontWeight: 700, color: 'var(--violet)' }}>{item.cost} cr</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Transaction history */}
+            {ledger && ledger.length > 0 ? (
+              <>
+                <h3 style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.75rem' }}>
+                  Recent transactions
+                </h3>
+                <div style={{ borderRadius: '10px', overflow: 'hidden', border: '1px solid var(--border)' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                        {['Date', 'Description', 'Credits', 'Balance'].map(h => (
+                          <th key={h} style={{ padding: '0.625rem 0.875rem', textAlign: 'left', color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                            {h}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {ledger.map((row: any, i: number) => {
+                        const isPositive = row.amount > 0
+                        const date = new Date(row.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                        return (
+                          <tr key={row.id} style={{ borderBottom: i < ledger.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                            <td style={{ padding: '0.75rem 0.875rem', color: 'var(--text-secondary)', fontSize: '0.8125rem', whiteSpace: 'nowrap' }}>{date}</td>
+                            <td style={{ padding: '0.75rem 0.875rem', fontSize: '0.875rem' }}>
+                              {row.description || ACTION_LABELS[row.action] || row.action}
+                            </td>
+                            <td style={{ padding: '0.75rem 0.875rem', fontWeight: 700, fontSize: '0.9375rem', color: isPositive ? '#4ade80' : '#f87171', whiteSpace: 'nowrap' }}>
+                              {isPositive ? '+' : ''}{row.amount.toLocaleString()}
+                            </td>
+                            <td style={{ padding: '0.75rem 0.875rem', color: 'var(--text-secondary)', fontSize: '0.875rem', whiteSpace: 'nowrap' }}>
+                              {row.balance_after?.toLocaleString() ?? '—'}
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            ) : (
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>No transactions yet.</p>
+            )}
+          </section>
+
+          {/* ── Autopilot Settings ── */}
+          <section style={{ backgroundColor: 'var(--surface)', border: isAutopilotPlan ? '1px solid rgba(124,92,252,0.3)' : '1px solid var(--border)', borderRadius: '16px', padding: '1.75rem' }}>
+            <div className="flex items-center gap-3 mb-1">
+              <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.125rem', fontWeight: 700 }}>
+                ✦ Yara Autopilot
+              </h2>
+              {isAutopilotPlan && (
+                <span style={{ backgroundColor: merchant.auto_campaigns_enabled ? 'rgba(124,92,252,0.15)' : 'rgba(100,100,100,0.15)', color: merchant.auto_campaigns_enabled ? 'var(--violet)' : 'var(--text-secondary)', borderRadius: '100px', padding: '0.2rem 0.6rem', fontSize: '0.75rem', fontWeight: 700 }}>
+                  {merchant.auto_campaigns_enabled ? 'ON' : 'OFF'}
+                </span>
+              )}
+            </div>
+
+            {!isAutopilotPlan ? (
+              <div style={{ marginTop: '1rem' }}>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem', lineHeight: 1.7, marginBottom: '1rem' }}>
+                  Yara Autopilot runs every morning and automatically sends win-back emails to at-risk and lapsed customers — no manual campaigns needed.
+                </p>
+                <Link href="/pricing" style={{ display: 'inline-block', backgroundColor: 'var(--violet)', color: '#fff', borderRadius: '10px', fontWeight: 700, padding: '0.75rem 1.5rem', fontSize: '0.9375rem', textDecoration: 'none' }}>
+                  Upgrade to Brain to unlock →
+                </Link>
+              </div>
+            ) : (
+              <form action={async (formData: FormData) => {
+                'use server'
+                const { createServiceClient: sc } = await import('@/lib/supabase/server')
+                const s = sc()
+                const enabled = formData.get('autopilot_enabled') === 'on'
+                const subject = (formData.get('subject') as string || '').trim()
+                await s.from('merchants').update({
+                  auto_campaigns_enabled: enabled,
+                  auto_campaign_subject: subject || 'We miss you at {{business_name}} — come back for something special',
+                  updated_at: new Date().toISOString(),
+                }).eq('id', merchant.id)
+                const { redirect: r } = await import('next/navigation')
+                r('/account?saved=autopilot')
+              }} style={{ marginTop: '1.25rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                  {/* Toggle */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        name="autopilot_enabled"
+                        defaultChecked={!!merchant.auto_campaigns_enabled}
+                        style={{ width: 18, height: 18, accentColor: 'var(--violet)', cursor: 'pointer' }}
+                      />
+                      <span style={{ fontSize: '0.9375rem', fontWeight: 500 }}>
+                        Run daily at 9am UTC — email at-risk &amp; lapsed customers automatically
+                      </span>
+                    </label>
+                  </div>
+
+                  {/* Subject line */}
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                      Win-back email subject line
+                    </label>
+                    <input
+                      type="text"
+                      name="subject"
+                      defaultValue={merchant.auto_campaign_subject || 'We miss you at {{business_name}} — come back for something special'}
+                      placeholder="We miss you at {{business_name}}…"
+                      style={{ width: '100%', backgroundColor: 'var(--ink)', border: '1px solid var(--border)', borderRadius: '8px', padding: '0.75rem 1rem', fontSize: '0.9375rem', color: 'var(--text-primary)', fontFamily: 'inherit', boxSizing: 'border-box' }}
+                    />
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', marginTop: '0.375rem' }}>
+                      Use <code style={{ backgroundColor: 'rgba(124,92,252,0.1)', color: 'var(--violet)', padding: '0.1rem 0.35rem', borderRadius: '4px' }}>{'{{business_name}}'}</code> and <code style={{ backgroundColor: 'rgba(124,92,252,0.1)', color: 'var(--violet)', padding: '0.1rem 0.35rem', borderRadius: '4px' }}>{'{{first_name}}'}</code> as placeholders.
+                    </p>
+                  </div>
+
+                  <div>
+                    <button type="submit" style={{ backgroundColor: 'var(--violet)', color: '#fff', borderRadius: '10px', fontWeight: 700, padding: '0.75rem 1.5rem', fontSize: '0.9375rem', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
+                      Save autopilot settings
+                    </button>
+                  </div>
+                </div>
+              </form>
+            )}
+          </section>
+
+          {/* ── Account Info ── */}
+          <section style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.75rem' }}>
+            <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.125rem', fontWeight: 700, marginBottom: '1.25rem' }}>
+              Account Info
+            </h2>
+            <form action={async (formData: FormData) => {
+              'use server'
+              const { createServiceClient: sc } = await import('@/lib/supabase/server')
+              const s = sc()
+              const { createClient: cc } = await import('@/lib/supabase/server')
+              const sb = cc()
+              const { data: { user: u } } = await sb.auth.getUser()
+              if (!u) return
+              const businessName = (formData.get('business_name') as string || '').trim()
+              if (businessName) {
+                await s.from('merchants').update({ business_name: businessName, updated_at: new Date().toISOString() }).eq('auth_user_id', u.id)
+              }
+              const { redirect: r } = await import('next/navigation')
+              r('/account?saved=account')
+            }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                    Business name
+                  </label>
+                  <input
+                    type="text"
+                    name="business_name"
+                    defaultValue={merchant.business_name || ''}
+                    style={{ width: '100%', maxWidth: '400px', backgroundColor: 'var(--ink)', border: '1px solid var(--border)', borderRadius: '8px', padding: '0.75rem 1rem', fontSize: '0.9375rem', color: 'var(--text-primary)', fontFamily: 'inherit', boxSizing: 'border-box' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                    Email address
+                  </label>
+                  <div style={{ fontSize: '0.9375rem', color: 'var(--text-secondary)', padding: '0.75rem 0' }}>
+                    {user.email}
+                  </div>
+                </div>
+                <div>
+                  <button type="submit" style={{ backgroundColor: 'var(--surface)', color: 'var(--text-primary)', border: '1px solid var(--border)', borderRadius: '10px', fontWeight: 600, padding: '0.75rem 1.5rem', fontSize: '0.9375rem', cursor: 'pointer', fontFamily: 'inherit' }}>
+                    Save changes
+                  </button>
+                </div>
+              </div>
+            </form>
+          </section>
+
+        </div>
+      </div>
+    </div>
+  )
+}
