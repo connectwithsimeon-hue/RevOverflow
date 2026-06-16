@@ -3,6 +3,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { sendWinBackEmail } from '@/lib/email'
 import { deductEmailBatch } from '@/lib/credits'
 import { generateYaraCopy, type TriggerType } from '@/lib/yara'
+import { logCampaignSent } from '@/lib/outcome'
 
 function segmentToTrigger(segment: string | null): TriggerType {
   switch (segment) {
@@ -135,6 +136,7 @@ export async function POST(
         bodyHtml: emailBodyHtml,
       })
       totalSent++
+      logCampaignSent({ merchantId: merchant.id, customerId: customer.id, channel: 'email', triggerType: trigger, campaignId: campaign.id }).catch(() => {})
     } catch (err: any) {
       console.error(`Failed to send to ${customer.email}:`, err?.message || err)
       sendErrors.push({ email: customer.email, error: err?.message || String(err) })

@@ -4,6 +4,8 @@ import { logout } from '@/app/actions/auth'
 import Link from 'next/link'
 import OnboardingBanner from '@/app/components/OnboardingBanner'
 import ReachableBaseMeter from '@/app/components/ReachableBaseMeter'
+import GuaranteeBanner from '@/app/components/GuaranteeBanner'
+import { computeGuaranteeStatus } from '@/lib/guarantee'
 
 export const dynamic = 'force-dynamic'
 
@@ -97,6 +99,9 @@ export default async function DashboardPage({
 
   // VIP setup = merchant has a vip_slug set
   const hasVipSetup = !!merchant.vip_slug
+
+  // Guarantee status (runs fast — only reads outcome_log)
+  const guarantee = await computeGuaranteeStatus(merchant.id)
 
   const hasScores = (segmentRows?.length || 0) > 0
 
@@ -223,6 +228,11 @@ export default async function DashboardPage({
             )}
           </div>
         </div>
+
+        {/* ── Guarantee banner ──────────────────────────────────────────── */}
+        {guarantee?.eligible && (
+          <GuaranteeBanner {...guarantee} />
+        )}
 
         {/* ── Mode meter + Onboarding guide ────────────────────────────── */}
         <ReachableBaseMeter reachable={reachable} total={totalCustomers} modeA={modeA} />

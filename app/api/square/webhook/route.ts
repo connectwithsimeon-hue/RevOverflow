@@ -16,6 +16,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { WebhooksHelper } from 'square'
 import { createServiceClient } from '@/lib/supabase/server'
 import { decrypt } from '@/lib/encryption'
+import { attributeRevenueIfCampaignSent } from '@/lib/outcome'
 
 // ── Main handler ─────────────────────────────────────────────────────────────
 export async function POST(request: NextRequest) {
@@ -192,6 +193,16 @@ export async function POST(request: NextRequest) {
         updated_at: new Date().toISOString(),
       }).eq('id', customerId)
     }
+  }
+
+  // ── Learning Loop: attribute revenue if campaign was sent recently ──────
+  if (customerId && totalMoney > 0) {
+    attributeRevenueIfCampaignSent({
+      merchantId,
+      customerId,
+      orderAmount: totalMoney / 100,
+      orderedAt: o.created_at ?? new Date().toISOString(),
+    }).catch(console.error)
   }
 
   // ── Fire RFV scoring (fire-and-forget) ─────────────────────────────────

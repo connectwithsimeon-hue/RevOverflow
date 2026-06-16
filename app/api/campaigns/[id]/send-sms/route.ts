@@ -9,6 +9,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { sendSms } from '@/lib/sms'
 import { deductCredits, hasCredits } from '@/lib/credits'
 import { generateYaraCopy, type TriggerType } from '@/lib/yara'
+import { logCampaignSent } from '@/lib/outcome'
 
 /** Map a customer segment to the right Yara trigger */
 function segmentToTrigger(segment: string | null): TriggerType {
@@ -124,6 +125,7 @@ export async function POST(
 
     if (result.ok) {
       await deductCredits(merchant.id, 'sms_sent', `SMS: ${campaign.name}`, campaign.id)
+      logCampaignSent({ merchantId: merchant.id, customerId: customer.id, channel: 'sms', triggerType: segmentToTrigger(customer.segment), campaignId: campaign.id }).catch(() => {})
       sent++
     } else {
       errors.push(`${customer.phone}: ${result.error}`)
