@@ -26,7 +26,7 @@ export type ActionType =
   | 'guarantee_review'    // Day-60 guarantee check flagged
   | 'cron_run'            // Cron job completed
 
-export type Channel = 'email' | 'sms' | 'referral' | 'system'
+export type Channel = 'email' | 'sms' | 'whatsapp' | 'referral' | 'system'
 
 export type TriggerType = 'win_back' | 'new_customer' | 'vip_reward' | 'birthday' | 'cross_sell'
 
