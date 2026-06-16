@@ -6,6 +6,7 @@ import OnboardingBanner from '@/app/components/OnboardingBanner'
 import ReachableBaseMeter from '@/app/components/ReachableBaseMeter'
 import GuaranteeBanner from '@/app/components/GuaranteeBanner'
 import { computeGuaranteeStatus } from '@/lib/guarantee'
+import YaraRecommendations from '@/app/components/YaraRecommendations'
 
 export const dynamic = 'force-dynamic'
 
@@ -273,6 +274,9 @@ export default async function DashboardPage({
             highlight
           />
         </div>
+
+        {/* ── Yara Recommendations (client component — fetches /api/insights) */}
+        {isConnected && hasScores && <YaraRecommendations />}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
 
