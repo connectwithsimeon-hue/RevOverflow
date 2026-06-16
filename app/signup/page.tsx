@@ -31,7 +31,7 @@ export default function SignupPage() {
           Create your account
         </h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem', marginBottom: '2rem' }}>
-          Connect your Square and start winning customers back.
+          Connect your POS (Square, Clover, or Toast) and start winning customers back.
         </p>
 
         <form onSubmit={handleSubmit}>

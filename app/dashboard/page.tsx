@@ -1,6 +1,5 @@
 import { redirect } from 'next/navigation'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
-import { logout } from '@/app/actions/auth'
 import Link from 'next/link'
 import OnboardingBanner from '@/app/components/OnboardingBanner'
 import ReachableBaseMeter from '@/app/components/ReachableBaseMeter'
@@ -9,6 +8,7 @@ import { computeGuaranteeStatus } from '@/lib/guarantee'
 import YaraRecommendations from '@/app/components/YaraRecommendations'
 import TrustScoreWidget from '@/app/components/TrustScoreWidget'
 import GoalModeWidget from '@/app/components/GoalModeWidget'
+import DashboardSidebar from '@/app/components/DashboardSidebar'
 
 export const dynamic = 'force-dynamic'
 
@@ -67,6 +67,24 @@ export default async function DashboardPage({
     .select('total_amount, ordered_at')
     .eq('merchant_id', merchant.id)
     .gte('ordered_at', new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString())
+
+  // ── Last 7 days, bucketed by day (for the revenue chart) ─────────────────
+  const dayBuckets: { date: string; label: string; amount: number }[] = []
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date()
+    d.setDate(d.getDate() - i)
+    dayBuckets.push({
+      date: d.toISOString().slice(0, 10),
+      label: d.toLocaleDateString('en-US', { weekday: 'short' }),
+      amount: 0,
+    })
+  }
+  for (const row of revenueRows ?? []) {
+    const day = (row.ordered_at as string)?.slice(0, 10)
+    const bucket = dayBuckets.find(b => b.date === day)
+    if (bucket) bucket.amount += parseFloat(row.total_amount ?? '0')
+  }
+  const maxDayAmount = Math.max(1, ...dayBuckets.map(b => b.amount))
 
   // Revenue this month vs last month
   const nowDate = new Date()
@@ -155,31 +173,42 @@ export default async function DashboardPage({
 
   const totalPages = Math.ceil((custTotal || 0) / PAGE_SIZE)
 
+  const initials = (merchant.business_name || 'R')
+    .split(' ').slice(0, 2).map((w: string) => w[0]?.toUpperCase()).join('')
+
   return (
-    <div style={{ backgroundColor: 'var(--ink)', minHeight: '100vh', color: 'var(--text-primary)' }}>
-      {/* Nav */}
-      <nav style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'var(--surface)', position: 'sticky', top: 0, zIndex: 50 }}>
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
-          <Link href="/dashboard" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '1.125rem', textDecoration: 'none', color: 'inherit' }}>
-            Rev<span style={{ color: 'var(--violet)' }}>Overflow</span>
-          </Link>
-          <div className="flex items-center gap-5">
-            <Link href="/campaigns" style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: 500 }}>Campaigns</Link>
-            <Link href="/customers" style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: 500 }}>Customers</Link>
-            <Link href="/account" style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: 500 }}>Account</Link>
-            <Link href="/pricing" style={{ fontSize: '0.8125rem', background: 'var(--violet)', color: '#fff', padding: '0.4rem 1rem', borderRadius: '8px', textDecoration: 'none', fontWeight: 600 }}>
+    <div style={{ backgroundColor: 'var(--ink)', minHeight: '100vh', color: 'var(--text-primary)', display: 'flex' }}>
+      <DashboardSidebar active="dashboard" plan={merchant.plan} />
+
+      <main style={{ flex: 1, minWidth: 0 }}>
+        {/* ── Topbar ────────────────────────────────────────────────────── */}
+        <div style={{
+          height: 72, borderBottom: '1px solid var(--border)', position: 'sticky', top: 0, zIndex: 40,
+          backgroundColor: 'rgba(13,13,17,0.85)', backdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 2rem',
+        }}>
+          <div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Dashboard</div>
+            <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: '1.0625rem' }}>
+              Welcome back{merchant.business_name ? `, ${merchant.business_name}` : ''} 👋
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <Link href="/pricing" style={{ fontSize: '0.8125rem', background: 'var(--violet)', color: '#fff', padding: '0.5rem 1.125rem', borderRadius: '8px', textDecoration: 'none', fontWeight: 600 }}>
               Upgrade
             </Link>
-            <form action={logout}>
-              <button type="submit" style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
-                Sign out
-              </button>
-            </form>
+            <div style={{
+              width: 38, height: 38, borderRadius: '50%', flexShrink: 0,
+              background: 'linear-gradient(135deg, #7C5CFC 0%, #a78bfa 100%)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontWeight: 700, fontSize: '0.8125rem', color: '#fff',
+            }}>
+              {initials}
+            </div>
           </div>
         </div>
-      </nav>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl px-8 py-8">
 
         {/* ── Flash banners ─────────────────────────────────────────────── */}
         {searchParams.billing === 'success' && (
@@ -282,32 +311,65 @@ export default async function DashboardPage({
         {isConnected && hasScores && <TrustScoreWidget />}
 
         {/* ── Key metrics row ───────────────────────────────────────────── */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-          <StatCard
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+          <KpiCard
+            icon="💰" gradient="linear-gradient(135deg, #7C5CFC 0%, #a78bfa 100%)"
             label="Revenue This Month"
             value={`$${thisMonthRev.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
-            sub={lastMonthRev > 0 ? `${revChange >= 0 ? '+' : ''}${revChange.toFixed(0)}% vs last month` : undefined}
-            subColor={revChange >= 0 ? '#4ade80' : '#f87171'}
-            highlight
+            trendPct={lastMonthRev > 0 ? revChange : undefined}
           />
-          <StatCard
+          <KpiCard
+            icon="👥" gradient="linear-gradient(135deg, #60a5fa 0%, #38bdf8 100%)"
             label="Total Customers"
             value={totalCustomers.toLocaleString()}
-            sub={`${reachable.toLocaleString()} reachable`}
+            footnote={`${reachable.toLocaleString()} reachable`}
           />
-          <StatCard
+          <KpiCard
+            icon="⚠️" gradient="linear-gradient(135deg, #fbbf24 0%, #fb923c 100%)"
             label="Need Win-back"
             value={atRisk.toLocaleString()}
-            sub={atRisk > 0 ? 'at risk + lapsed' : 'all good'}
-            subColor={atRisk > 0 ? '#fbbf24' : '#4ade80'}
+            footnote={atRisk > 0 ? 'at risk + lapsed' : 'all good'}
+            footnoteColor={atRisk > 0 ? '#fbbf24' : '#4ade80'}
           />
-          <StatCard
+          <KpiCard
+            icon="✦" gradient="linear-gradient(135deg, #4ade80 0%, #22d3ee 100%)"
             label="Yara Credits"
             value={(merchant.credit_balance ?? 0).toLocaleString()}
-            sub="buy more →"
-            subLink="/pricing"
-            highlight
+            footnote="buy more →"
+            footnoteLink="/pricing"
           />
+        </div>
+
+        {/* ── Revenue chart ─────────────────────────────────────────────── */}
+        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.5rem', marginBottom: '1.5rem' }}>
+          <div className="flex items-center justify-between mb-5 flex-wrap gap-2">
+            <div>
+              <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: '0.9375rem' }}>Revenue — last 7 days</h2>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', marginTop: '0.125rem' }}>
+                ${dayBuckets.reduce((s, b) => s + b.amount, 0).toLocaleString('en-US', { maximumFractionDigits: 0 })} total
+              </p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: '0.75rem', height: 140 }}>
+            {dayBuckets.map((b, i) => {
+              const heightPct = Math.max(4, Math.round((b.amount / maxDayAmount) * 100))
+              const isToday = i === dayBuckets.length - 1
+              return (
+                <div key={b.date} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
+                    {b.amount > 0 ? `$${b.amount.toFixed(0)}` : ''}
+                  </div>
+                  <div style={{
+                    width: '100%', maxWidth: 36, borderRadius: '6px 6px 2px 2px',
+                    height: `${heightPct}%`, minHeight: 4,
+                    background: isToday ? 'linear-gradient(180deg, #a78bfa 0%, #7C5CFC 100%)' : 'rgba(124,92,252,0.25)',
+                    transition: 'height 0.4s ease',
+                  }} />
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: isToday ? 700 : 500 }}>{b.label}</div>
+                </div>
+              )
+            })}
+          </div>
         </div>
 
         {/* ── Yara Recommendations (client component — fetches /api/insights) */}
@@ -414,17 +476,26 @@ export default async function DashboardPage({
 
             {/* Segment breakdown */}
             {hasScores && (
-              <div style={{ marginBottom: '1.5rem' }}>
-                <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, marginBottom: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.08em' }}>
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.25rem', marginBottom: '1.5rem' }}>
+                <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, marginBottom: '0.875rem', color: 'var(--text-secondary)', textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.08em' }}>
                   Customer Segments
                 </h2>
+                {/* Stacked composition bar */}
+                <div style={{ display: 'flex', height: 8, borderRadius: '100px', overflow: 'hidden', marginBottom: '1rem' }}>
+                  {(['loyal', 'active', 'new', 'at_risk', 'lapsed', 'lost'] as const).map(seg => {
+                    const count = segmentCounts[seg] || 0
+                    const pct = totalCustomers ? (count / totalCustomers) * 100 : 0
+                    if (pct === 0) return null
+                    return <div key={seg} style={{ width: `${pct}%`, background: SEGMENT_META[seg].color }} />
+                  })}
+                </div>
                 <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                   {(['loyal', 'active', 'new', 'at_risk', 'lapsed', 'lost'] as const).map(seg => {
                     const meta  = SEGMENT_META[seg]
                     const count = segmentCounts[seg] || 0
                     const pct   = totalCustomers ? Math.round((count / totalCustomers) * 100) : 0
                     return (
-                      <div key={seg} style={{ background: 'var(--surface)', border: `1px solid ${meta.color}25`, borderRadius: '10px', padding: '0.875rem 0.75rem' }}>
+                      <div key={seg} style={{ background: 'var(--ink)', border: `1px solid ${meta.color}25`, borderRadius: '10px', padding: '0.875rem 0.75rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: '0.4rem' }}>
                           <div style={{ width: 6, height: 6, borderRadius: '50%', background: meta.color }} />
                           <span style={{ color: meta.color, fontSize: '0.7rem', fontWeight: 600 }}>{meta.label}</span>
@@ -464,13 +535,27 @@ export default async function DashboardPage({
                         const lastPurchase = c.last_purchase_at
                           ? relativeDate(c.last_purchase_at)
                           : '—'
+                        const custInitials = (c.name || '?').split(' ').slice(0, 2).map((w: string) => w[0]?.toUpperCase()).join('') || '?'
                         return (
-                          <tr key={c.id} style={{ borderBottom: i < customers.length - 1 ? '1px solid var(--border)' : 'none' }}>
+                          <tr key={c.id} style={{ borderBottom: i < customers.length - 1 ? '1px solid var(--border)' : 'none', background: i % 2 === 1 ? 'rgba(255,255,255,0.015)' : 'transparent' }}>
                             <td style={{ padding: '0.75rem 1rem' }}>
-                              <Link href={`/customers/${c.id}`} style={{ fontWeight: 600, fontSize: '0.9rem', color: 'inherit', textDecoration: 'none' }}>
-                                {c.name || 'Unknown'}
-                              </Link>
-                              <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginTop: '1px' }}>{c.email || c.phone || '—'}</div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+                                <div style={{
+                                  width: 30, height: 30, borderRadius: '50%', flexShrink: 0,
+                                  background: seg ? seg.bg : 'rgba(124,92,252,0.12)',
+                                  color: seg ? seg.color : 'var(--violet)',
+                                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                  fontSize: '0.6875rem', fontWeight: 700,
+                                }}>
+                                  {custInitials}
+                                </div>
+                                <div>
+                                  <Link href={`/customers/${c.id}`} style={{ fontWeight: 600, fontSize: '0.9rem', color: 'inherit', textDecoration: 'none' }}>
+                                    {c.name || 'Unknown'}
+                                  </Link>
+                                  <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginTop: '1px' }}>{c.email || c.phone || '—'}</div>
+                                </div>
+                              </div>
                             </td>
                             <td style={{ padding: '0.75rem 1rem' }}>
                               {seg
@@ -601,6 +686,7 @@ export default async function DashboardPage({
         </div>
 
       </div>
+      </main>
     </div>
   )
 }
@@ -637,6 +723,41 @@ function StatCard({ label, value, sub, subColor, subLink, highlight }: {
         subLink
           ? <Link href={subLink} style={{ fontSize: '0.75rem', color: 'var(--violet)', textDecoration: 'none', fontWeight: 600, display: 'block', marginTop: '0.25rem' }}>{sub}</Link>
           : <div style={{ fontSize: '0.75rem', color: subColor || 'var(--text-secondary)', marginTop: '0.25rem', fontWeight: 600 }}>{sub}</div>
+      )}
+    </div>
+  )
+}
+
+function KpiCard({ icon, gradient, label, value, trendPct, footnote, footnoteColor, footnoteLink }: {
+  icon: string; gradient: string; label: string; value: string
+  trendPct?: number; footnote?: string; footnoteColor?: string; footnoteLink?: string
+}) {
+  const trendUp = (trendPct ?? 0) >= 0
+  return (
+    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.25rem' }}>
+      <div className="flex items-center justify-between mb-3">
+        <div style={{
+          width: 38, height: 38, borderRadius: '10px', background: gradient,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.0625rem',
+        }}>
+          {icon}
+        </div>
+        {trendPct !== undefined && (
+          <span style={{
+            fontSize: '0.7rem', fontWeight: 700, borderRadius: '100px', padding: '0.2rem 0.5rem',
+            background: trendUp ? 'rgba(74,222,128,0.12)' : 'rgba(248,113,113,0.12)',
+            color: trendUp ? '#4ade80' : '#f87171',
+          }}>
+            {trendUp ? '↑' : '↓'} {Math.abs(trendPct).toFixed(0)}%
+          </span>
+        )}
+      </div>
+      <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, marginBottom: '0.25rem' }}>{label}</div>
+      <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.625rem', fontWeight: 800, lineHeight: 1 }}>{value}</div>
+      {footnote && (
+        footnoteLink
+          ? <Link href={footnoteLink} style={{ fontSize: '0.75rem', color: 'var(--violet)', textDecoration: 'none', fontWeight: 600, display: 'block', marginTop: '0.375rem' }}>{footnote}</Link>
+          : <div style={{ fontSize: '0.75rem', color: footnoteColor || 'var(--text-secondary)', marginTop: '0.375rem', fontWeight: 600 }}>{footnote}</div>
       )}
     </div>
   )

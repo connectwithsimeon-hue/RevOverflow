@@ -34,7 +34,7 @@ export default function OnboardingBanner({
       label: 'Connect your POS',
       description: 'Link your Square account so Yara can read your customers and orders.',
       done: isConnected,
-      action: !isConnected ? { label: 'Connect Square →', href: '/api/square/connect' } : undefined,
+      action: !isConnected ? { label: 'Connect your POS →', href: '/api/square/connect' } : undefined,
     },
     {
       number: 2,
@@ -59,7 +59,7 @@ export default function OnboardingBanner({
       label: 'Connect your POS',
       description: 'Link your Square account so Yara can import any existing customers.',
       done: isConnected,
-      action: !isConnected ? { label: 'Connect Square →', href: '/api/square/connect' } : undefined,
+      action: !isConnected ? { label: 'Connect your POS →', href: '/api/square/connect' } : undefined,
     },
     {
       number: 2,

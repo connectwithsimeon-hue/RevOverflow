@@ -60,13 +60,13 @@ export default function Home() {
             </span>
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '1.125rem', lineHeight: 1.75, maxWidth: 580, margin: '0 auto 2.5rem' }}>
-            Connect your Square account. Yara — your AI Revenue Operator — scores every customer,
+            Connect your POS (Square, Clover, or Toast). Yara — your AI Revenue Operator — scores every customer,
             writes personalised win-back messages, and sends them automatically.
             You see exactly how much revenue she generates.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <Link href="/signup" style={{ backgroundColor: 'var(--violet)', color: '#fff', borderRadius: '10px', fontWeight: 700, padding: '0.9375rem 2.25rem', fontSize: '1.0625rem', textDecoration: 'none' }}>
-              Connect Square — it's free to start
+              Connect your POS — it's free to start
             </Link>
             <a href="#how-it-works" style={{ color: 'var(--text-secondary)', borderRadius: '10px', fontWeight: 600, padding: '0.9375rem 1.75rem', fontSize: '1.0625rem', border: '1px solid var(--border)', textDecoration: 'none' }}>
               See how it works →
@@ -155,7 +155,7 @@ export default function Home() {
             {[
               {
                 step: '01',
-                title: 'Connect your Square',
+                title: 'Connect your POS (Square, Clover, or Toast)',
                 body: 'One click — RevOverflow reads your customer history, orders, and purchase patterns securely. Setup takes under 2 minutes.',
                 icon: '🔗',
               },
@@ -378,7 +378,7 @@ export default function Home() {
             <span style={{ color: 'var(--violet)' }}>Yara will bring them back.</span>
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '1.0625rem', lineHeight: 1.75, marginBottom: '2.5rem' }}>
-            Connect Square in 2 minutes. Yara scores your customers and gets to work the same day.
+            Connect your POS in 2 minutes. Yara scores your customers and gets to work the same day.
             No technical setup. No contracts. 3× ROI in 60 days — guaranteed.
           </p>
           <Link href="/signup" style={{ backgroundColor: 'var(--violet)', color: '#fff', borderRadius: '12px', fontWeight: 700, padding: '1rem 2.75rem', fontSize: '1.125rem', textDecoration: 'none', display: 'inline-block' }}>
