@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/auto-campaigns",
       "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/ad-sync",
+      "schedule": "0 10 * * 1"
     }
   ]
 }

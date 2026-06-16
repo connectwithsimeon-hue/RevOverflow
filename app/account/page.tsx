@@ -3,6 +3,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { logout } from '@/app/actions/auth'
 import Link from 'next/link'
 import ReferralLinkWidget from '@/app/components/ReferralLinkWidget'
+import AdSyncWidget from '@/app/components/AdSyncWidget'
 
 const PLAN_META: Record<string, { label: string; price: number; credits: number; color: string; features: string[] }> = {
   capture: { label: 'Capture', price: 147,  credits: 500,   color: '#60a5fa', features: ['Customer scoring (RFV)', 'Segmentation', '500 Yara credits/mo', 'Square POS'] },
@@ -363,6 +364,72 @@ export default async function AccountPage() {
               Share this link with your best customers so they can invite friends. Every referral is tracked and attributed back to them.
             </p>
             <ReferralLinkWidget merchantId={merchant.id} referralToken={merchant.referral_token} vipSlug={merchant.vip_slug} />
+          </section>
+
+          {/* ── Ad Audience Sync ── */}
+          <section style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.75rem' }}>
+            <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+              📣 Ad Audience Sync
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '1.25rem', lineHeight: 1.6 }}>
+              Yara keeps a Facebook suppression + lookalike audience and a Google Ads suppression list in sync with your customer base —
+              so you stop paying to "acquire" people who already buy from you, and start finding more people like your best customers.
+              One-time setup: in Facebook Business Settings → Partners, add RevOverflow as a partner with Ads access on your ad account.
+              In Google Ads → Access and security, grant RevOverflow's manager account access. Then paste your account IDs below.
+            </p>
+
+            <form action={async (formData: FormData) => {
+              'use server'
+              const { createServiceClient: sc, createClient: cc } = await import('@/lib/supabase/server')
+              const sb = cc()
+              const { data: { user: u } } = await sb.auth.getUser()
+              if (!u) return
+              const s = sc()
+              const { data: m } = await s.from('merchants').select('id').eq('auth_user_id', u.id).single()
+              if (!m) return
+              const metaId = (formData.get('meta_ad_account_id') as string || '').replace(/[^\d]/g, '')
+              const googleId = (formData.get('google_ads_customer_id') as string || '').replace(/[^\d]/g, '')
+              await s.from('merchants').update({
+                meta_ad_account_id: metaId || null,
+                google_ads_customer_id: googleId || null,
+              }).eq('id', m.id)
+              const { redirect: r } = await import('next/navigation')
+              r('/account?saved=ads')
+            }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.25rem' }}>
+                <div style={{ flex: 1, minWidth: '220px' }}>
+                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                    Facebook Ad Account ID
+                  </label>
+                  <input
+                    type="text"
+                    name="meta_ad_account_id"
+                    defaultValue={merchant.meta_ad_account_id || ''}
+                    placeholder="123456789012345"
+                    style={{ width: '100%', backgroundColor: 'var(--ink)', border: '1px solid var(--border)', borderRadius: '8px', padding: '0.75rem 1rem', fontSize: '0.9375rem', color: 'var(--text-primary)', fontFamily: 'inherit', boxSizing: 'border-box' }}
+                  />
+                </div>
+                <div style={{ flex: 1, minWidth: '220px' }}>
+                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                    Google Ads Customer ID
+                  </label>
+                  <input
+                    type="text"
+                    name="google_ads_customer_id"
+                    defaultValue={merchant.google_ads_customer_id || ''}
+                    placeholder="123-456-7890"
+                    style={{ width: '100%', backgroundColor: 'var(--ink)', border: '1px solid var(--border)', borderRadius: '8px', padding: '0.75rem 1rem', fontSize: '0.9375rem', color: 'var(--text-primary)', fontFamily: 'inherit', boxSizing: 'border-box' }}
+                  />
+                </div>
+              </div>
+              <div style={{ marginTop: '1.25rem' }}>
+                <button type="submit" style={{ backgroundColor: 'var(--surface)', color: 'var(--text-primary)', border: '1px solid var(--border)', borderRadius: '10px', fontWeight: 600, padding: '0.75rem 1.5rem', fontSize: '0.9375rem', cursor: 'pointer', fontFamily: 'inherit' }}>
+                  Save account IDs
+                </button>
+              </div>
+            </form>
+
+            <AdSyncWidget />
           </section>
 
           {/* ── Account Info ── */}

@@ -25,6 +25,7 @@ export type ActionType =
   | 'offer_created'       // Square offer/discount created
   | 'guarantee_review'    // Day-60 guarantee check flagged
   | 'cron_run'            // Cron job completed
+  | 'ad_audience_synced'  // Facebook/Google ad suppression + lookalike audiences refreshed
 
 export type Channel = 'email' | 'sms' | 'whatsapp' | 'referral' | 'system'
 
