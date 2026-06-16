@@ -29,6 +29,8 @@ export default async function DashboardPage({
     square_error?: string
     clover_connected?: string
     clover_error?: string
+    toast_connected?: string
+    toast_error?: string
     page?: string
     billing?: string
     credits?: string
@@ -48,11 +50,13 @@ export default async function DashboardPage({
 
   if (!merchant) redirect('/login')
 
-  const posProvider: 'square' | 'clover' | null = merchant.square_merchant_id
+  const posProvider: 'square' | 'clover' | 'toast' | null = merchant.square_merchant_id
     ? 'square'
     : merchant.clover_merchant_id
       ? 'clover'
-      : null
+      : merchant.toast_restaurant_guid
+        ? 'toast'
+        : null
   const isConnected = posProvider !== null
   const syncStatus  = merchant.sync_status as string
   const syncProgress = merchant.sync_progress as number
@@ -196,6 +200,12 @@ export default async function DashboardPage({
         {searchParams.clover_error && (
           <Banner color="red" icon="✕">Clover error: {searchParams.clover_error}. <a href="/api/clover/connect" style={{ color: '#60a5fa' }}>Try again</a></Banner>
         )}
+        {searchParams.toast_connected && (
+          <Banner color="green" icon="✓">Toast connected — syncing your customers and orders now.</Banner>
+        )}
+        {searchParams.toast_error && (
+          <Banner color="red" icon="✕">Toast error: {searchParams.toast_error}. <a href="/dashboard/connect-toast" style={{ color: '#60a5fa' }}>Try again</a></Banner>
+        )}
         {searchParams.syncing && (
           <Banner color="violet" icon="↻">Syncing your data — refresh in about 30 seconds.</Banner>
         )}
@@ -234,7 +244,7 @@ export default async function DashboardPage({
           {/* Quick action buttons */}
           <div className="flex gap-3 flex-wrap">
             {isConnected && syncStatus !== 'in_progress' && (
-              <a href={posProvider === 'clover' ? '/api/clover/sync-trigger' : '/api/square/sync-trigger'} style={btnStyle('ghost')}>↻ Sync</a>
+              <a href={posProvider === 'clover' ? '/api/clover/sync-trigger' : posProvider === 'toast' ? '/api/toast/sync-trigger' : '/api/square/sync-trigger'} style={btnStyle('ghost')}>↻ Sync</a>
             )}
             {hasScores && atRisk > 0 && (
               <Link href="/campaigns" style={btnStyle('violet')}>✦ Launch Campaign</Link>
@@ -243,6 +253,7 @@ export default async function DashboardPage({
               <>
                 <a href="/api/square/connect" style={btnStyle('violet')}>Connect Square →</a>
                 <a href="/api/clover/connect" style={btnStyle('ghost')}>Connect Clover →</a>
+                <Link href="/dashboard/connect-toast" style={btnStyle('ghost')}>Connect Toast →</Link>
               </>
             )}
           </div>
@@ -320,6 +331,7 @@ export default async function DashboardPage({
                 <div className="flex items-center justify-center gap-3 flex-wrap">
                   <a href="/api/square/connect" style={btnStyle('violet')}>Connect Square</a>
                   <a href="/api/clover/connect" style={btnStyle('ghost')}>Connect Clover</a>
+                  <Link href="/dashboard/connect-toast" style={btnStyle('ghost')}>Connect Toast</Link>
                 </div>
               </div>
             )}
@@ -328,7 +340,7 @@ export default async function DashboardPage({
             {syncStatus === 'in_progress' && (
               <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '1.25rem', marginBottom: '1.5rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                  <span style={{ color: '#fbbf24', fontWeight: 600 }}>↻ Syncing {posProvider === 'clover' ? 'Clover' : 'Square'} data… {syncProgress}%</span>
+                  <span style={{ color: '#fbbf24', fontWeight: 600 }}>↻ Syncing {posProvider === 'clover' ? 'Clover' : posProvider === 'toast' ? 'Toast' : 'Square'} data… {syncProgress}%</span>
                 </div>
                 <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '100px', height: 6 }}>
                   <div style={{ background: 'var(--violet)', borderRadius: '100px', height: 6, width: `${syncProgress}%`, transition: 'width 0.5s ease' }} />
