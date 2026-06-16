@@ -21,6 +21,9 @@ import { sendSms } from '@/lib/sms'
 import { deductCredits, CREDIT_COSTS } from '@/lib/credits'
 import { generateYaraCopy, type TriggerType } from '@/lib/yara'
 import { preCheckCompliance, recordMessageSent } from '@/lib/compliance'
+import { logCampaignSent } from '@/lib/outcome'
+import { getMerchantBenchmarkContext } from '@/lib/benchmarks'
+import { checkDay60Guarantee } from '@/lib/guarantee'
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get('authorization')
@@ -54,6 +57,14 @@ export async function GET(request: NextRequest) {
 
   for (const merchant of merchants) {
     const merchantResult: any = { merchantId: merchant.id, business: merchant.business_name, triggers: {} }
+
+    // ── Learning Loop L2: load benchmark context for this merchant ───────────
+    const benchmarkCtx = await getMerchantBenchmarkContext(merchant.id).catch(() => null)
+    merchantResult.bestTrigger = benchmarkCtx?.bestTriggerForIndustry ?? 'win_back'
+    merchantResult.aboveAverage = benchmarkCtx?.aboveAverage ?? null
+
+    // ── Day-60 guarantee check (runs every day, only acts at day 60) ────────
+    checkDay60Guarantee(merchant.id).catch(console.error)
 
     // ── 1. WIN-BACK ─────────────────────────────────────────────────────────
     await runTrigger({
@@ -273,6 +284,7 @@ async function runTrigger({
 
         await deductCredits(merchant.id, 'email_sent', `Auto ${label}: ${campaign.id}`, campaign.id)
         await recordMessageSent(customer.id, 'email')
+        logCampaignSent({ merchantId: merchant.id, customerId: customer.id, channel: 'email', triggerType: trigger, campaignId: campaign.id }).catch(() => {})
         merchant.credit_balance = (merchant.credit_balance ?? 0) - CREDIT_COSTS.email_sent
         sent++
       } catch (err: any) {
