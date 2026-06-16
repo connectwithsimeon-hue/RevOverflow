@@ -1,22 +1,60 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createHmac, timingSafeEqual } from 'crypto'
 import { createServiceClient } from '@/lib/supabase/server'
 import { grantCredits, PLAN_CREDITS } from '@/lib/credits'
+
+/**
+ * Verifies a Stripe webhook signature per Stripe's documented algorithm
+ * (https://docs.stripe.com/webhooks#verify-manually), since the `stripe`
+ * npm package isn't installed here (checkout/webhook calls use raw fetch).
+ *
+ * Header format: "t=<timestamp>,v1=<signature>[,v1=<signature>...]"
+ * Expected signature = HMAC-SHA256(secret, `${timestamp}.${payload}`)
+ *
+ * Without this, anyone who knows a merchant_id could POST a fake
+ * checkout.session.completed event and grant themselves credits/a
+ * subscription for free — the previous version only checked the
+ * timestamp and never validated the signature itself.
+ */
+function verifyStripeSignature(payload: string, sigHeader: string, secret: string): boolean {
+  const parts = Object.fromEntries(
+    sigHeader.split(',').map((p) => {
+      const [k, v] = p.split('=')
+      return [k, v]
+    })
+  )
+  const timestamp = parts.t
+  const signatures = sigHeader
+    .split(',')
+    .filter((p) => p.startsWith('v1='))
+    .map((p) => p.slice(3))
+
+  if (!timestamp || signatures.length === 0) return false
+
+  const fiveMinutes = 5 * 60
+  if (Math.floor(Date.now() / 1000) - parseInt(timestamp) > fiveMinutes) return false
+
+  const expected = createHmac('sha256', secret).update(`${timestamp}.${payload}`).digest('hex')
+  const expectedBuf = Buffer.from(expected, 'utf8')
+
+  return signatures.some((sig) => {
+    const sigBuf = Buffer.from(sig, 'utf8')
+    return sigBuf.length === expectedBuf.length && timingSafeEqual(sigBuf, expectedBuf)
+  })
+}
 
 export async function POST(request: NextRequest) {
   const payload = await request.text()
   const sig = request.headers.get('stripe-signature') || ''
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
 
-  // Verify signature if webhook secret is set
+  // Verify signature if webhook secret is set. In live mode this must be
+  // configured (Stripe Dashboard → Webhooks → Signing secret) or every
+  // event is rejected below.
   if (webhookSecret) {
-    // Simple timestamp check (full HMAC verification requires crypto)
-    const timestampMatch = sig.match(/t=(\d+)/)
-    if (timestampMatch) {
-      const timestamp = parseInt(timestampMatch[1])
-      const fiveMinutes = 5 * 60
-      if (Math.floor(Date.now() / 1000) - timestamp > fiveMinutes) {
-        return NextResponse.json({ error: 'Webhook too old' }, { status: 400 })
-      }
+    if (!verifyStripeSignature(payload, sig, webhookSecret)) {
+      console.error('Stripe webhook: invalid signature')
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
     }
   }
 
