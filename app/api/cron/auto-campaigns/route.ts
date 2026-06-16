@@ -25,6 +25,7 @@ import { logCampaignSent } from '@/lib/outcome'
 import { getMerchantBenchmarkContext } from '@/lib/benchmarks'
 import { checkDay60Guarantee } from '@/lib/guarantee'
 import { buildContextSnapshot, type ContextSnapshot } from '@/lib/context-engine'
+import { checkGuardrails } from '@/lib/trust'
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get('authorization')
@@ -62,6 +63,24 @@ export async function GET(request: NextRequest) {
 
   for (const merchant of merchants) {
     const merchantResult: any = { merchantId: merchant.id, business: merchant.business_name, triggers: {} }
+
+    // ── Trust guardrail check — skip merchant if not yet allowed ────────────
+    // Count how many autonomous sends have already gone out today
+    const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0)
+    const { count: sendsToday } = await service
+      .from('outcome_log')
+      .select('id', { count: 'exact', head: true })
+      .eq('merchant_id', merchant.id)
+      .eq('action_type', 'campaign_sent')
+      .gte('created_at', todayStart.toISOString())
+
+    const guardrail = await checkGuardrails(merchant.id, sendsToday ?? 0).catch(() => ({ allowed: true, reason: undefined }))
+    if (!guardrail.allowed) {
+      merchantResult.skipped = true
+      merchantResult.skipReason = (guardrail as { allowed: boolean; reason?: string }).reason
+      results.push(merchantResult)
+      continue
+    }
 
     // ── Learning Loop L2: load benchmark context for this merchant ───────────
     const benchmarkCtx = await getMerchantBenchmarkContext(merchant.id).catch(() => null)

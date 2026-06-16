@@ -7,6 +7,7 @@ import ReachableBaseMeter from '@/app/components/ReachableBaseMeter'
 import GuaranteeBanner from '@/app/components/GuaranteeBanner'
 import { computeGuaranteeStatus } from '@/lib/guarantee'
 import YaraRecommendations from '@/app/components/YaraRecommendations'
+import TrustScoreWidget from '@/app/components/TrustScoreWidget'
 
 export const dynamic = 'force-dynamic'
 
@@ -245,6 +246,9 @@ export default async function DashboardPage({
           hasVipSetup={hasVipSetup}
           reachable={reachable}
         />
+
+        {/* ── Yara Trust Score (collapses to a header — expands on click) ── */}
+        {isConnected && hasScores && <TrustScoreWidget />}
 
         {/* ── Key metrics row ───────────────────────────────────────────── */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
