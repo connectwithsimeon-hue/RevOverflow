@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
 
   const merchantId = merchant.id as string
   const accessToken = decrypt(merchant.square_access_token as string)
-  const squareBase = 'https://connect.squareupsandbox.com'
+  const squareBase = process.env.SQUARE_BASE_URL ?? 'https://connect.squareup.com'
   const headers = {
     Authorization: `Bearer ${accessToken}`,
     'Square-Version': '2024-01-17',

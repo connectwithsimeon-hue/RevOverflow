@@ -23,7 +23,8 @@ export async function GET(request: NextRequest) {
   }
 
   // Exchange code for tokens
-  const tokenRes = await fetch('https://connect.squareupsandbox.com/oauth2/token', {
+  const squareBase = process.env.SQUARE_BASE_URL ?? 'https://connect.squareup.com'
+  const tokenRes = await fetch(`${squareBase}/oauth2/token`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Square-Version': '2024-01-17' },
     body: JSON.stringify({

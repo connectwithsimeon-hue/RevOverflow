@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
   if (!merchant) return NextResponse.json({ error: 'No merchant' }, { status: 404 })
 
   const accessToken = decrypt(merchant.square_access_token as string)
-  const squareBase = 'https://connect.squareupsandbox.com'
+  const squareBase = process.env.SQUARE_BASE_URL ?? 'https://connect.squareup.com'
   const headers = {
     Authorization: `Bearer ${accessToken}`,
     'Square-Version': '2024-01-17',

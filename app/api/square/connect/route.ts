@@ -21,8 +21,9 @@ export async function GET() {
   // State = the user's auth id so we can look them up in the callback
   const state = Buffer.from(user.id).toString('base64')
 
+  const squareBase = process.env.SQUARE_BASE_URL ?? 'https://connect.squareup.com'
   const authUrl =
-    `https://connect.squareupsandbox.com/oauth2/authorize` +
+    `${squareBase}/oauth2/authorize` +
     `?client_id=${appId}` +
     `&scope=${scopes}` +
     `&redirect_uri=${encodeURIComponent(redirectUrl)}` +
