@@ -10,6 +10,8 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk'
+import type { ContextSnapshot } from '@/lib/context-engine'
+import { formatContextForPrompt } from '@/lib/context-engine'
 
 const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -67,10 +69,11 @@ export async function generateYaraCopy(
   trigger: TriggerType,
   customer: CustomerContext,
   merchant: MerchantContext,
-  offerHint?: string  // e.g. "10% off" if merchant has set a discount
+  offerHint?: string,           // e.g. "10% off" if merchant has set a discount
+  context?: ContextSnapshot     // optional real-world context from context engine
 ): Promise<YaraMessageResult> {
 
-  const contextBlock = buildContextBlock(trigger, customer, merchant, offerHint)
+  const contextBlock = buildContextBlock(trigger, customer, merchant, offerHint, context)
 
   const response = await client.messages.create({
     model: 'claude-haiku-4-5-20251001',
@@ -118,7 +121,8 @@ function buildContextBlock(
   trigger: TriggerType,
   customer: CustomerContext,
   merchant: MerchantContext,
-  offerHint?: string
+  offerHint?: string,
+  context?: ContextSnapshot
 ): string {
   const triggerDescriptions: Record<TriggerType, string> = {
     win_back: `This customer is ${customer.segment} — they used to visit regularly but have drifted away. Bring them back warmly.`,
@@ -143,7 +147,9 @@ ${customer.birthday ? `- Birthday: ${customer.birthday}` : ''}
 
 MERCHANT VOICE: ${merchant.customVoice || 'warm and friendly, like a neighborhood business that genuinely cares'}
 
-${offerHint ? `OFFER TO INCLUDE: ${offerHint}` : 'Include a light offer or incentive — suggest what feels right'}
+${context ? `REAL-WORLD CONTEXT (use this to make your message feel timely — reference it naturally if relevant):
+${formatContextForPrompt(context)}
+` : ''}${offerHint ? `OFFER TO INCLUDE: ${offerHint}` : 'Include a light offer or incentive — suggest what feels right'}
 
 Return ONLY this JSON (no other text):
 {
@@ -205,7 +211,8 @@ export async function generateBatchCopy(
   trigger: TriggerType,
   customers: CustomerContext[],
   merchant: MerchantContext,
-  offerHint?: string
+  offerHint?: string,
+  context?: ContextSnapshot
 ): Promise<Map<string, YaraMessageResult>> {
   const results = new Map<string, YaraMessageResult>()
 
@@ -216,7 +223,7 @@ export async function generateBatchCopy(
     const batch = customers.slice(i, i + batchSize)
     await Promise.all(
       batch.map(async (c) => {
-        const copy = await generateYaraCopy(trigger, c, merchant, offerHint)
+        const copy = await generateYaraCopy(trigger, c, merchant, offerHint, context)
         results.set(c.firstName + '_' + i, copy)
       })
     )

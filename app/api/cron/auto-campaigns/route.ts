@@ -24,6 +24,7 @@ import { preCheckCompliance, recordMessageSent } from '@/lib/compliance'
 import { logCampaignSent } from '@/lib/outcome'
 import { getMerchantBenchmarkContext } from '@/lib/benchmarks'
 import { checkDay60Guarantee } from '@/lib/guarantee'
+import { buildContextSnapshot, type ContextSnapshot } from '@/lib/context-engine'
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get('authorization')
@@ -35,6 +36,10 @@ export async function GET(request: NextRequest) {
   const service   = createServiceClient()
   const results:  any[] = []
   const now       = new Date()
+
+  // Build one context snapshot for this cron run — shared across all merchants
+  // so we only call the weather API once per day
+  const contextSnapshot = await buildContextSnapshot().catch(() => undefined)
   const today     = toMMDD(now)
 
   // Cutoff dates for each trigger
@@ -68,7 +73,7 @@ export async function GET(request: NextRequest) {
 
     // ── 1. WIN-BACK ─────────────────────────────────────────────────────────
     await runTrigger({
-      service, merchant, now,
+      service, merchant, now, contextSnapshot,
       trigger: 'win_back',
       label: 'win_back',
       buildQuery: async () => {
@@ -86,7 +91,7 @@ export async function GET(request: NextRequest) {
 
     // ── 2. NEW CUSTOMER ──────────────────────────────────────────────────────
     await runTrigger({
-      service, merchant, now,
+      service, merchant, now, contextSnapshot,
       trigger: 'new_customer',
       label: 'new_customer',
       buildQuery: async () => {
@@ -106,7 +111,7 @@ export async function GET(request: NextRequest) {
 
     // ── 3. VIP REWARD ────────────────────────────────────────────────────────
     await runTrigger({
-      service, merchant, now,
+      service, merchant, now, contextSnapshot,
       trigger: 'vip_reward',
       label: 'vip_reward',
       buildQuery: async () => {
@@ -124,7 +129,7 @@ export async function GET(request: NextRequest) {
 
     // ── 4. BIRTHDAY ──────────────────────────────────────────────────────────
     await runTrigger({
-      service, merchant, now,
+      service, merchant, now, contextSnapshot,
       trigger: 'birthday',
       label: 'birthday',
       buildQuery: async () => {
@@ -144,7 +149,7 @@ export async function GET(request: NextRequest) {
 
     // ── 5. CROSS-SELL ────────────────────────────────────────────────────────
     await runTrigger({
-      service, merchant, now,
+      service, merchant, now, contextSnapshot,
       trigger: 'cross_sell',
       label: 'cross_sell',
       buildQuery: async () => {
@@ -169,15 +174,16 @@ export async function GET(request: NextRequest) {
 
 // ── Core trigger runner ────────────────────────────────────────────────────────
 async function runTrigger({
-  service, merchant, now, trigger, label, buildQuery, contactCutoff,
+  service, merchant, now, trigger, label, buildQuery, contactCutoff, contextSnapshot,
 }: {
-  service:       ReturnType<typeof createServiceClient>
-  merchant:      any
-  now:           Date
-  trigger:       TriggerType
-  label:         string
-  buildQuery:    () => Promise<any[]>
-  contactCutoff: string
+  service:          ReturnType<typeof createServiceClient>
+  merchant:         any
+  now:              Date
+  trigger:          TriggerType
+  label:            string
+  buildQuery:       () => Promise<any[]>
+  contactCutoff:    string
+  contextSnapshot?: ContextSnapshot
 }): Promise<any> {
 
   try {
@@ -255,7 +261,9 @@ async function runTrigger({
           {
             businessName: merchant.business_name,
             industry:     merchant.industry ?? undefined,
-          }
+          },
+          undefined,        // offerHint — auto-selected by Yara
+          contextSnapshot   // real-world calendar/weather context
         )
         emailSubject  = yara.emailSubject
         emailBodyHtml = yara.emailBodyHtml
