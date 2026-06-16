@@ -14,13 +14,21 @@ interface Props {
   isConnected: boolean
   hasSynced: boolean
   hasCampaign: boolean
+  modeA?: boolean
+  hasVipSetup?: boolean
+  reachable?: number
 }
 
-export default function OnboardingBanner({ isConnected, hasSynced, hasCampaign }: Props) {
-  // All three done — hide banner
-  if (isConnected && hasSynced && hasCampaign) return null
-
-  const steps: Step[] = [
+export default function OnboardingBanner({
+  isConnected,
+  hasSynced,
+  hasCampaign,
+  modeA = false,
+  hasVipSetup = false,
+  reachable = 0,
+}: Props) {
+  // Mode A: standard 3-step flow (Connect → Score → Campaign)
+  const modeASteps: Step[] = [
     {
       number: 1,
       label: 'Connect your POS',
@@ -38,11 +46,41 @@ export default function OnboardingBanner({ isConnected, hasSynced, hasCampaign }
     {
       number: 3,
       label: 'Launch your first win-back campaign',
-      description: 'Send a personalised email to at-risk and lapsed customers. Yara tracks who comes back.',
+      description: 'Send a personalised message to at-risk and lapsed customers. Yara tracks who comes back.',
       done: hasCampaign,
       action: hasSynced && !hasCampaign ? { label: 'Launch campaign →', href: '/campaigns' } : undefined,
     },
   ]
+
+  // Mode B: grow-your-list flow (Connect → VIP page → Reach 1,000)
+  const modeBSteps: Step[] = [
+    {
+      number: 1,
+      label: 'Connect your POS',
+      description: 'Link your Square account so Yara can import any existing customers.',
+      done: isConnected,
+      action: !isConnected ? { label: 'Connect Square →', href: '/api/square/connect' } : undefined,
+    },
+    {
+      number: 2,
+      label: 'Set up your VIP signup page',
+      description: 'Yara generates a QR code for your counter. Customers scan it to join your list.',
+      done: hasVipSetup,
+      action: isConnected && !hasVipSetup ? { label: 'Get your QR code →', href: '/account#vip' } : undefined,
+    },
+    {
+      number: 3,
+      label: 'Grow to 1,000 reachable customers',
+      description: `You have ${reachable.toLocaleString()} so far. Reach 1,000 to unlock Mode A — Revenue Activation and Yara's full power.`,
+      done: reachable >= 1000,
+      action: hasVipSetup && reachable < 1000 ? { label: 'View VIP page →', href: '/account#vip' } : undefined,
+    },
+  ]
+
+  const steps = modeA ? modeASteps : modeBSteps
+
+  // All steps done — hide banner
+  if (steps.every(s => s.done)) return null
 
   const completedCount = steps.filter(s => s.done).length
   const progressPct = Math.round((completedCount / steps.length) * 100)
@@ -52,7 +90,7 @@ export default function OnboardingBanner({ isConnected, hasSynced, hasCampaign }
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
         <div>
           <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1rem', fontWeight: 800, marginBottom: '0.2rem' }}>
-            ✦ Get started with RevOverflow
+            ✦ {modeA ? 'Get your first campaign live' : 'Build your reachable base'}
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem' }}>
             {completedCount} of {steps.length} steps complete

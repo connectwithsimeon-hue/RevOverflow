@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { logout } from '@/app/actions/auth'
 import Link from 'next/link'
+import OnboardingBanner from '@/app/components/OnboardingBanner'
+import ReachableBaseMeter from '@/app/components/ReachableBaseMeter'
 
 export const dynamic = 'force-dynamic'
 
@@ -33,7 +35,7 @@ export default async function DashboardPage({
   const service = createServiceClient()
   const { data: merchant } = await service
     .from('merchants')
-    .select('*')
+    .select('*, vip_slug')
     .eq('auth_user_id', user.id)
     .single()
 
@@ -91,6 +93,10 @@ export default async function DashboardPage({
 
   // Mode A = 1000+ reachable customers
   const mode = reachable >= 1000 ? 'A' : 'B'
+  const modeA = mode === 'A'
+
+  // VIP setup = merchant has a vip_slug set
+  const hasVipSetup = !!merchant.vip_slug
 
   const hasScores = (segmentRows?.length || 0) > 0
 
@@ -217,6 +223,17 @@ export default async function DashboardPage({
             )}
           </div>
         </div>
+
+        {/* ── Mode meter + Onboarding guide ────────────────────────────── */}
+        <ReachableBaseMeter reachable={reachable} total={totalCustomers} modeA={modeA} />
+        <OnboardingBanner
+          isConnected={isConnected}
+          hasSynced={hasScores}
+          hasCampaign={totalCampaignsSent > 0}
+          modeA={modeA}
+          hasVipSetup={hasVipSetup}
+          reachable={reachable}
+        />
 
         {/* ── Key metrics row ───────────────────────────────────────────── */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">

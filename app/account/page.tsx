@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { logout } from '@/app/actions/auth'
 import Link from 'next/link'
+import ReferralLinkWidget from '@/app/components/ReferralLinkWidget'
 
 const PLAN_META: Record<string, { label: string; price: number; credits: number; color: string; features: string[] }> = {
   capture: { label: 'Capture', price: 147,  credits: 500,   color: '#60a5fa', features: ['Customer scoring (RFV)', 'Segmentation', '500 Yara credits/mo', 'Square POS'] },
@@ -31,7 +32,7 @@ export default async function AccountPage() {
   const service = createServiceClient()
   const { data: merchant } = await service
     .from('merchants')
-    .select('*')
+    .select('*, vip_slug, referral_token')
     .eq('auth_user_id', user.id)
     .single()
 
@@ -297,6 +298,71 @@ export default async function AccountPage() {
                 </div>
               </form>
             )}
+          </section>
+
+          {/* ── VIP Signup Page + QR Code ── */}
+          <section id="vip" style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.75rem' }}>
+            <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+              ✦ VIP Signup Page
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '1.25rem', lineHeight: 1.6 }}>
+              Print this QR code and put it at your counter. Customers scan it to join your VIP list — Yara captures them automatically.
+            </p>
+            {merchant.vip_slug ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ background: 'var(--ink)', border: '1px solid var(--border)', borderRadius: '10px', padding: '0.875rem 1rem' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>Your VIP page URL</div>
+                  <div style={{ fontSize: '0.9375rem', color: 'var(--violet)', wordBreak: 'break-all' }}>
+                    {`${process.env.NEXT_PUBLIC_APP_URL ?? 'https://revoverflow.com'}/vip/${merchant.vip_slug}`}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  <a
+                    href="/api/vip/qr?format=png"
+                    download
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'var(--violet)', color: '#fff', borderRadius: '10px', padding: '0.75rem 1.25rem', fontWeight: 600, fontSize: '0.9375rem', textDecoration: 'none' }}
+                  >
+                    ⬇ Download QR (PNG)
+                  </a>
+                  <a
+                    href="/api/vip/qr?format=svg"
+                    download
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'var(--surface)', color: 'var(--text-primary)', border: '1px solid var(--border)', borderRadius: '10px', padding: '0.75rem 1.25rem', fontWeight: 600, fontSize: '0.9375rem', textDecoration: 'none' }}
+                  >
+                    ⬇ Download QR (SVG)
+                  </a>
+                  <a
+                    href={`${process.env.NEXT_PUBLIC_APP_URL ?? 'https://revoverflow.com'}/vip/${merchant.vip_slug}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'var(--surface)', color: 'var(--text-secondary)', border: '1px solid var(--border)', borderRadius: '10px', padding: '0.75rem 1.25rem', fontWeight: 600, fontSize: '0.9375rem', textDecoration: 'none' }}
+                  >
+                    Preview page ↗
+                  </a>
+                </div>
+              </div>
+            ) : (
+              <div style={{ background: 'rgba(124,92,252,0.07)', border: '1px solid rgba(124,92,252,0.2)', borderRadius: '10px', padding: '1rem 1.25rem' }}>
+                <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.875rem', margin: '0 0 0.75rem' }}>
+                  Your VIP page will be generated automatically the first time you visit{' '}
+                  <a href="/api/vip/qr" style={{ color: 'var(--violet)' }}>/api/vip/qr</a>.
+                </p>
+                <a href="/api/vip/qr" style={{ display: 'inline-block', background: 'var(--violet)', color: '#fff', borderRadius: '8px', padding: '0.625rem 1.25rem', fontWeight: 600, fontSize: '0.875rem', textDecoration: 'none' }}>
+                  Generate my QR code
+                </a>
+              </div>
+            )}
+          </section>
+
+          {/* ── Referral Link ── */}
+          <section style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.75rem' }}>
+            <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+              🎁 Referral Link
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '1.25rem', lineHeight: 1.6 }}>
+              Share this link with your best customers so they can invite friends. Every referral is tracked and attributed back to them.
+            </p>
+            <ReferralLinkWidget merchantId={merchant.id} referralToken={merchant.referral_token} vipSlug={merchant.vip_slug} />
           </section>
 
           {/* ── Account Info ── */}
