@@ -6,8 +6,20 @@
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
-import { sendSms, buildWinBackSms } from '@/lib/sms'
+import { sendSms } from '@/lib/sms'
 import { deductCredits, hasCredits } from '@/lib/credits'
+import { generateYaraCopy, type TriggerType } from '@/lib/yara'
+
+/** Map a customer segment to the right Yara trigger */
+function segmentToTrigger(segment: string | null): TriggerType {
+  switch (segment) {
+    case 'lapsed':   return 'win_back'
+    case 'at_risk':  return 'win_back'
+    case 'new':      return 'new_customer'
+    case 'loyal':    return 'vip_reward'
+    default:         return 'win_back'
+  }
+}
 
 export async function POST(
   request: NextRequest,
@@ -21,7 +33,7 @@ export async function POST(
 
   const { data: merchant } = await service
     .from('merchants')
-    .select('id, business_name, credit_balance')
+    .select('id, business_name, industry, credit_balance')
     .eq('auth_user_id', user.id)
     .single()
   if (!merchant) return NextResponse.json({ error: 'No merchant' }, { status: 404 })
@@ -37,7 +49,7 @@ export async function POST(
   // Get customers with phone numbers who are not in the control group
   const { data: sends } = await service
     .from('campaign_sends')
-    .select('customer_id, is_control_group, customers(id, name, phone)')
+    .select('customer_id, is_control_group, customers(id, name, phone, segment, total_orders, lifetime_value, avg_order_value, last_purchase_at, favorite_items)')
     .eq('campaign_id', campaign.id)
     .eq('is_control_group', false)
 
@@ -74,7 +86,39 @@ export async function POST(
     }
 
     const firstName = (customer.name || '').split(' ')[0] || 'there'
-    const text = buildWinBackSms({ firstName, businessName: merchant.business_name })
+    const trigger = segmentToTrigger(customer.segment)
+
+    // Calculate days since last visit
+    const lastVisit = customer.last_purchase_at ? new Date(customer.last_purchase_at) : null
+    const daysSince = lastVisit
+      ? Math.floor((Date.now() - lastVisit.getTime()) / (1000 * 60 * 60 * 24))
+      : 90
+
+    // Ask Yara to write a personalised message for this customer
+    let text: string
+    try {
+      const yaraResult = await generateYaraCopy(
+        trigger,
+        {
+          firstName,
+          totalOrders: customer.total_orders ?? 0,
+          lifetimeValue: parseFloat(customer.lifetime_value ?? '0'),
+          avgOrderValue: parseFloat(customer.avg_order_value ?? '0'),
+          daysSinceLastVisit: daysSince,
+          favoriteItems: customer.favorite_items ?? [],
+          segment: customer.segment ?? 'unknown',
+        },
+        {
+          businessName: merchant.business_name,
+          industry: merchant.industry ?? undefined,
+        }
+      )
+      text = yaraResult.smsText
+    } catch {
+      // Fallback to simple template if Yara API is down
+      text = `Hey ${firstName}! We miss you at ${merchant.business_name}. Come back and we'll make it worth your while. Reply STOP to opt out.`
+      if (text.length > 160) text = text.slice(0, 157) + '...'
+    }
 
     const result = await sendSms({ to: customer.phone, text })
 

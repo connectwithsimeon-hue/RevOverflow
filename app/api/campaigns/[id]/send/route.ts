@@ -2,6 +2,17 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { sendWinBackEmail } from '@/lib/email'
 import { deductEmailBatch } from '@/lib/credits'
+import { generateYaraCopy, type TriggerType } from '@/lib/yara'
+
+function segmentToTrigger(segment: string | null): TriggerType {
+  switch (segment) {
+    case 'lapsed':  return 'win_back'
+    case 'at_risk': return 'win_back'
+    case 'new':     return 'new_customer'
+    case 'loyal':   return 'vip_reward'
+    default:        return 'win_back'
+  }
+}
 
 export async function POST(
   request: NextRequest,
@@ -15,7 +26,7 @@ export async function POST(
 
   const { data: merchant } = await service
     .from('merchants')
-    .select('id, business_name, credit_balance')
+    .select('id, business_name, industry, credit_balance')
     .eq('auth_user_id', user.id)
     .single()
   if (!merchant) return NextResponse.json({ error: 'No merchant' }, { status: 404 })
@@ -29,11 +40,11 @@ export async function POST(
   if (!campaign) return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
   if (campaign.status === 'sent') return NextResponse.json({ error: 'Already sent' }, { status: 400 })
 
-  // Load eligible customers — at_risk and lapsed, with email addresses
+  // Load eligible customers — with full profile for Yara personalisation
   const targets = campaign.segment_targets as string[]
   const { data: customers } = await service
     .from('customers')
-    .select('id, name, email, segment, control_group')
+    .select('id, name, email, segment, control_group, total_orders, lifetime_value, avg_order_value, last_purchase_at, favorite_items')
     .eq('merchant_id', merchant.id)
     .in('segment', targets)
     .not('email', 'is', null)
@@ -78,19 +89,50 @@ export async function POST(
       continue // Don't email the control group
     }
 
-    // Personalise the email
+    // Personalise the email with Yara's AI copy
     const firstName = (customer.name || '').split(' ')[0] || 'there'
-    const personalised = campaign.body_html
-      .replace(/\{\{first_name\}\}/g, firstName)
-      .replace(/\{\{business_name\}\}/g, merchant.business_name)
+    const trigger = segmentToTrigger(customer.segment)
+    const lastVisit = customer.last_purchase_at ? new Date(customer.last_purchase_at) : null
+    const daysSince = lastVisit
+      ? Math.floor((Date.now() - lastVisit.getTime()) / (1000 * 60 * 60 * 24))
+      : 90
+
+    let emailSubject: string
+    let emailBodyHtml: string
+    try {
+      const yara = await generateYaraCopy(
+        trigger,
+        {
+          firstName,
+          totalOrders: customer.total_orders ?? 0,
+          lifetimeValue: parseFloat(customer.lifetime_value ?? '0'),
+          avgOrderValue: parseFloat(customer.avg_order_value ?? '0'),
+          daysSinceLastVisit: daysSince,
+          favoriteItems: customer.favorite_items ?? [],
+          segment: customer.segment ?? 'unknown',
+        },
+        {
+          businessName: merchant.business_name,
+          industry: merchant.industry ?? undefined,
+        }
+      )
+      emailSubject  = yara.emailSubject
+      emailBodyHtml = yara.emailBodyHtml
+    } catch {
+      // Fallback to the campaign's static template if Yara is unavailable
+      emailSubject  = campaign.subject.replace(/\{\{first_name\}\}/g, firstName)
+      emailBodyHtml = campaign.body_html
+        .replace(/\{\{first_name\}\}/g, firstName)
+        .replace(/\{\{business_name\}\}/g, merchant.business_name)
+    }
 
     try {
       await sendWinBackEmail({
         to: customer.email,
         customerName: customer.name || '',
         businessName: merchant.business_name,
-        subject: campaign.subject.replace(/\{\{first_name\}\}/g, firstName),
-        bodyHtml: personalised,
+        subject: emailSubject,
+        bodyHtml: emailBodyHtml,
       })
       totalSent++
     } catch (err: any) {
