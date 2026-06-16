@@ -8,6 +8,7 @@ import GuaranteeBanner from '@/app/components/GuaranteeBanner'
 import { computeGuaranteeStatus } from '@/lib/guarantee'
 import YaraRecommendations from '@/app/components/YaraRecommendations'
 import TrustScoreWidget from '@/app/components/TrustScoreWidget'
+import GoalModeWidget from '@/app/components/GoalModeWidget'
 
 export const dynamic = 'force-dynamic'
 
@@ -246,6 +247,9 @@ export default async function DashboardPage({
           hasVipSetup={hasVipSetup}
           reachable={reachable}
         />
+
+        {/* ── Goal Mode — autonomous execution toward revenue target ─────── */}
+        {isConnected && hasScores && <GoalModeWidget />}
 
         {/* ── Yara Trust Score (collapses to a header — expands on click) ── */}
         {isConnected && hasScores && <TrustScoreWidget />}

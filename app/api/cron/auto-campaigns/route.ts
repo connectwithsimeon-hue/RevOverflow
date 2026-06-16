@@ -26,6 +26,7 @@ import { getMerchantBenchmarkContext } from '@/lib/benchmarks'
 import { checkDay60Guarantee } from '@/lib/guarantee'
 import { buildContextSnapshot, type ContextSnapshot } from '@/lib/context-engine'
 import { checkGuardrails } from '@/lib/trust'
+import { evaluateGoalWeekly } from '@/lib/goal-mode'
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get('authorization')
@@ -89,6 +90,9 @@ export async function GET(request: NextRequest) {
 
     // ── Day-60 guarantee check (runs every day, only acts at day 60) ────────
     checkDay60Guarantee(merchant.id).catch(console.error)
+
+    // ── Goal Mode: update goal_status weekly ────────────────────────────────
+    evaluateGoalWeekly(merchant.id).catch(console.error)
 
     // ── 1. WIN-BACK ─────────────────────────────────────────────────────────
     await runTrigger({
