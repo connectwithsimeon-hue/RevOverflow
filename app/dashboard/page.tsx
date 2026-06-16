@@ -27,6 +27,8 @@ export default async function DashboardPage({
   searchParams: {
     square_connected?: string
     square_error?: string
+    clover_connected?: string
+    clover_error?: string
     page?: string
     billing?: string
     credits?: string
@@ -46,7 +48,12 @@ export default async function DashboardPage({
 
   if (!merchant) redirect('/login')
 
-  const isConnected = !!merchant.square_merchant_id
+  const posProvider: 'square' | 'clover' | null = merchant.square_merchant_id
+    ? 'square'
+    : merchant.clover_merchant_id
+      ? 'clover'
+      : null
+  const isConnected = posProvider !== null
   const syncStatus  = merchant.sync_status as string
   const syncProgress = merchant.sync_progress as number
 
@@ -183,8 +190,14 @@ export default async function DashboardPage({
         {searchParams.square_error && (
           <Banner color="red" icon="✕">Square error: {searchParams.square_error}. <a href="/api/square/connect" style={{ color: '#60a5fa' }}>Try again</a></Banner>
         )}
+        {searchParams.clover_connected && (
+          <Banner color="green" icon="✓">Clover connected — syncing your customers and orders now.</Banner>
+        )}
+        {searchParams.clover_error && (
+          <Banner color="red" icon="✕">Clover error: {searchParams.clover_error}. <a href="/api/clover/connect" style={{ color: '#60a5fa' }}>Try again</a></Banner>
+        )}
         {searchParams.syncing && (
-          <Banner color="violet" icon="↻">Syncing Square data — refresh in about 30 seconds.</Banner>
+          <Banner color="violet" icon="↻">Syncing your data — refresh in about 30 seconds.</Banner>
         )}
 
         {/* ── Page header ───────────────────────────────────────────────── */}
@@ -211,9 +224,9 @@ export default async function DashboardPage({
             </div>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem' }}>
               {!isConnected
-                ? 'Connect Square to get started.'
+                ? 'Connect your POS to get started.'
                 : syncStatus !== 'complete'
-                  ? 'Syncing your Square data…'
+                  ? 'Syncing your data…'
                   : `${totalCustomers.toLocaleString()} customers · ${atRisk > 0 ? `${atRisk} need attention` : 'all segments healthy'}`}
             </p>
           </div>
@@ -221,13 +234,16 @@ export default async function DashboardPage({
           {/* Quick action buttons */}
           <div className="flex gap-3 flex-wrap">
             {isConnected && syncStatus !== 'in_progress' && (
-              <a href="/api/square/sync-trigger" style={btnStyle('ghost')}>↻ Sync</a>
+              <a href={posProvider === 'clover' ? '/api/clover/sync-trigger' : '/api/square/sync-trigger'} style={btnStyle('ghost')}>↻ Sync</a>
             )}
             {hasScores && atRisk > 0 && (
               <Link href="/campaigns" style={btnStyle('violet')}>✦ Launch Campaign</Link>
             )}
             {!isConnected && (
-              <a href="/api/square/connect" style={btnStyle('violet')}>Connect Square →</a>
+              <>
+                <a href="/api/square/connect" style={btnStyle('violet')}>Connect Square →</a>
+                <a href="/api/clover/connect" style={btnStyle('ghost')}>Connect Clover →</a>
+              </>
             )}
           </div>
         </div>
@@ -296,12 +312,15 @@ export default async function DashboardPage({
               <div style={{ background: 'var(--surface)', border: '1px solid rgba(124,92,252,0.3)', borderRadius: '16px', padding: '2.5rem', textAlign: 'center', marginBottom: '1.5rem' }}>
                 <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🔗</div>
                 <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.75rem' }}>
-                  Connect your Square account
+                  Connect your POS
                 </h2>
                 <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: '1.5rem', fontSize: '0.9375rem', maxWidth: 360, margin: '0 auto 1.5rem' }}>
                   One click — we read your customers, score everyone, and show Yara who to target first.
                 </p>
-                <a href="/api/square/connect" style={btnStyle('violet')}>Connect Square</a>
+                <div className="flex items-center justify-center gap-3 flex-wrap">
+                  <a href="/api/square/connect" style={btnStyle('violet')}>Connect Square</a>
+                  <a href="/api/clover/connect" style={btnStyle('ghost')}>Connect Clover</a>
+                </div>
               </div>
             )}
 
@@ -309,7 +328,7 @@ export default async function DashboardPage({
             {syncStatus === 'in_progress' && (
               <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '1.25rem', marginBottom: '1.5rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                  <span style={{ color: '#fbbf24', fontWeight: 600 }}>↻ Syncing Square data… {syncProgress}%</span>
+                  <span style={{ color: '#fbbf24', fontWeight: 600 }}>↻ Syncing {posProvider === 'clover' ? 'Clover' : 'Square'} data… {syncProgress}%</span>
                 </div>
                 <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '100px', height: 6 }}>
                   <div style={{ background: 'var(--violet)', borderRadius: '100px', height: 6, width: `${syncProgress}%`, transition: 'width 0.5s ease' }} />
