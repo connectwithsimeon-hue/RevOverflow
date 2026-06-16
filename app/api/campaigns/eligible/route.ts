@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   const service = createServiceClient()
   const { data: merchant } = await service
     .from('merchants')
-    .select('id, business_name')
+    .select('id, business_name, plan')
     .eq('auth_user_id', user.id)
     .single()
   if (!merchant) return NextResponse.json({ error: 'No merchant' }, { status: 404 })
@@ -79,5 +79,6 @@ export async function GET(request: NextRequest) {
     customers: customers || [],
     pastCampaigns: campaignsWithStats,
     businessName: merchant.business_name,
+    plan: merchant.plan,
   })
 }

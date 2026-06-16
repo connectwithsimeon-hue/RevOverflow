@@ -288,13 +288,45 @@ export default async function DashboardPage({
           </div>
         </div>
 
+        {/* ── Top section: KPI board + Reachable Audience board ──────────── */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-5 mb-6">
+          <div className="grid grid-cols-2 gap-4">
+            <KpiCard
+              icon="💰" gradient="linear-gradient(135deg, #7C5CFC 0%, #a78bfa 100%)" accent="#7C5CFC"
+              label="Revenue This Month"
+              value={`$${thisMonthRev.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
+              trendPct={lastMonthRev > 0 ? revChange : undefined}
+            />
+            <KpiCard
+              icon="👥" gradient="linear-gradient(135deg, #60a5fa 0%, #38bdf8 100%)" accent="#60a5fa"
+              label="Total Customers"
+              value={totalCustomers.toLocaleString()}
+              footnote={`${reachable.toLocaleString()} reachable`}
+            />
+            <KpiCard
+              icon="⚠️" gradient="linear-gradient(135deg, #fbbf24 0%, #fb923c 100%)" accent="#fbbf24"
+              label="Need Win-back"
+              value={atRisk.toLocaleString()}
+              footnote={atRisk > 0 ? 'at risk + lapsed' : 'all good'}
+              footnoteColor={atRisk > 0 ? '#fbbf24' : '#4ade80'}
+            />
+            <KpiCard
+              icon="✦" gradient="linear-gradient(135deg, #4ade80 0%, #22d3ee 100%)" accent="#4ade80"
+              label="Yara Credits"
+              value={(merchant.credit_balance ?? 0).toLocaleString()}
+              footnote="buy more →"
+              footnoteLink="/pricing"
+            />
+          </div>
+          <ReachableBaseMeter reachable={reachable} total={totalCustomers} modeA={modeA} />
+        </div>
+
         {/* ── Guarantee banner ──────────────────────────────────────────── */}
         {guarantee?.eligible && (
           <GuaranteeBanner {...guarantee} />
         )}
 
-        {/* ── Mode meter + Onboarding guide ────────────────────────────── */}
-        <ReachableBaseMeter reachable={reachable} total={totalCustomers} modeA={modeA} />
+        {/* ── Onboarding guide ─────────────────────────────────────────── */}
         <OnboardingBanner
           isConnected={isConnected}
           hasSynced={hasScores}
@@ -309,36 +341,6 @@ export default async function DashboardPage({
 
         {/* ── Yara Trust Score (collapses to a header — expands on click) ── */}
         {isConnected && hasScores && <TrustScoreWidget />}
-
-        {/* ── Key metrics row ───────────────────────────────────────────── */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-          <KpiCard
-            icon="💰" gradient="linear-gradient(135deg, #7C5CFC 0%, #a78bfa 100%)"
-            label="Revenue This Month"
-            value={`$${thisMonthRev.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
-            trendPct={lastMonthRev > 0 ? revChange : undefined}
-          />
-          <KpiCard
-            icon="👥" gradient="linear-gradient(135deg, #60a5fa 0%, #38bdf8 100%)"
-            label="Total Customers"
-            value={totalCustomers.toLocaleString()}
-            footnote={`${reachable.toLocaleString()} reachable`}
-          />
-          <KpiCard
-            icon="⚠️" gradient="linear-gradient(135deg, #fbbf24 0%, #fb923c 100%)"
-            label="Need Win-back"
-            value={atRisk.toLocaleString()}
-            footnote={atRisk > 0 ? 'at risk + lapsed' : 'all good'}
-            footnoteColor={atRisk > 0 ? '#fbbf24' : '#4ade80'}
-          />
-          <KpiCard
-            icon="✦" gradient="linear-gradient(135deg, #4ade80 0%, #22d3ee 100%)"
-            label="Yara Credits"
-            value={(merchant.credit_balance ?? 0).toLocaleString()}
-            footnote="buy more →"
-            footnoteLink="/pricing"
-          />
-        </div>
 
         {/* ── Revenue chart ─────────────────────────────────────────────── */}
         <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.5rem', marginBottom: '1.5rem' }}>
@@ -728,17 +730,23 @@ function StatCard({ label, value, sub, subColor, subLink, highlight }: {
   )
 }
 
-function KpiCard({ icon, gradient, label, value, trendPct, footnote, footnoteColor, footnoteLink }: {
-  icon: string; gradient: string; label: string; value: string
+function KpiCard({ icon, gradient, accent, label, value, trendPct, footnote, footnoteColor, footnoteLink }: {
+  icon: string; gradient: string; accent: string; label: string; value: string
   trendPct?: number; footnote?: string; footnoteColor?: string; footnoteLink?: string
 }) {
   const trendUp = (trendPct ?? 0) >= 0
   return (
-    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.25rem' }}>
+    <div style={{
+      background: `linear-gradient(160deg, ${accent}1a 0%, var(--surface) 65%)`,
+      border: '1px solid var(--border)',
+      borderRadius: '18px', padding: '1.375rem',
+      boxShadow: '0 6px 20px -10px rgba(0,0,0,0.45)',
+    }}>
       <div className="flex items-center justify-between mb-3">
         <div style={{
-          width: 38, height: 38, borderRadius: '10px', background: gradient,
-          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.0625rem',
+          width: 42, height: 42, borderRadius: '12px', background: gradient,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.125rem',
+          boxShadow: `0 4px 14px -4px ${accent}80`,
         }}>
           {icon}
         </div>
@@ -752,12 +760,12 @@ function KpiCard({ icon, gradient, label, value, trendPct, footnote, footnoteCol
           </span>
         )}
       </div>
-      <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, marginBottom: '0.25rem' }}>{label}</div>
-      <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.625rem', fontWeight: 800, lineHeight: 1 }}>{value}</div>
+      <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, marginBottom: '0.3rem' }}>{label}</div>
+      <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.75rem', fontWeight: 800, lineHeight: 1 }}>{value}</div>
       {footnote && (
         footnoteLink
-          ? <Link href={footnoteLink} style={{ fontSize: '0.75rem', color: 'var(--violet)', textDecoration: 'none', fontWeight: 600, display: 'block', marginTop: '0.375rem' }}>{footnote}</Link>
-          : <div style={{ fontSize: '0.75rem', color: footnoteColor || 'var(--text-secondary)', marginTop: '0.375rem', fontWeight: 600 }}>{footnote}</div>
+          ? <Link href={footnoteLink} style={{ fontSize: '0.75rem', color: 'var(--violet)', textDecoration: 'none', fontWeight: 600, display: 'block', marginTop: '0.5rem' }}>{footnote}</Link>
+          : <div style={{ fontSize: '0.75rem', color: footnoteColor || 'var(--text-secondary)', marginTop: '0.5rem', fontWeight: 600 }}>{footnote}</div>
       )}
     </div>
   )

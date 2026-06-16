@@ -1,7 +1,8 @@
 /**
  * ReachableBaseMeter
- * Shows a merchant's progress toward Mode A (1,000 reachable customers).
- * Mode A merchants see a "Revenue Activation" badge instead of the progress bar.
+ * Compact vertical card showing a merchant's progress toward Mode A (1,000 reachable customers).
+ * Mode A merchants see a "Revenue Activation" active-state card instead of the progress bar.
+ * Designed to sit alongside the KPI card grid in the dashboard's top "two boards" section.
  */
 
 interface Props {
@@ -19,82 +20,73 @@ export default function ReachableBaseMeter({ reachable, total, modeA }: Props) {
   if (modeA) {
     return (
       <div style={{
-        display: 'flex', alignItems: 'center', gap: '0.75rem',
-        background: 'rgba(74,222,128,0.06)',
-        border: '1px solid rgba(74,222,128,0.2)',
-        borderRadius: '12px', padding: '0.875rem 1.25rem',
-        marginBottom: '1.5rem',
+        background: 'linear-gradient(160deg, rgba(74,222,128,0.12) 0%, var(--surface) 65%)',
+        border: '1px solid rgba(74,222,128,0.25)',
+        borderRadius: '18px', padding: '1.375rem',
+        boxShadow: '0 6px 20px -10px rgba(0,0,0,0.45)',
+        height: '100%', display: 'flex', flexDirection: 'column',
       }}>
         <div style={{
-          width: 36, height: 36, borderRadius: '10px',
-          background: 'rgba(74,222,128,0.15)',
+          width: 42, height: 42, borderRadius: '12px',
+          background: 'linear-gradient(135deg, #4ade80 0%, #22d3ee 100%)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: '1.125rem', flexShrink: 0,
+          fontSize: '1.125rem', marginBottom: '0.875rem',
+          boxShadow: '0 4px 14px -4px rgba(74,222,128,0.6)',
         }}>
           ⚡
         </div>
-        <div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem' }}>
-            <span style={{ fontWeight: 800, fontSize: '0.9375rem', color: '#4ade80', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-              Mode A — Revenue Activation
-            </span>
-          </div>
-          <span style={{ fontSize: '0.8125rem', color: 'rgba(255,255,255,0.5)' }}>
-            {reachable.toLocaleString()} reachable customers · Yara is running automatically
-          </span>
+        <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, marginBottom: '0.3rem' }}>
+          Reachable Audience
+        </div>
+        <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.75rem', fontWeight: 800, lineHeight: 1, marginBottom: '0.625rem' }}>
+          {reachable.toLocaleString()}
         </div>
         <div style={{
-          background: 'rgba(74,222,128,0.15)',
-          color: '#4ade80',
+          display: 'inline-flex', alignItems: 'center', gap: '0.375rem',
+          background: 'rgba(74,222,128,0.15)', color: '#4ade80',
           border: '1px solid rgba(74,222,128,0.3)',
-          borderRadius: '6px', padding: '0.25rem 0.625rem',
-          fontSize: '0.75rem', fontWeight: 700, whiteSpace: 'nowrap',
+          borderRadius: '100px', padding: '0.2rem 0.625rem',
+          fontSize: '0.7rem', fontWeight: 700, width: 'fit-content',
         }}>
-          ACTIVE
+          ● Mode A Active
         </div>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', lineHeight: 1.5, marginTop: '0.75rem', marginBottom: 0 }}>
+          Yara is running automatically across your full base.
+        </p>
       </div>
     )
   }
 
-  // Mode B — show progress bar toward 1,000
+  // Mode B — compact progress card
   return (
     <div style={{
-      background: 'rgba(124,92,252,0.06)',
-      border: '1px solid rgba(124,92,252,0.2)',
-      borderRadius: '12px', padding: '1rem 1.25rem',
-      marginBottom: '1.5rem',
+      background: 'linear-gradient(160deg, rgba(124,92,252,0.12) 0%, var(--surface) 65%)',
+      border: '1px solid rgba(124,92,252,0.25)',
+      borderRadius: '18px', padding: '1.375rem',
+      boxShadow: '0 6px 20px -10px rgba(0,0,0,0.45)',
+      height: '100%', display: 'flex', flexDirection: 'column',
     }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '0.75rem', gap: '1rem', flexWrap: 'wrap' }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem' }}>
-            <span style={{ fontSize: '0.875rem', fontWeight: 700, color: 'rgba(255,255,255,0.85)' }}>
-              Reachable Base
-            </span>
-            <span style={{
-              background: 'rgba(124,92,252,0.2)',
-              color: '#a78bfa',
-              border: '1px solid rgba(124,92,252,0.3)',
-              borderRadius: '6px', padding: '0.125rem 0.5rem',
-              fontSize: '0.6875rem', fontWeight: 700,
-            }}>
-              Mode B
-            </span>
-          </div>
-          <p style={{ fontSize: '0.8125rem', color: 'rgba(255,255,255,0.45)', margin: 0 }}>
-            {remaining.toLocaleString()} more to unlock Mode A — Revenue Activation
-          </p>
-        </div>
-        <div style={{ textAlign: 'right', flexShrink: 0 }}>
-          <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#a78bfa', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            {reachable.toLocaleString()}
-          </span>
-          <span style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.35)', marginLeft: '0.25rem' }}>
-            / {TARGET.toLocaleString()}
-          </span>
-        </div>
+      <div style={{
+        width: 42, height: 42, borderRadius: '12px',
+        background: 'linear-gradient(135deg, #7C5CFC 0%, #a78bfa 100%)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: '1.125rem', marginBottom: '0.875rem',
+        boxShadow: '0 4px 14px -4px rgba(124,92,252,0.6)',
+      }}>
+        📈
       </div>
 
-      {/* Progress bar */}
+      <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, marginBottom: '0.3rem' }}>
+        Reachable Audience
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.3rem', marginBottom: '0.75rem' }}>
+        <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.75rem', fontWeight: 800, lineHeight: 1, color: 'var(--violet)' }}>
+          {reachable.toLocaleString()}
+        </span>
+        <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>/ {TARGET.toLocaleString()}</span>
+      </div>
+
       <div style={{ height: '8px', background: 'rgba(255,255,255,0.08)', borderRadius: '100px', overflow: 'hidden', marginBottom: '0.625rem' }}>
         <div style={{
           width: `${pct}%`, height: '100%',
@@ -104,20 +96,21 @@ export default function ReachableBaseMeter({ reachable, total, modeA }: Props) {
         }} />
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.35)' }}>
-          {total.toLocaleString()} total customers · {pct}% reachable
-        </span>
-        <a
-          href="/dashboard?tab=vip"
-          style={{
-            fontSize: '0.75rem', fontWeight: 700, color: '#a78bfa',
-            textDecoration: 'none',
-          }}
-        >
-          Get VIP QR code →
-        </a>
-      </div>
+      <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', margin: 0 }}>
+        {remaining.toLocaleString()} more to unlock Mode A · {total.toLocaleString()} total
+      </p>
+
+      <a
+        href="/dashboard?tab=vip"
+        style={{
+          marginTop: 'auto', display: 'block', textAlign: 'center',
+          background: 'var(--violet)', color: '#fff', borderRadius: '8px',
+          padding: '0.5625rem', fontSize: '0.8125rem', fontWeight: 700,
+          textDecoration: 'none',
+        }}
+      >
+        Get VIP QR code →
+      </a>
     </div>
   )
 }

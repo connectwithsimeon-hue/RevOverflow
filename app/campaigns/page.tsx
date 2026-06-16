@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import DashboardSidebar from '@/app/components/DashboardSidebar'
 
 const SEGMENT_META: Record<string, { label: string; color: string }> = {
   at_risk: { label: 'At Risk',  color: '#fbbf24' },
@@ -80,6 +81,7 @@ export default function CampaignsPage() {
   const [customers, setCustomers] = useState<EligibleCustomer[]>([])
   const [pastCampaigns, setPastCampaigns] = useState<PastCampaign[]>([])
   const [businessName, setBusinessName] = useState('')
+  const [plan, setPlan] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   const [campaignName, setCampaignName] = useState('Win-back — At Risk & Lapsed')
@@ -101,6 +103,7 @@ export default function CampaignsPage() {
       setCustomers(data.customers || [])
       setPastCampaigns(data.pastCampaigns || [])
       setBusinessName(data.businessName || '')
+      setPlan(data.plan || null)
       setBodyHtml(defaultBody(data.businessName || 'us'))
       setLoading(false)
     }
@@ -195,23 +198,42 @@ export default function CampaignsPage() {
     )
   }
 
+  const initials = (businessName || 'R')
+    .split(' ').slice(0, 2).map((w: string) => w[0]?.toUpperCase()).join('')
+
   return (
-    <div style={{ backgroundColor: 'var(--ink)', minHeight: '100vh', color: 'var(--text-primary)' }}>
-      {/* Nav */}
-      <nav style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
-        <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
-          <Link href="/dashboard" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '1.125rem', textDecoration: 'none', color: 'inherit' }}>
-            Rev<span style={{ color: 'var(--violet)' }}>Overflow</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link href="/dashboard" style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', textDecoration: 'none' }}>Dashboard</Link>
-            <Link href="/campaigns" style={{ color: 'var(--violet)', fontSize: '0.875rem', textDecoration: 'none', fontWeight: 600 }}>Campaigns</Link>
-            <Link href="/account" style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', textDecoration: 'none' }}>Account</Link>
+    <div style={{ backgroundColor: 'var(--ink)', minHeight: '100vh', color: 'var(--text-primary)', display: 'flex' }}>
+      <DashboardSidebar active="campaigns" plan={plan} />
+
+      <main style={{ flex: 1, minWidth: 0 }}>
+        {/* ── Topbar ────────────────────────────────────────────────────── */}
+        <div style={{
+          height: 72, borderBottom: '1px solid var(--border)', position: 'sticky', top: 0, zIndex: 40,
+          backgroundColor: 'rgba(13,13,17,0.85)', backdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 2rem',
+        }}>
+          <div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Campaigns</div>
+            <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: '1.0625rem' }}>
+              Win-back &amp; outreach
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <Link href="/pricing" style={{ fontSize: '0.8125rem', background: 'var(--violet)', color: '#fff', padding: '0.5rem 1.125rem', borderRadius: '8px', textDecoration: 'none', fontWeight: 600 }}>
+              Upgrade
+            </Link>
+            <div style={{
+              width: 38, height: 38, borderRadius: '50%', flexShrink: 0,
+              background: 'linear-gradient(135deg, #7C5CFC 0%, #a78bfa 100%)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontWeight: 700, fontSize: '0.8125rem', color: '#fff',
+            }}>
+              {initials}
+            </div>
           </div>
         </div>
-      </nav>
 
-      <div className="max-w-6xl mx-auto px-6 py-10">
+      <div className="max-w-6xl px-8 py-8">
 
         {/* Header */}
         <div className="mb-8">
@@ -466,6 +488,7 @@ export default function CampaignsPage() {
           </div>
         )}
       </div>
+      </main>
     </div>
   )
 }

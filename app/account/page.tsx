@@ -1,9 +1,9 @@
 import { redirect } from 'next/navigation'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
-import { logout } from '@/app/actions/auth'
 import Link from 'next/link'
 import ReferralLinkWidget from '@/app/components/ReferralLinkWidget'
 import AdSyncWidget from '@/app/components/AdSyncWidget'
+import DashboardSidebar from '@/app/components/DashboardSidebar'
 
 const PLAN_META: Record<string, { label: string; price: number; credits: number; color: string; features: string[] }> = {
   capture: { label: 'Capture', price: 147,  credits: 500,   color: '#60a5fa', features: ['Customer scoring (RFV)', 'Segmentation', '500 Yara credits/mo', 'Square POS'] },
@@ -49,30 +49,42 @@ export default async function AccountPage() {
   const plan = PLAN_META[merchant.plan || 'capture'] || PLAN_META['capture']
   const isAutopilotPlan = ['brain', 'empire'].includes(merchant.plan || '')
 
+  const initials = (merchant.business_name || 'R')
+    .split(' ').slice(0, 2).map((w: string) => w[0]?.toUpperCase()).join('')
+
   return (
-    <div style={{ backgroundColor: 'var(--ink)', minHeight: '100vh', color: 'var(--text-primary)' }}>
-      {/* Nav */}
-      <nav style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'var(--surface)' }}>
-        <div className="max-w-4xl mx-auto px-6 flex items-center justify-between h-16">
-          <Link href="/dashboard" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '1.125rem', textDecoration: 'none', color: 'inherit' }}>
-            Rev<span style={{ color: 'var(--violet)' }}>Overflow</span>
-          </Link>
-          <div className="flex items-center gap-4">
+    <div style={{ backgroundColor: 'var(--ink)', minHeight: '100vh', color: 'var(--text-primary)', display: 'flex' }}>
+      <DashboardSidebar active="account" plan={merchant.plan} />
+
+      <main style={{ flex: 1, minWidth: 0 }}>
+        {/* ── Topbar ────────────────────────────────────────────────────── */}
+        <div style={{
+          height: 72, borderBottom: '1px solid var(--border)', position: 'sticky', top: 0, zIndex: 40,
+          backgroundColor: 'rgba(13,13,17,0.85)', backdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 2rem',
+        }}>
+          <div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Account</div>
+            <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: '1.0625rem' }}>
+              Account &amp; Settings
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <span style={{ backgroundColor: 'rgba(124,92,252,0.15)', color: 'var(--violet)', border: '1px solid rgba(124,92,252,0.35)', borderRadius: '100px', padding: '0.25rem 0.75rem', fontSize: '0.8125rem', fontWeight: 700, textTransform: 'capitalize' }}>
               {merchant.plan || 'free'} plan
             </span>
-            <Link href="/dashboard" style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', textDecoration: 'none' }}>Dashboard</Link>
-            <Link href="/campaigns" style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', textDecoration: 'none' }}>Campaigns</Link>
-            <form action={logout}>
-              <button type="submit" style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
-                Log out
-              </button>
-            </form>
+            <div style={{
+              width: 38, height: 38, borderRadius: '50%', flexShrink: 0,
+              background: 'linear-gradient(135deg, #7C5CFC 0%, #a78bfa 100%)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontWeight: 700, fontSize: '0.8125rem', color: '#fff',
+            }}>
+              {initials}
+            </div>
           </div>
         </div>
-      </nav>
 
-      <div className="max-w-4xl mx-auto px-6 py-10">
+      <div className="max-w-4xl px-8 py-8">
         <div className="mb-8">
           <h1 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.375rem' }}>
             Account & Settings
@@ -483,6 +495,7 @@ export default async function AccountPage() {
 
         </div>
       </div>
+      </main>
     </div>
   )
 }
