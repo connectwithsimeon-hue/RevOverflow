@@ -34,6 +34,10 @@ export async function POST(request: NextRequest) {
 
   // ── Verification handshake ──────────────────────────────────────────────
   if (body.verificationCode && !body.merchants) {
+    // Logged so Simeon can read it from Vercel's live logs and paste it into
+    // the "Verification Code" box in the Clover Developer Dashboard — Clover
+    // requires that manual confirmation in addition to the auto-echoed response.
+    console.log('CLOVER WEBHOOK VERIFICATION CODE:', body.verificationCode)
     return NextResponse.json({ verificationCode: body.verificationCode })
   }
 
