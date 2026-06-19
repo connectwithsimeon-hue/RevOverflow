@@ -6,8 +6,8 @@ import Link from 'next/link'
 import DashboardSidebar from '@/app/components/DashboardSidebar'
 
 const SEGMENT_META: Record<string, { label: string; color: string }> = {
-  at_risk: { label: 'At Risk',  color: '#fbbf24' },
-  lapsed:  { label: 'Lapsed',  color: '#fb923c' },
+  at_risk: { label: 'At Risk',  color: '#92400e' },
+  lapsed:  { label: 'Lapsed',  color: '#c2410c' },
 }
 
 function defaultSubject() {
@@ -209,7 +209,7 @@ export default function CampaignsPage() {
         {/* ── Topbar ────────────────────────────────────────────────────── */}
         <div style={{
           height: 72, borderBottom: '1px solid var(--border)', position: 'sticky', top: 0, zIndex: 40,
-          backgroundColor: 'rgba(13,13,17,0.85)', backdropFilter: 'blur(8px)',
+          backgroundColor: 'rgba(247,247,251,0.85)', backdropFilter: 'blur(8px)',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 2rem',
         }}>
           <div>
@@ -265,7 +265,7 @@ export default function CampaignsPage() {
             <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🎉</div>
             <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.375rem', fontWeight: 800, marginBottom: '0.5rem' }}>Campaign sent!</h2>
             <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: '1.5rem' }}>
-              <strong style={{ color: '#4ade80' }}>{result.totalSent} emails sent</strong> · {result.totalControl} held as control group
+              <strong style={{ color: '#15803d' }}>{result.totalSent} emails sent</strong> · {result.totalControl} held as control group
             </p>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
               Yara will track who comes back and attribute revenue automatically.
@@ -285,12 +285,12 @@ export default function CampaignsPage() {
                 <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1rem', fontWeight: 700, marginBottom: '1.25rem' }}>Audience</h2>
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   {[
-                    { label: 'At Risk',      count: atRisk.length,  color: '#fbbf24' },
-                    { label: 'Lapsed',       count: lapsed.length,  color: '#fb923c' },
-                    { label: 'Will receive', count: willSend.length, color: '#4ade80' },
-                    { label: 'Control',      count: control.length,  color: '#9899b0' },
+                    { label: 'At Risk',      count: atRisk.length,  color: '#92400e' },
+                    { label: 'Lapsed',       count: lapsed.length,  color: '#c2410c' },
+                    { label: 'Will receive', count: willSend.length, color: '#15803d' },
+                    { label: 'Control',      count: control.length,  color: '#52525b' },
                   ].map(s => (
-                    <div key={s.label} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '10px', padding: '0.875rem' }}>
+                    <div key={s.label} style={{ background: 'rgba(21,21,31,0.03)', borderRadius: '10px', padding: '0.875rem' }}>
                       <div style={{ color: s.color, fontSize: '0.75rem', fontWeight: 600, marginBottom: '0.25rem' }}>{s.label}</div>
                       <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.5rem', fontWeight: 800 }}>{s.count}</div>
                     </div>
@@ -310,7 +310,7 @@ export default function CampaignsPage() {
                           {SEGMENT_META[c.segment]?.label}
                         </span>
                         {c.control_group && (
-                          <span style={{ fontSize: '0.7rem', color: '#6b6c80', background: 'rgba(255,255,255,0.05)', padding: '2px 6px', borderRadius: '4px' }}>control</span>
+                          <span style={{ fontSize: '0.7rem', color: '#6b6c80', background: 'rgba(21,21,31,0.05)', padding: '2px 6px', borderRadius: '4px' }}>control</span>
                         )}
                       </div>
                     </div>
@@ -327,7 +327,7 @@ export default function CampaignsPage() {
                     <input
                       value={campaignName}
                       onChange={e => setCampaignName(e.target.value)}
-                      style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)', borderRadius: '8px', padding: '0.625rem 0.875rem', color: 'var(--text-primary)', fontSize: '0.9375rem', fontFamily: 'inherit', boxSizing: 'border-box' }}
+                      style={{ width: '100%', background: 'rgba(21,21,31,0.05)', border: '1px solid var(--border)', borderRadius: '8px', padding: '0.625rem 0.875rem', color: 'var(--text-primary)', fontSize: '0.9375rem', fontFamily: 'inherit', boxSizing: 'border-box' }}
                     />
                   </div>
                   <div>
@@ -337,7 +337,7 @@ export default function CampaignsPage() {
                     <input
                       value={subject}
                       onChange={e => setSubject(e.target.value)}
-                      style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)', borderRadius: '8px', padding: '0.625rem 0.875rem', color: 'var(--text-primary)', fontSize: '0.9375rem', fontFamily: 'inherit', boxSizing: 'border-box' }}
+                      style={{ width: '100%', background: 'rgba(21,21,31,0.05)', border: '1px solid var(--border)', borderRadius: '8px', padding: '0.625rem 0.875rem', color: 'var(--text-primary)', fontSize: '0.9375rem', fontFamily: 'inherit', boxSizing: 'border-box' }}
                     />
                   </div>
                 </div>
@@ -360,7 +360,7 @@ export default function CampaignsPage() {
                 </p>
 
                 {error && (
-                  <div style={{ backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '8px', padding: '0.75rem 1rem', marginBottom: '1rem', color: '#f87171', fontSize: '0.875rem' }}>
+                  <div style={{ backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '8px', padding: '0.75rem 1rem', marginBottom: '1rem', color: '#b91c1c', fontSize: '0.875rem' }}>
                     {error}
                   </div>
                 )}
@@ -387,7 +387,7 @@ export default function CampaignsPage() {
                 {/* SMS — standalone, no email required */}
                 {smsResult ? (
                   <div style={{ backgroundColor: 'rgba(74,222,128,0.08)', border: '1px solid rgba(74,222,128,0.3)', borderRadius: '10px', padding: '0.875rem', textAlign: 'center', fontSize: '0.9375rem' }}>
-                    📱 SMS sent to <strong style={{ color: '#4ade80' }}>{smsResult.sent} customers</strong>
+                    📱 SMS sent to <strong style={{ color: '#15803d' }}>{smsResult.sent} customers</strong>
                     {smsResult.skipped > 0 && <span style={{ color: 'var(--text-secondary)' }}> · {smsResult.skipped} skipped (no phone)</span>}
                   </div>
                 ) : (
@@ -398,7 +398,7 @@ export default function CampaignsPage() {
                       width: '100%',
                       backgroundColor: 'transparent',
                       color: smsEligibleCount === 0 ? 'var(--text-secondary)' : 'var(--text-primary)',
-                      border: `1px solid ${smsEligibleCount === 0 ? 'rgba(255,255,255,0.1)' : 'rgba(124,92,252,0.5)'}`,
+                      border: `1px solid ${smsEligibleCount === 0 ? 'rgba(21,21,31,0.1)' : 'rgba(124,92,252,0.5)'}`,
                       borderRadius: '10px',
                       fontWeight: 600,
                       padding: '0.875rem',
@@ -421,8 +421,8 @@ export default function CampaignsPage() {
                 <div className="flex flex-col gap-4">
                   <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1rem', fontWeight: 700 }}>Past campaigns</h2>
                   {pastCampaigns.map(p => {
-                    const statusColor: Record<string, string> = { sent: '#4ade80', sending: '#fbbf24', draft: '#9899b0' }
-                    const sc = statusColor[p.status] || '#9899b0'
+                    const statusColor: Record<string, string> = { sent: '#15803d', sending: '#92400e', draft: '#52525b' }
+                    const sc = statusColor[p.status] || '#52525b'
                     const hasConversions = p.attribution && (p.attribution.sentConverted > 0 || p.attribution.controlConverted > 0)
                     return (
                       <div key={p.id} style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '14px', padding: '1.25rem' }}>
@@ -440,8 +440,8 @@ export default function CampaignsPage() {
                           </div>
                           {p.attribution?.lift != null && (
                             <div style={{ background: 'rgba(74,222,128,0.1)', border: '1px solid rgba(74,222,128,0.3)', borderRadius: '8px', padding: '0.375rem 0.75rem', textAlign: 'center', flexShrink: 0 }}>
-                              <div style={{ fontSize: '0.65rem', color: '#4ade80', fontWeight: 600, textTransform: 'uppercase' }}>Lift</div>
-                              <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.125rem', fontWeight: 800, color: '#4ade80' }}>+{p.attribution.lift}%</div>
+                              <div style={{ fontSize: '0.65rem', color: '#15803d', fontWeight: 600, textTransform: 'uppercase' }}>Lift</div>
+                              <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.125rem', fontWeight: 800, color: '#15803d' }}>+{p.attribution.lift}%</div>
                             </div>
                           )}
                         </div>
@@ -449,7 +449,7 @@ export default function CampaignsPage() {
                         {hasConversions ? (
                           <div className="grid grid-cols-2 gap-3">
                             <div style={{ background: 'rgba(124,92,252,0.07)', border: '1px solid rgba(124,92,252,0.2)', borderRadius: '10px', padding: '0.875rem' }}>
-                              <div style={{ fontSize: '0.7rem', color: '#a78bfa', fontWeight: 600, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Received email</div>
+                              <div style={{ fontSize: '0.7rem', color: 'var(--violet-dark)', fontWeight: 600, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Received email</div>
                               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
                                 <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>Converted</span>
                                 <span style={{ fontSize: '0.8125rem', fontWeight: 600 }}>{p.attribution!.sentConverted}/{p.attribution!.sentCount} ({p.attribution!.sentRate}%)</span>
@@ -460,10 +460,10 @@ export default function CampaignsPage() {
                               </div>
                               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>Attributed to Yara</span>
-                                <span style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#4ade80' }}>${p.attribution!.attributedRevenue.toLocaleString()}</span>
+                                <span style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#15803d' }}>${p.attribution!.attributedRevenue.toLocaleString()}</span>
                               </div>
                             </div>
-                            <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)', borderRadius: '10px', padding: '0.875rem' }}>
+                            <div style={{ background: 'rgba(21,21,31,0.03)', border: '1px solid var(--border)', borderRadius: '10px', padding: '0.875rem' }}>
                               <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Control group</div>
                               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
                                 <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>Converted</span>

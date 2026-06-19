@@ -74,7 +74,7 @@ export default function AdSyncWidget() {
           onClick={handleSync}
           disabled={syncing || !anyConnected}
           style={{
-            background: anyConnected ? 'var(--violet)' : 'rgba(255,255,255,0.08)',
+            background: anyConnected ? 'var(--violet)' : 'rgba(21,21,31,0.08)',
             color: anyConnected ? '#fff' : 'var(--text-secondary)',
             border: 'none', borderRadius: '8px', padding: '0.625rem 1.25rem',
             fontWeight: 700, fontSize: '0.875rem', cursor: anyConnected ? 'pointer' : 'not-allowed',
@@ -100,7 +100,7 @@ export default function AdSyncWidget() {
 }
 
 function StatusPill({ label, live, connected }: { label: string; live: boolean; connected: boolean }) {
-  const color = !connected ? 'rgba(255,255,255,0.3)' : live ? '#4ade80' : '#fbbf24'
+  const color = !connected ? 'rgba(21,21,31,0.3)' : live ? '#4ade80' : '#fbbf24'
   const text = !connected ? 'Not connected' : live ? 'Live' : 'Connected — not synced yet'
   return (
     <div style={{ background: `${color}15`, border: `1px solid ${color}40`, borderRadius: '8px', padding: '0.5rem 0.75rem', fontSize: '0.75rem' }}>

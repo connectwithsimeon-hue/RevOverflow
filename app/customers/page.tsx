@@ -6,12 +6,12 @@ import DashboardSidebar from '@/app/components/DashboardSidebar'
 export const dynamic = 'force-dynamic'
 
 const SEGMENT_META: Record<string, { label: string; color: string; bg: string }> = {
-  loyal:   { label: 'Loyal',    color: '#a78bfa', bg: 'rgba(167,139,250,0.12)' },
-  active:  { label: 'Active',   color: '#4ade80', bg: 'rgba(74,222,128,0.12)'  },
-  new:     { label: 'New',      color: '#60a5fa', bg: 'rgba(96,165,250,0.12)'  },
-  at_risk: { label: 'At Risk',  color: '#fbbf24', bg: 'rgba(251,191,36,0.12)'  },
-  lapsed:  { label: 'Lapsed',   color: '#fb923c', bg: 'rgba(251,146,60,0.12)'  },
-  lost:    { label: 'Lost',     color: '#f87171', bg: 'rgba(248,113,113,0.12)' },
+  loyal:   { label: 'Loyal',    color: 'var(--violet-dark)', bg: 'rgba(167,139,250,0.12)' },
+  active:  { label: 'Active',   color: '#15803d', bg: 'rgba(74,222,128,0.12)'  },
+  new:     { label: 'New',      color: '#1d4ed8', bg: 'rgba(96,165,250,0.12)'  },
+  at_risk: { label: 'At Risk',  color: '#92400e', bg: 'rgba(251,191,36,0.12)'  },
+  lapsed:  { label: 'Lapsed',   color: '#c2410c', bg: 'rgba(251,146,60,0.12)'  },
+  lost:    { label: 'Lost',     color: '#b91c1c', bg: 'rgba(248,113,113,0.12)' },
 }
 
 const SEGMENTS = ['loyal', 'active', 'new', 'at_risk', 'lapsed', 'lost'] as const
@@ -93,7 +93,7 @@ export default async function CustomersPage({
         {/* ── Topbar ────────────────────────────────────────────────────── */}
         <div style={{
           height: 72, borderBottom: '1px solid var(--border)', position: 'sticky', top: 0, zIndex: 40,
-          backgroundColor: 'rgba(13,13,17,0.85)', backdropFilter: 'blur(8px)',
+          backgroundColor: 'rgba(247,247,251,0.85)', backdropFilter: 'blur(8px)',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 2rem',
         }}>
           <div>
@@ -179,7 +179,7 @@ export default async function CustomersPage({
                       const lastPurchase = c.last_purchase_at ? relativeDate(c.last_purchase_at) : '—'
                       const custInitials = (c.name || '?').split(' ').slice(0, 2).map((w: string) => w[0]?.toUpperCase()).join('') || '?'
                       return (
-                        <tr key={c.id} style={{ borderBottom: i < customers.length - 1 ? '1px solid var(--border)' : 'none', background: i % 2 === 1 ? 'rgba(255,255,255,0.015)' : 'transparent' }}>
+                        <tr key={c.id} style={{ borderBottom: i < customers.length - 1 ? '1px solid var(--border)' : 'none', background: i % 2 === 1 ? 'rgba(21,21,31,0.015)' : 'transparent' }}>
                           <td style={{ padding: '0.75rem 1rem' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
                               <div style={{

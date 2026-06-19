@@ -36,7 +36,7 @@ const STATUS_COLOR: Record<string, string> = {
   on_track: '#4ade80',
   at_risk:  '#fbbf24',
   achieved: '#7c5cfc',
-  no_goal:  'rgba(255,255,255,0.3)',
+  no_goal:  'rgba(21,21,31,0.3)',
 }
 
 const fmt = (n: number) =>
@@ -95,7 +95,7 @@ export default function GoalModeWidget() {
                 autoFocus
                 style={{
                   width: '100%', padding: '0.625rem 0.875rem 0.625rem 1.75rem',
-                  background: 'rgba(255,255,255,0.06)', border: '1px solid var(--border)',
+                  background: 'rgba(21,21,31,0.06)', border: '1px solid var(--border)',
                   borderRadius: '8px', color: 'var(--text-primary)', fontSize: '1rem',
                   fontFamily: 'inherit', outline: 'none',
                 }}
@@ -154,7 +154,7 @@ export default function GoalModeWidget() {
       >
         {/* Circular progress */}
         <svg width="48" height="48" style={{ flexShrink: 0, transform: 'rotate(-90deg)' }}>
-          <circle cx="24" cy="24" r="20" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="4" />
+          <circle cx="24" cy="24" r="20" fill="none" stroke="rgba(21,21,31,0.08)" strokeWidth="4" />
           <circle
             cx="24" cy="24" r="20" fill="none"
             stroke={color} strokeWidth="4"
@@ -176,7 +176,7 @@ export default function GoalModeWidget() {
           </div>
         </div>
 
-        <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.75rem', flexShrink: 0 }}>
+        <div style={{ color: 'rgba(21,21,31,0.35)', fontSize: '0.75rem', flexShrink: 0 }}>
           {expanded ? '▲' : '▼'}
         </div>
       </div>
@@ -191,8 +191,8 @@ export default function GoalModeWidget() {
               { label: 'Yara attributed',    val: fmt(goal.revenueAttributed)     },
               { label: 'Weekly run rate',    val: fmt(goal.weeklyRunRate)         },
             ].map(s => (
-              <div key={s.label} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '8px', padding: '0.625rem 0.75rem' }}>
-                <div style={{ fontSize: '0.6875rem', color: 'rgba(255,255,255,0.4)', marginBottom: '0.25rem' }}>{s.label}</div>
+              <div key={s.label} style={{ background: 'rgba(21,21,31,0.04)', borderRadius: '8px', padding: '0.625rem 0.75rem' }}>
+                <div style={{ fontSize: '0.6875rem', color: 'rgba(21,21,31,0.4)', marginBottom: '0.25rem' }}>{s.label}</div>
                 <div style={{ fontWeight: 700, fontSize: '0.9375rem' }}>{s.val}</div>
               </div>
             ))}
@@ -201,22 +201,22 @@ export default function GoalModeWidget() {
           {/* Execution plan */}
           {goal.plan.length > 0 && (
             <>
-              <div style={{ fontWeight: 700, fontSize: '0.8125rem', marginBottom: '0.625rem', color: 'rgba(255,255,255,0.6)' }}>
+              <div style={{ fontWeight: 700, fontSize: '0.8125rem', marginBottom: '0.625rem', color: 'rgba(21,21,31,0.6)' }}>
                 YARA'S PLAN TO CLOSE THE GAP
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                 {goal.plan.map((action, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.625rem 0.75rem', background: 'rgba(255,255,255,0.03)', borderRadius: '8px' }}>
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.625rem 0.75rem', background: 'rgba(21,21,31,0.03)', borderRadius: '8px' }}>
                     <div style={{ width: '1.5rem', height: '1.5rem', borderRadius: '50%', background: 'rgba(124,92,252,0.2)', color: 'var(--violet)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.6875rem', fontWeight: 700, flexShrink: 0 }}>
                       W{action.week}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.125rem' }}>{action.description}</div>
-                      <div style={{ fontSize: '0.6875rem', color: 'rgba(255,255,255,0.35)' }}>
+                      <div style={{ fontSize: '0.6875rem', color: 'rgba(21,21,31,0.35)' }}>
                         Est. {fmt(action.estimatedRevenue)} recovered
                       </div>
                     </div>
-                    <div style={{ fontSize: '0.6875rem', color: 'rgba(255,255,255,0.25)', flexShrink: 0 }}>
+                    <div style={{ fontSize: '0.6875rem', color: 'rgba(21,21,31,0.25)', flexShrink: 0 }}>
                       {action.status === 'done' ? '✓' : action.status === 'executing' ? '⚡' : '○'}
                     </div>
                   </div>
@@ -229,7 +229,7 @@ export default function GoalModeWidget() {
           <div style={{ marginTop: '0.875rem', textAlign: 'right' }}>
             <button
               onClick={() => { setSetting(true); setExpanded(false) }}
-              style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.35)', fontSize: '0.75rem', cursor: 'pointer', fontFamily: 'inherit' }}
+              style={{ background: 'none', border: 'none', color: 'rgba(21,21,31,0.35)', fontSize: '0.75rem', cursor: 'pointer', fontFamily: 'inherit' }}
             >
               Change goal
             </button>

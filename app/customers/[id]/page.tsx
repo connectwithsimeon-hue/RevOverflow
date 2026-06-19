@@ -4,12 +4,12 @@ import { logout } from '@/app/actions/auth'
 import Link from 'next/link'
 
 const SEGMENT_META: Record<string, { label: string; color: string; bg: string; description: string }> = {
-  loyal:   { label: 'Loyal',   color: '#a78bfa', bg: 'rgba(167,139,250,0.1)', description: 'High-value regular' },
-  active:  { label: 'Active',  color: '#4ade80', bg: 'rgba(74,222,128,0.1)',  description: 'Buying consistently' },
-  new:     { label: 'New',     color: '#60a5fa', bg: 'rgba(96,165,250,0.1)',  description: 'First purchase' },
-  at_risk: { label: 'At Risk', color: '#fbbf24', bg: 'rgba(251,191,36,0.1)', description: 'Starting to drift' },
-  lapsed:  { label: 'Lapsed',  color: '#fb923c', bg: 'rgba(251,146,60,0.1)', description: 'Haven\'t bought in 4+ months' },
-  lost:    { label: 'Lost',    color: '#f87171', bg: 'rgba(248,113,113,0.1)', description: 'Gone over a year' },
+  loyal:   { label: 'Loyal',   color: 'var(--violet-dark)', bg: 'rgba(167,139,250,0.1)', description: 'High-value regular' },
+  active:  { label: 'Active',  color: '#15803d', bg: 'rgba(74,222,128,0.1)',  description: 'Buying consistently' },
+  new:     { label: 'New',     color: '#1d4ed8', bg: 'rgba(96,165,250,0.1)',  description: 'First purchase' },
+  at_risk: { label: 'At Risk', color: '#92400e', bg: 'rgba(251,191,36,0.1)', description: 'Starting to drift' },
+  lapsed:  { label: 'Lapsed',  color: '#c2410c', bg: 'rgba(251,146,60,0.1)', description: 'Haven\'t bought in 4+ months' },
+  lost:    { label: 'Lost',    color: '#b91c1c', bg: 'rgba(248,113,113,0.1)', description: 'Gone over a year' },
 }
 
 export default async function CustomerDetailPage({ params }: { params: { id: string } }) {
@@ -98,7 +98,7 @@ export default async function CustomerDetailPage({ params }: { params: { id: str
                   </span>
                 )}
                 {customer.control_group && (
-                  <span style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)', borderRadius: '100px', padding: '0.25rem 0.75rem', fontSize: '0.8125rem', fontWeight: 600 }}>
+                  <span style={{ backgroundColor: 'rgba(21,21,31,0.05)', color: 'var(--text-secondary)', borderRadius: '100px', padding: '0.25rem 0.75rem', fontSize: '0.8125rem', fontWeight: 600 }}>
                     Control group
                   </span>
                 )}
@@ -133,7 +133,7 @@ export default async function CustomerDetailPage({ params }: { params: { id: str
               { label: 'Last purchase',   value: lastPurchase },
               { label: 'Customer since',  value: joined },
             ].map(stat => (
-              <div key={stat.label} style={{ backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: '10px', padding: '1rem' }}>
+              <div key={stat.label} style={{ backgroundColor: 'rgba(21,21,31,0.03)', borderRadius: '10px', padding: '1rem' }}>
                 <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.25rem' }}>{stat.label}</div>
                 <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.25rem', fontWeight: 800 }}>{stat.value}</div>
               </div>
@@ -177,17 +177,17 @@ export default async function CustomerDetailPage({ params }: { params: { id: str
                   const campaign = send.campaigns
                   const converted = !!send.converted_at
                   return (
-                    <div key={send.id} style={{ padding: '0.75rem', backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: '10px', border: '1px solid var(--border)' }}>
+                    <div key={send.id} style={{ padding: '0.75rem', backgroundColor: 'rgba(21,21,31,0.03)', borderRadius: '10px', border: '1px solid var(--border)' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
                         <div style={{ fontSize: '0.875rem', fontWeight: 600, flex: 1 }}>
                           {campaign?.name || 'Campaign'}
                         </div>
                         {send.is_control_group ? (
-                          <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', backgroundColor: 'rgba(255,255,255,0.05)', padding: '0.15rem 0.45rem', borderRadius: '4px', whiteSpace: 'nowrap' }}>control</span>
+                          <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', backgroundColor: 'rgba(21,21,31,0.05)', padding: '0.15rem 0.45rem', borderRadius: '4px', whiteSpace: 'nowrap' }}>control</span>
                         ) : converted ? (
-                          <span style={{ fontSize: '0.7rem', color: '#4ade80', backgroundColor: 'rgba(74,222,128,0.1)', padding: '0.15rem 0.45rem', borderRadius: '4px', whiteSpace: 'nowrap' }}>converted ✓</span>
+                          <span style={{ fontSize: '0.7rem', color: '#15803d', backgroundColor: 'rgba(74,222,128,0.1)', padding: '0.15rem 0.45rem', borderRadius: '4px', whiteSpace: 'nowrap' }}>converted ✓</span>
                         ) : (
-                          <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', backgroundColor: 'rgba(255,255,255,0.05)', padding: '0.15rem 0.45rem', borderRadius: '4px', whiteSpace: 'nowrap' }}>sent</span>
+                          <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', backgroundColor: 'rgba(21,21,31,0.05)', padding: '0.15rem 0.45rem', borderRadius: '4px', whiteSpace: 'nowrap' }}>sent</span>
                         )}
                       </div>
                       {campaign?.subject && (
@@ -196,7 +196,7 @@ export default async function CustomerDetailPage({ params }: { params: { id: str
                       <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.375rem' }}>
                         {send.sent_at ? new Date(send.sent_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
                         {converted && send.conversion_value && (
-                          <span style={{ color: '#4ade80', fontWeight: 600, marginLeft: '0.5rem' }}>· ${Number(send.conversion_value).toFixed(2)} order</span>
+                          <span style={{ color: '#15803d', fontWeight: 600, marginLeft: '0.5rem' }}>· ${Number(send.conversion_value).toFixed(2)} order</span>
                         )}
                       </div>
                     </div>

@@ -6,13 +6,13 @@
   --violet: #7C5CFC;
   --violet-light: #9B82FD;
   --violet-dark: #5B3FE4;
-  --ink: #13141C;
-  --ink-light: #1E2030;
-  --ink-muted: #2C2E3E;
-  --surface: #181924;
-  --border: rgba(124, 92, 252, 0.18);
-  --text-primary: #F0F0F8;
-  --text-secondary: #9899B0;
+  --ink: #F7F7FB;
+  --ink-light: #FFFFFF;
+  --ink-muted: #ECECF4;
+  --surface: #FFFFFF;
+  --border: rgba(20, 20, 43, 0.08);
+  --text-primary: #15151F;
+  --text-secondary: #6B6D80;
 }
 
 * {

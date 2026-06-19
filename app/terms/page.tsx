@@ -1,53 +1,53 @@
 export default function TermsPage() {
   return (
-    <div style={{ backgroundColor: '#0f0f17', minHeight: '100vh', color: '#f0f0f8', fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ backgroundColor: 'var(--ink)', minHeight: '100vh', color: 'var(--text-primary)', fontFamily: "'Inter', sans-serif" }}>
       <div style={{ maxWidth: '720px', margin: '0 auto', padding: '4rem 2rem' }}>
         <h1 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem' }}>Terms of Service</h1>
-        <p style={{ color: '#6b6c80', marginBottom: '3rem' }}>Last updated: June 15, 2026</p>
+        <p style={{ color: '#9396A8', marginBottom: '3rem' }}>Last updated: June 15, 2026</p>
 
         <section style={{ marginBottom: '2.5rem' }}>
           <h2 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.75rem' }}>1. Acceptance of Terms</h2>
-          <p style={{ color: '#9899b0', lineHeight: 1.8 }}>By accessing or using RevOverflow (operated by SiMaYa Labs), you agree to be bound by these Terms of Service. If you do not agree, do not use the platform.</p>
+          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8 }}>By accessing or using RevOverflow (operated by SiMaYa Labs), you agree to be bound by these Terms of Service. If you do not agree, do not use the platform.</p>
         </section>
 
         <section style={{ marginBottom: '2.5rem' }}>
           <h2 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.75rem' }}>2. Description of Service</h2>
-          <p style={{ color: '#9899b0', lineHeight: 1.8 }}>RevOverflow is an AI-powered revenue operator for small businesses. It connects to point-of-sale systems, analyzes customer behaviour, and sends automated win-back campaigns via email and SMS on behalf of merchants.</p>
+          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8 }}>RevOverflow is an AI-powered revenue operator for small businesses. It connects to point-of-sale systems, analyzes customer behaviour, and sends automated win-back campaigns via email and SMS on behalf of merchants.</p>
         </section>
 
         <section style={{ marginBottom: '2.5rem' }}>
           <h2 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.75rem' }}>3. Merchant Responsibilities</h2>
-          <p style={{ color: '#9899b0', lineHeight: 1.8 }}>Merchants are responsible for ensuring they have appropriate consent to contact their customers via SMS and email. Merchants must comply with all applicable laws including the Telephone Consumer Protection Act (TCPA), CAN-SPAM Act, and any other applicable regulations in their jurisdiction.</p>
+          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8 }}>Merchants are responsible for ensuring they have appropriate consent to contact their customers via SMS and email. Merchants must comply with all applicable laws including the Telephone Consumer Protection Act (TCPA), CAN-SPAM Act, and any other applicable regulations in their jurisdiction.</p>
         </section>
 
         <section style={{ marginBottom: '2.5rem' }}>
           <h2 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.75rem' }}>4. SMS Messaging Terms</h2>
-          <p style={{ color: '#9899b0', lineHeight: 1.8 }}>RevOverflow sends SMS messages on behalf of merchants to their customers. Message frequency varies based on campaign settings. Message and data rates may apply. Customers may opt out at any time by replying STOP. For help, reply HELP or contact support@revoverflow.com.</p>
+          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8 }}>RevOverflow sends SMS messages on behalf of merchants to their customers. Message frequency varies based on campaign settings. Message and data rates may apply. Customers may opt out at any time by replying STOP. For help, reply HELP or contact support@revoverflow.com.</p>
         </section>
 
         <section style={{ marginBottom: '2.5rem' }}>
           <h2 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.75rem' }}>5. Billing and Credits</h2>
-          <p style={{ color: '#9899b0', lineHeight: 1.8 }}>RevOverflow operates on a subscription plus credit model. Monthly credits are granted based on your plan and do not roll over. Additional credits may be purchased. Subscriptions auto-renew monthly unless cancelled. Refunds are not provided for unused credits.</p>
+          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8 }}>RevOverflow operates on a subscription plus credit model. Monthly credits are granted based on your plan and do not roll over. Additional credits may be purchased. Subscriptions auto-renew monthly unless cancelled. Refunds are not provided for unused credits.</p>
         </section>
 
         <section style={{ marginBottom: '2.5rem' }}>
           <h2 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.75rem' }}>6. Prohibited Uses</h2>
-          <p style={{ color: '#9899b0', lineHeight: 1.8 }}>You may not use RevOverflow to send spam, unsolicited messages, or messages to individuals who have opted out. You may not use the platform for any unlawful purpose or in any way that violates these terms.</p>
+          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8 }}>You may not use RevOverflow to send spam, unsolicited messages, or messages to individuals who have opted out. You may not use the platform for any unlawful purpose or in any way that violates these terms.</p>
         </section>
 
         <section style={{ marginBottom: '2.5rem' }}>
           <h2 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.75rem' }}>7. Limitation of Liability</h2>
-          <p style={{ color: '#9899b0', lineHeight: 1.8 }}>RevOverflow is provided "as is." SiMaYa Labs is not liable for any indirect, incidental, or consequential damages arising from use of the platform. Our total liability shall not exceed the amount paid by you in the 3 months preceding the claim.</p>
+          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8 }}>RevOverflow is provided "as is." SiMaYa Labs is not liable for any indirect, incidental, or consequential damages arising from use of the platform. Our total liability shall not exceed the amount paid by you in the 3 months preceding the claim.</p>
         </section>
 
         <section style={{ marginBottom: '2.5rem' }}>
           <h2 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.75rem' }}>8. Termination</h2>
-          <p style={{ color: '#9899b0', lineHeight: 1.8 }}>We may terminate or suspend your account at any time for violation of these terms. You may cancel your subscription at any time through the Account page.</p>
+          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8 }}>We may terminate or suspend your account at any time for violation of these terms. You may cancel your subscription at any time through the Account page.</p>
         </section>
 
         <section style={{ marginBottom: '2.5rem' }}>
           <h2 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.75rem' }}>9. Contact</h2>
-          <p style={{ color: '#9899b0', lineHeight: 1.8 }}>Questions about these terms? Email <a href="mailto:support@revoverflow.com" style={{ color: '#a78bfa' }}>support@revoverflow.com</a>.</p>
+          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8 }}>Questions about these terms? Email <a href="mailto:support@revoverflow.com" style={{ color: 'var(--violet-dark)' }}>support@revoverflow.com</a>.</p>
         </section>
       </div>
     </div>

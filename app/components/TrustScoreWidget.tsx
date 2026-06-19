@@ -102,7 +102,7 @@ export default function TrustScoreWidget() {
           </div>
 
           {/* Progress bar */}
-          <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: '100px', height: '6px', overflow: 'hidden' }}>
+          <div style={{ background: 'rgba(21,21,31,0.08)', borderRadius: '100px', height: '6px', overflow: 'hidden' }}>
             <div style={{
               width: `${pct}%`,
               height: '100%',
@@ -113,13 +113,13 @@ export default function TrustScoreWidget() {
           </div>
 
           {trust.level < 3 && (
-            <div style={{ fontSize: '0.6875rem', color: 'rgba(255,255,255,0.35)', marginTop: '0.25rem' }}>
+            <div style={{ fontSize: '0.6875rem', color: 'rgba(21,21,31,0.35)', marginTop: '0.25rem' }}>
               {nextScore - trust.score} more points to Level {trust.level + 1}
             </div>
           )}
         </div>
 
-        <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.75rem', flexShrink: 0 }}>
+        <div style={{ color: 'rgba(21,21,31,0.35)', fontSize: '0.75rem', flexShrink: 0 }}>
           {expanded ? '▲' : '▼'}
         </div>
       </div>
@@ -139,17 +139,17 @@ export default function TrustScoreWidget() {
               { label: 'Manual approval',     pts: trust.factors.approvalBonus, max: 5  },
             ].map(f => (
               <div key={f.label} style={{
-                background: 'rgba(255,255,255,0.04)',
+                background: 'rgba(21,21,31,0.04)',
                 borderRadius: '8px', padding: '0.625rem 0.75rem',
               }}>
-                <div style={{ fontSize: '0.6875rem', color: 'rgba(255,255,255,0.4)', marginBottom: '0.25rem' }}>
+                <div style={{ fontSize: '0.6875rem', color: 'rgba(21,21,31,0.4)', marginBottom: '0.25rem' }}>
                   {f.label}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <span style={{ fontWeight: 700, fontSize: '0.875rem', color }}>
                     {f.pts}
                   </span>
-                  <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.25)' }}>
+                  <span style={{ fontSize: '0.75rem', color: 'rgba(21,21,31,0.25)' }}>
                     / {f.max} pts
                   </span>
                 </div>
@@ -165,15 +165,15 @@ export default function TrustScoreWidget() {
               borderRadius: '8px',
               padding: '0.625rem 0.875rem',
               fontSize: '0.8125rem',
-              color: '#fbbf24',
+              color: '#92400e',
             }}>
               ⚠️ Campaigns require your approval until Yara reaches Level 1 (25 pts).
-              Go to <a href="/campaigns" style={{ color: '#fbbf24', textDecoration: 'underline' }}>Campaigns</a> to approve pending sends.
+              Go to <a href="/campaigns" style={{ color: '#92400e', textDecoration: 'underline' }}>Campaigns</a> to approve pending sends.
             </div>
           )}
 
-          <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'rgba(255,255,255,0.3)' }}>
-            Daily send limit: <strong style={{ color: 'rgba(255,255,255,0.55)' }}>
+          <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'rgba(21,21,31,0.3)' }}>
+            Daily send limit: <strong style={{ color: 'rgba(21,21,31,0.55)' }}>
               {trust.maxSendsPerDay === 9999 ? 'Unlimited' : trust.maxSendsPerDay} messages
             </strong>
           </div>

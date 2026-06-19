@@ -19,10 +19,10 @@ export default function GlobalError({
 
   return (
     <html>
-      <body style={{ background: '#0b0b14', color: '#fff', fontFamily: 'sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+      <body style={{ background: '#F7F7FB', color: '#15151F', fontFamily: 'sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
         <div style={{ textAlign: 'center', maxWidth: 420, padding: '2rem' }}>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.75rem' }}>Something went wrong</h1>
-          <p style={{ color: 'rgba(255,255,255,0.6)', marginBottom: '1.5rem' }}>
+          <p style={{ color: 'rgba(21,21,31,0.6)', marginBottom: '1.5rem' }}>
             We've been notified and are looking into it. Try refreshing the page.
           </p>
           <button

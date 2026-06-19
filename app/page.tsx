@@ -25,7 +25,7 @@ export default function Home() {
 
       {/* ── NAV ─────────────────────────────────────────────────────────────── */}
       <nav style={{ borderBottom: '1px solid var(--border)', position: 'sticky', top: 0, zIndex: 50 }}>
-        <div style={{ backgroundColor: 'rgba(19,20,28,0.92)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)' }}>
+        <div style={{ backgroundColor: 'rgba(247,247,251,0.92)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)' }}>
           <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
             <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '1.25rem' }}>
               Rev<span style={{ color: 'var(--violet)' }}>Overflow</span>
@@ -48,7 +48,7 @@ export default function Home() {
         {/* Guarantee badge */}
         <div className="flex justify-center mb-10">
           <div style={{ backgroundColor: 'rgba(74,222,128,0.08)', border: '1px solid rgba(74,222,128,0.25)', borderRadius: '100px', padding: '0.4rem 1.125rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ color: '#4ade80', fontSize: '0.8125rem', fontWeight: 600 }}>✓ 3× ROI Guarantee in 60 days — or your money back</span>
+            <span style={{ color: '#15803d', fontSize: '0.8125rem', fontWeight: 600 }}>✓ 3× ROI Guarantee in 60 days — or your money back</span>
           </div>
         </div>
 
@@ -82,7 +82,7 @@ export default function Home() {
           <div style={{ backgroundColor: 'var(--surface)', border: '1px solid rgba(124,92,252,0.3)', borderRadius: '16px', padding: '1.75rem', gridColumn: 'span 2' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
               <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Revenue This Month</div>
-              <span style={{ background: 'rgba(74,222,128,0.12)', color: '#4ade80', borderRadius: '6px', padding: '0.25rem 0.625rem', fontSize: '0.75rem', fontWeight: 700 }}>+41% vs last month</span>
+              <span style={{ background: 'rgba(74,222,128,0.12)', color: '#15803d', borderRadius: '6px', padding: '0.25rem 0.625rem', fontSize: '0.75rem', fontWeight: 700 }}>+41% vs last month</span>
             </div>
             <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '3rem', fontWeight: 800, lineHeight: 1, marginBottom: '0.375rem' }}>
               $<AnimatedNumber target={12480} />
@@ -102,7 +102,7 @@ export default function Home() {
               <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.625rem' }}>Customers won back</div>
               <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '2.5rem', fontWeight: 800, lineHeight: 1 }}><AnimatedNumber target={127} /></div>
               <div style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', marginTop: '0.25rem' }}>this month · 44% return rate</div>
-              <div style={{ marginTop: '0.75rem', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '100px', height: 5 }}>
+              <div style={{ marginTop: '0.75rem', backgroundColor: 'rgba(21,21,31,0.05)', borderRadius: '100px', height: 5 }}>
                 <div style={{ backgroundColor: 'var(--violet)', borderRadius: '100px', height: 5, width: '44%' }} />
               </div>
             </div>
@@ -190,7 +190,7 @@ export default function Home() {
           <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🛡️</div>
           <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 'clamp(1.875rem, 3.5vw, 2.5rem)', fontWeight: 800, marginBottom: '1.25rem' }}>
             3× ROI in 60 days.<br />
-            <span style={{ color: '#4ade80' }}>Or we refund every dollar.</span>
+            <span style={{ color: '#15803d' }}>Or we refund every dollar.</span>
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '1.0625rem', lineHeight: 1.75, maxWidth: 540, margin: '0 auto 2rem' }}>
             If Yara doesn't generate at least 3× your subscription cost in verified, attributed revenue
@@ -205,7 +205,7 @@ export default function Home() {
               <div key={g.label} style={{ backgroundColor: 'rgba(74,222,128,0.06)', border: '1px solid rgba(74,222,128,0.2)', borderRadius: '12px', padding: '1.25rem' }}>
                 <div style={{ fontWeight: 700, fontSize: '0.875rem', marginBottom: '0.25rem' }}>{g.label}</div>
                 <div style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', marginBottom: '0.5rem' }}>{g.price}</div>
-                <div style={{ color: '#4ade80', fontSize: '0.8125rem', fontWeight: 600 }}>{g.roi}</div>
+                <div style={{ color: '#15803d', fontSize: '0.8125rem', fontWeight: 600 }}>{g.roi}</div>
               </div>
             ))}
           </div>
@@ -241,7 +241,7 @@ export default function Home() {
               </p>
               {['RFV customer scoring — know who is about to leave', 'AI-written win-back SMS & email per customer', 'Birthday, new customer, VIP & cross-sell campaigns', 'Control-group revenue proof', '3x ROI guarantee in 60 days'].map(f => (
                 <div key={f} className="flex items-start gap-2 mb-2.5">
-                  <span style={{ color: '#4ade80', fontWeight: 700, flexShrink: 0, marginTop: 1 }}>✓</span>
+                  <span style={{ color: '#15803d', fontWeight: 700, flexShrink: 0, marginTop: 1 }}>✓</span>
                   <span style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem' }}>{f}</span>
                 </div>
               ))}
@@ -249,7 +249,7 @@ export default function Home() {
 
             {/* Mode B */}
             <div style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '20px', padding: '2.5rem' }}>
-              <div style={{ display: 'inline-block', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '0.375rem 0.875rem', marginBottom: '1.5rem' }}>
+              <div style={{ display: 'inline-block', background: 'rgba(21,21,31,0.05)', border: '1px solid rgba(21,21,31,0.1)', borderRadius: '8px', padding: '0.375rem 0.875rem', marginBottom: '1.5rem' }}>
                 <span style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', fontWeight: 700 }}>Mode B · Data Capture</span>
               </div>
               <h3 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.875rem' }}>
@@ -303,7 +303,7 @@ export default function Home() {
                     <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{t.name}</div>
                     <div style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem' }}>{t.biz}</div>
                   </div>
-                  <span style={{ background: 'rgba(74,222,128,0.1)', color: '#4ade80', borderRadius: '6px', padding: '0.25rem 0.625rem', fontSize: '0.75rem', fontWeight: 700 }}>{t.result}</span>
+                  <span style={{ background: 'rgba(74,222,128,0.1)', color: '#15803d', borderRadius: '6px', padding: '0.25rem 0.625rem', fontSize: '0.75rem', fontWeight: 700 }}>{t.result}</span>
                 </div>
               </div>
             ))}

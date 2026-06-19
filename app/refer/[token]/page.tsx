@@ -74,17 +74,17 @@ export default function ReferralPage() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #13141C 0%, #1a1b2e 100%)',
+      background: 'linear-gradient(135deg, #F7F7FB 0%, #FFFFFF 100%)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: '2rem 1rem',
       fontFamily: "'Inter', sans-serif",
     }}>
       <div style={{
         width: '100%', maxWidth: 440,
-        background: 'rgba(255,255,255,0.04)',
+        background: 'rgba(21,21,31,0.04)',
         border: '1px solid rgba(124,92,252,0.25)',
         borderRadius: '24px', padding: '2.5rem 2rem',
-        boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
+        boxShadow: '0 20px 60px rgba(16,24,40,0.12)',
       }}>
 
         {/* Header */}
@@ -99,10 +99,10 @@ export default function ReferralPage() {
           </div>
           {step === 'form' ? (
             <>
-              <h1 style={{ color: '#fff', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '1.5rem', margin: '0 0 0.375rem' }}>
+              <h1 style={{ color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '1.5rem', margin: '0 0 0.375rem' }}>
                 You were referred!
               </h1>
-              <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.9375rem', margin: 0 }}>
+              <p style={{ color: 'rgba(21,21,31,0.55)', fontSize: '0.9375rem', margin: 0 }}>
                 {loaded && merchant
                   ? `A friend thinks you'd love exclusive deals from ${bizName}.`
                   : 'A friend thinks you would love exclusive VIP deals.'}
@@ -110,10 +110,10 @@ export default function ReferralPage() {
             </>
           ) : (
             <>
-              <h1 style={{ color: '#fff', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '1.5rem', margin: '0 0 0.375rem' }}>
+              <h1 style={{ color: 'var(--text-primary)', fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '1.5rem', margin: '0 0 0.375rem' }}>
                 🎉 Welcome!
               </h1>
-              <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.9375rem', margin: 0 }}>
+              <p style={{ color: 'rgba(21,21,31,0.55)', fontSize: '0.9375rem', margin: 0 }}>
                 You're on the VIP list for {bizName}. Look out for exclusive deals soon.
               </p>
             </>
@@ -124,7 +124,7 @@ export default function ReferralPage() {
           <form onSubmit={handleSubmit}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
-                <label style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.8125rem', fontWeight: 500, display: 'block', marginBottom: '0.375rem' }}>
+                <label style={{ color: 'rgba(21,21,31,0.6)', fontSize: '0.8125rem', fontWeight: 500, display: 'block', marginBottom: '0.375rem' }}>
                   Your name *
                 </label>
                 <input
@@ -135,14 +135,14 @@ export default function ReferralPage() {
                   required
                   style={{
                     width: '100%', boxSizing: 'border-box',
-                    background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
+                    background: 'rgba(21,21,31,0.06)', border: '1px solid rgba(21,21,31,0.12)',
                     borderRadius: '10px', padding: '0.75rem 1rem',
-                    color: '#fff', fontSize: '1rem', fontFamily: 'inherit', outline: 'none',
+                    color: 'var(--text-primary)', fontSize: '1rem', fontFamily: 'inherit', outline: 'none',
                   }}
                 />
               </div>
               <div>
-                <label style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.8125rem', fontWeight: 500, display: 'block', marginBottom: '0.375rem' }}>
+                <label style={{ color: 'rgba(21,21,31,0.6)', fontSize: '0.8125rem', fontWeight: 500, display: 'block', marginBottom: '0.375rem' }}>
                   Email address
                 </label>
                 <input
@@ -152,15 +152,15 @@ export default function ReferralPage() {
                   onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
                   style={{
                     width: '100%', boxSizing: 'border-box',
-                    background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
+                    background: 'rgba(21,21,31,0.06)', border: '1px solid rgba(21,21,31,0.12)',
                     borderRadius: '10px', padding: '0.75rem 1rem',
-                    color: '#fff', fontSize: '1rem', fontFamily: 'inherit', outline: 'none',
+                    color: 'var(--text-primary)', fontSize: '1rem', fontFamily: 'inherit', outline: 'none',
                   }}
                 />
               </div>
               <div>
-                <label style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.8125rem', fontWeight: 500, display: 'block', marginBottom: '0.375rem' }}>
-                  Phone <span style={{ color: 'rgba(255,255,255,0.3)', fontWeight: 400 }}>(for SMS deals)</span>
+                <label style={{ color: 'rgba(21,21,31,0.6)', fontSize: '0.8125rem', fontWeight: 500, display: 'block', marginBottom: '0.375rem' }}>
+                  Phone <span style={{ color: 'rgba(21,21,31,0.3)', fontWeight: 400 }}>(for SMS deals)</span>
                 </label>
                 <input
                   type="tel"
@@ -169,15 +169,15 @@ export default function ReferralPage() {
                   onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
                   style={{
                     width: '100%', boxSizing: 'border-box',
-                    background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
+                    background: 'rgba(21,21,31,0.06)', border: '1px solid rgba(21,21,31,0.12)',
                     borderRadius: '10px', padding: '0.75rem 1rem',
-                    color: '#fff', fontSize: '1rem', fontFamily: 'inherit', outline: 'none',
+                    color: 'var(--text-primary)', fontSize: '1rem', fontFamily: 'inherit', outline: 'none',
                   }}
                 />
               </div>
 
               {error && (
-                <div style={{ color: '#f87171', fontSize: '0.875rem', background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.25)', borderRadius: '8px', padding: '0.625rem 0.875rem' }}>
+                <div style={{ color: '#b91c1c', fontSize: '0.875rem', background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.25)', borderRadius: '8px', padding: '0.625rem 0.875rem' }}>
                   {error}
                 </div>
               )}
@@ -196,7 +196,7 @@ export default function ReferralPage() {
                 {loading ? 'Joining…' : '🎁 Join the VIP list'}
               </button>
 
-              <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.75rem', textAlign: 'center', margin: 0 }}>
+              <p style={{ color: 'rgba(21,21,31,0.3)', fontSize: '0.75rem', textAlign: 'center', margin: 0 }}>
                 By joining you agree to receive occasional deals. Reply STOP to cancel SMS anytime.
               </p>
             </div>

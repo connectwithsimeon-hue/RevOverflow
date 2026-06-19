@@ -13,12 +13,12 @@ import DashboardSidebar from '@/app/components/DashboardSidebar'
 export const dynamic = 'force-dynamic'
 
 const SEGMENT_META: Record<string, { label: string; color: string; bg: string }> = {
-  loyal:   { label: 'Loyal',    color: '#a78bfa', bg: 'rgba(167,139,250,0.12)' },
-  active:  { label: 'Active',   color: '#4ade80', bg: 'rgba(74,222,128,0.12)'  },
-  new:     { label: 'New',      color: '#60a5fa', bg: 'rgba(96,165,250,0.12)'  },
-  at_risk: { label: 'At Risk',  color: '#fbbf24', bg: 'rgba(251,191,36,0.12)'  },
-  lapsed:  { label: 'Lapsed',   color: '#fb923c', bg: 'rgba(251,146,60,0.12)'  },
-  lost:    { label: 'Lost',     color: '#f87171', bg: 'rgba(248,113,113,0.12)' },
+  loyal:   { label: 'Loyal',    color: 'var(--violet-dark)', bg: 'rgba(167,139,250,0.12)' },
+  active:  { label: 'Active',   color: '#15803d', bg: 'rgba(74,222,128,0.12)'  },
+  new:     { label: 'New',      color: '#1d4ed8', bg: 'rgba(96,165,250,0.12)'  },
+  at_risk: { label: 'At Risk',  color: '#92400e', bg: 'rgba(251,191,36,0.12)'  },
+  lapsed:  { label: 'Lapsed',   color: '#c2410c', bg: 'rgba(251,146,60,0.12)'  },
+  lost:    { label: 'Lost',     color: '#b91c1c', bg: 'rgba(248,113,113,0.12)' },
 }
 
 export default async function DashboardPage({
@@ -184,7 +184,7 @@ export default async function DashboardPage({
         {/* ── Topbar ────────────────────────────────────────────────────── */}
         <div style={{
           height: 72, borderBottom: '1px solid var(--border)', position: 'sticky', top: 0, zIndex: 40,
-          backgroundColor: 'rgba(13,13,17,0.85)', backdropFilter: 'blur(8px)',
+          backgroundColor: 'rgba(247,247,251,0.85)', backdropFilter: 'blur(8px)',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 2rem',
         }}>
           <div>
@@ -221,19 +221,19 @@ export default async function DashboardPage({
           <Banner color="green" icon="✓">Square connected — syncing your customers and orders now.</Banner>
         )}
         {searchParams.square_error && (
-          <Banner color="red" icon="✕">Square error: {searchParams.square_error}. <a href="/api/square/connect" style={{ color: '#60a5fa' }}>Try again</a></Banner>
+          <Banner color="red" icon="✕">Square error: {searchParams.square_error}. <a href="/api/square/connect" style={{ color: '#1d4ed8' }}>Try again</a></Banner>
         )}
         {searchParams.clover_connected && (
           <Banner color="green" icon="✓">Clover connected — syncing your customers and orders now.</Banner>
         )}
         {searchParams.clover_error && (
-          <Banner color="red" icon="✕">Clover error: {searchParams.clover_error}. <a href="/api/clover/connect" style={{ color: '#60a5fa' }}>Try again</a></Banner>
+          <Banner color="red" icon="✕">Clover error: {searchParams.clover_error}. <a href="/api/clover/connect" style={{ color: '#1d4ed8' }}>Try again</a></Banner>
         )}
         {searchParams.toast_connected && (
           <Banner color="green" icon="✓">Toast connected — syncing your customers and orders now.</Banner>
         )}
         {searchParams.toast_error && (
-          <Banner color="red" icon="✕">Toast error: {searchParams.toast_error}. <a href="/dashboard/connect-toast" style={{ color: '#60a5fa' }}>Try again</a></Banner>
+          <Banner color="red" icon="✕">Toast error: {searchParams.toast_error}. <a href="/dashboard/connect-toast" style={{ color: '#1d4ed8' }}>Try again</a></Banner>
         )}
         {searchParams.syncing && (
           <Banner color="violet" icon="↻">Syncing your data — refresh in about 30 seconds.</Banner>
@@ -250,7 +250,7 @@ export default async function DashboardPage({
               {hasScores && (
                 <span style={{
                   background: mode === 'A' ? 'rgba(124,92,252,0.15)' : 'rgba(251,191,36,0.15)',
-                  color:      mode === 'A' ? 'var(--violet)'          : '#fbbf24',
+                  color:      mode === 'A' ? 'var(--violet)'          : '#92400e',
                   border:     `1px solid ${mode === 'A' ? 'rgba(124,92,252,0.4)' : 'rgba(251,191,36,0.4)'}`,
                   borderRadius: '100px',
                   padding: '0.25rem 0.75rem',
@@ -308,7 +308,7 @@ export default async function DashboardPage({
               label="Need Win-back"
               value={atRisk.toLocaleString()}
               footnote={atRisk > 0 ? 'at risk + lapsed' : 'all good'}
-              footnoteColor={atRisk > 0 ? '#fbbf24' : '#4ade80'}
+              footnoteColor={atRisk > 0 ? '#92400e' : '#15803d'}
             />
             <KpiCard
               icon="✦" gradient="linear-gradient(135deg, #4ade80 0%, #22d3ee 100%)" accent="#4ade80"
@@ -404,9 +404,9 @@ export default async function DashboardPage({
             {syncStatus === 'in_progress' && (
               <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '1.25rem', marginBottom: '1.5rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                  <span style={{ color: '#fbbf24', fontWeight: 600 }}>↻ Syncing {posProvider === 'clover' ? 'Clover' : posProvider === 'toast' ? 'Toast' : 'Square'} data… {syncProgress}%</span>
+                  <span style={{ color: '#92400e', fontWeight: 600 }}>↻ Syncing {posProvider === 'clover' ? 'Clover' : posProvider === 'toast' ? 'Toast' : 'Square'} data… {syncProgress}%</span>
                 </div>
-                <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '100px', height: 6 }}>
+                <div style={{ background: 'rgba(21,21,31,0.05)', borderRadius: '100px', height: 6 }}>
                   <div style={{ background: 'var(--violet)', borderRadius: '100px', height: 6, width: `${syncProgress}%`, transition: 'width 0.5s ease' }} />
                 </div>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', marginTop: '0.5rem' }}>Refresh in about a minute to see your customers.</p>
@@ -539,7 +539,7 @@ export default async function DashboardPage({
                           : '—'
                         const custInitials = (c.name || '?').split(' ').slice(0, 2).map((w: string) => w[0]?.toUpperCase()).join('') || '?'
                         return (
-                          <tr key={c.id} style={{ borderBottom: i < customers.length - 1 ? '1px solid var(--border)' : 'none', background: i % 2 === 1 ? 'rgba(255,255,255,0.015)' : 'transparent' }}>
+                          <tr key={c.id} style={{ borderBottom: i < customers.length - 1 ? '1px solid var(--border)' : 'none', background: i % 2 === 1 ? 'rgba(21,21,31,0.015)' : 'transparent' }}>
                             <td style={{ padding: '0.75rem 1rem' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
                                 <div style={{
@@ -675,7 +675,7 @@ export default async function DashboardPage({
                       <div style={{ fontSize: '0.875rem', fontWeight: 600, flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {c.name}
                       </div>
-                      <span style={{ background: 'rgba(74,222,128,0.1)', color: '#4ade80', borderRadius: '100px', padding: '0.15rem 0.5rem', fontSize: '0.7rem', fontWeight: 600, flexShrink: 0 }}>
+                      <span style={{ background: 'rgba(74,222,128,0.1)', color: '#15803d', borderRadius: '100px', padding: '0.15rem 0.5rem', fontSize: '0.7rem', fontWeight: 600, flexShrink: 0 }}>
                         {c.total_sent ?? 0} sent
                       </span>
                     </div>
@@ -740,13 +740,13 @@ function KpiCard({ icon, gradient, accent, label, value, trendPct, footnote, foo
       background: `linear-gradient(160deg, ${accent}1a 0%, var(--surface) 65%)`,
       border: '1px solid var(--border)',
       borderRadius: '18px', padding: '1.375rem',
-      boxShadow: '0 6px 20px -10px rgba(0,0,0,0.45)',
+      boxShadow: '0 6px 20px -10px rgba(16,24,40,0.12)',
     }}>
       <div className="flex items-center justify-between mb-3">
         <div style={{
           width: 42, height: 42, borderRadius: '12px', background: gradient,
           display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.125rem',
-          boxShadow: `0 4px 14px -4px ${accent}80`,
+          boxShadow: `0 4px 14px -4px ${accent}40`,
         }}>
           {icon}
         </div>

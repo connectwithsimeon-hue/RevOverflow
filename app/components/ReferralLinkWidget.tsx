@@ -70,7 +70,7 @@ export default function ReferralLinkWidget({ merchantId, referralToken, vipSlug 
           {copied ? '✓ Copied!' : 'Copy link'}
         </button>
       </div>
-      <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8125rem', margin: 0 }}>
+      <p style={{ color: 'rgba(21,21,31,0.4)', fontSize: '0.8125rem', margin: 0 }}>
         Share this link via text, email, or post it on your social media.
         Every new signup is tracked — you can see referral activity in your outcome log.
       </p>

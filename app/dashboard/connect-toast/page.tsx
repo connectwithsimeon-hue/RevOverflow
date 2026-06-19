@@ -58,7 +58,7 @@ export default function ConnectToastPage() {
             required
             style={{
               width: '100%',
-              background: 'rgba(255,255,255,0.05)',
+              background: 'rgba(21,21,31,0.05)',
               border: '1px solid var(--border)',
               borderRadius: '10px',
               padding: '0.75rem 1rem',
@@ -69,7 +69,7 @@ export default function ConnectToastPage() {
           />
 
           {error && (
-            <p style={{ color: '#f87171', fontSize: '0.875rem', marginBottom: '1rem' }}>{error}</p>
+            <p style={{ color: '#b91c1c', fontSize: '0.875rem', marginBottom: '1rem' }}>{error}</p>
           )}
 
           <button

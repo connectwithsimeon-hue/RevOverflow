@@ -136,7 +136,7 @@ export default function YaraRecommendations() {
                   }}>
                     {opp.urgency === 'now' ? '🔴 Act now' : opp.urgency === 'soon' ? '🟡 Soon' : '🟢 Whenever'}
                   </span>
-                  <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.75rem' }}>
+                  <span style={{ color: 'rgba(21,21,31,0.35)', fontSize: '0.75rem' }}>
                     {EFFORT_LABEL[opp.effort]}
                   </span>
                 </div>
@@ -149,10 +149,10 @@ export default function YaraRecommendations() {
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-                  <span style={{ fontWeight: 800, color: '#4ade80', fontSize: '1rem' }}>
+                  <span style={{ fontWeight: 800, color: '#15803d', fontSize: '1rem' }}>
                     {fmt(opp.estimatedRevenue)} potential
                   </span>
-                  <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.8125rem' }}>
+                  <span style={{ color: 'rgba(21,21,31,0.35)', fontSize: '0.8125rem' }}>
                     {opp.customerCount} customers
                   </span>
                 </div>

@@ -125,7 +125,7 @@ export default function OnboardingBanner({
               <div style={{
                 width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                backgroundColor: step.done ? '#4ade80' : isNext ? 'var(--violet)' : 'rgba(255,255,255,0.1)',
+                backgroundColor: step.done ? '#4ade80' : isNext ? 'var(--violet)' : 'rgba(21,21,31,0.1)',
                 color: step.done || isNext ? '#fff' : 'var(--text-secondary)',
                 fontSize: '0.8125rem', fontWeight: 800,
               }}>

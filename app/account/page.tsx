@@ -6,9 +6,9 @@ import AdSyncWidget from '@/app/components/AdSyncWidget'
 import DashboardSidebar from '@/app/components/DashboardSidebar'
 
 const PLAN_META: Record<string, { label: string; price: number; credits: number; color: string; features: string[] }> = {
-  capture: { label: 'Capture', price: 147,  credits: 500,   color: '#60a5fa', features: ['Customer scoring (RFV)', 'Segmentation', '500 Yara credits/mo', 'Square POS'] },
-  core:    { label: 'Core',    price: 397,  credits: 2000,  color: '#4ade80', features: ['Everything in Capture', 'Win-back campaigns', 'Revenue attribution', '2,000 Yara credits/mo'] },
-  brain:   { label: 'Brain',   price: 697,  credits: 5000,  color: '#a78bfa', features: ['Everything in Core', 'Autonomous Yara Autopilot', 'Multi-POS connectors', '5,000 Yara credits/mo'] },
+  capture: { label: 'Capture', price: 147,  credits: 500,   color: '#1d4ed8', features: ['Customer scoring (RFV)', 'Segmentation', '500 Yara credits/mo', 'Square POS'] },
+  core:    { label: 'Core',    price: 397,  credits: 2000,  color: '#15803d', features: ['Everything in Capture', 'Win-back campaigns', 'Revenue attribution', '2,000 Yara credits/mo'] },
+  brain:   { label: 'Brain',   price: 697,  credits: 5000,  color: 'var(--violet-dark)', features: ['Everything in Core', 'Autonomous Yara Autopilot', 'Multi-POS connectors', '5,000 Yara credits/mo'] },
   empire:  { label: 'Empire',  price: 1497, credits: 15000, color: '#f59e0b', features: ['Everything in Brain', 'White-glove onboarding', 'Unlimited POS', '15,000 Yara credits/mo'] },
 }
 
@@ -60,7 +60,7 @@ export default async function AccountPage() {
         {/* ── Topbar ────────────────────────────────────────────────────── */}
         <div style={{
           height: 72, borderBottom: '1px solid var(--border)', position: 'sticky', top: 0, zIndex: 40,
-          backgroundColor: 'rgba(13,13,17,0.85)', backdropFilter: 'blur(8px)',
+          backgroundColor: 'rgba(247,247,251,0.85)', backdropFilter: 'blur(8px)',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 2rem',
         }}>
           <div>
@@ -356,7 +356,7 @@ export default async function AccountPage() {
               </div>
             ) : (
               <div style={{ background: 'rgba(124,92,252,0.07)', border: '1px solid rgba(124,92,252,0.2)', borderRadius: '10px', padding: '1rem 1.25rem' }}>
-                <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.875rem', margin: '0 0 0.75rem' }}>
+                <p style={{ color: 'rgba(21,21,31,0.55)', fontSize: '0.875rem', margin: '0 0 0.75rem' }}>
                   Your VIP page will be generated automatically the first time you visit{' '}
                   <a href="/api/vip/qr" style={{ color: 'var(--violet)' }}>/api/vip/qr</a>.
                 </p>

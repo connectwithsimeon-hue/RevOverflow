@@ -116,7 +116,7 @@ export default async function AdminPage() {
                 {(merchants ?? []).map((m, i) => {
                   const sync = syncBadge(m.sync_status)
                   return (
-                    <tr key={m.id} style={{ borderBottom: i < (merchants?.length ?? 0) - 1 ? '1px solid var(--border)' : 'none', backgroundColor: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.015)' }}>
+                    <tr key={m.id} style={{ borderBottom: i < (merchants?.length ?? 0) - 1 ? '1px solid var(--border)' : 'none', backgroundColor: i % 2 === 0 ? 'transparent' : 'rgba(21,21,31,0.015)' }}>
                       <td style={{ padding: '0.875rem 1.25rem', fontWeight: 600 }}>{m.business_name}</td>
                       <td style={{ padding: '0.875rem 1.25rem' }}>
                         <span style={{ backgroundColor: planBadge(m.plan) + '22', color: planBadge(m.plan), border: `1px solid ${planBadge(m.plan)}44`, borderRadius: '6px', padding: '0.2rem 0.6rem', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em' }}>

@@ -172,7 +172,7 @@ export default function PricingPage() {
         </p>
 
         {error && (
-          <div style={{ backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '10px', padding: '1rem', marginBottom: '2rem', color: '#f87171', textAlign: 'center' }}>
+          <div style={{ backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '10px', padding: '1rem', marginBottom: '2rem', color: '#b91c1c', textAlign: 'center' }}>
             {error}
           </div>
         )}
@@ -211,7 +211,7 @@ export default function PricingPage() {
               <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 1.75rem', flex: 1 }}>
                 {plan.features.map(f => (
                   <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '0.6rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                    <span style={{ color: '#4ade80', flexShrink: 0, marginTop: '1px' }}>✓</span>{f}
+                    <span style={{ color: '#15803d', flexShrink: 0, marginTop: '1px' }}>✓</span>{f}
                   </li>
                 ))}
               </ul>
@@ -296,7 +296,7 @@ export default function PricingPage() {
                   <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: '1.125rem', fontWeight: 700, margin: '6px 0 2px' }}>${pack.price}</div>
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>${pack.perK} per 1,000</div>
                   {pack.tag && (
-                    <div style={{ display: 'inline-block', fontSize: '0.7rem', fontWeight: 700, backgroundColor: 'rgba(74,222,128,0.15)', color: '#4ade80', padding: '2px 8px', borderRadius: '20px', marginBottom: '10px' }}>
+                    <div style={{ display: 'inline-block', fontSize: '0.7rem', fontWeight: 700, backgroundColor: 'rgba(74,222,128,0.15)', color: '#15803d', padding: '2px 8px', borderRadius: '20px', marginBottom: '10px' }}>
                       {pack.tag}
                     </div>
                   )}

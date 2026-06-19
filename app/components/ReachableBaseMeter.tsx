@@ -23,7 +23,7 @@ export default function ReachableBaseMeter({ reachable, total, modeA }: Props) {
         background: 'linear-gradient(160deg, rgba(74,222,128,0.12) 0%, var(--surface) 65%)',
         border: '1px solid rgba(74,222,128,0.25)',
         borderRadius: '18px', padding: '1.375rem',
-        boxShadow: '0 6px 20px -10px rgba(0,0,0,0.45)',
+        boxShadow: '0 6px 20px -10px rgba(16,24,40,0.12)',
         height: '100%', display: 'flex', flexDirection: 'column',
       }}>
         <div style={{
@@ -31,7 +31,7 @@ export default function ReachableBaseMeter({ reachable, total, modeA }: Props) {
           background: 'linear-gradient(135deg, #4ade80 0%, #22d3ee 100%)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: '1.125rem', marginBottom: '0.875rem',
-          boxShadow: '0 4px 14px -4px rgba(74,222,128,0.6)',
+          boxShadow: '0 4px 14px -4px rgba(74,222,128,0.35)',
         }}>
           ⚡
         </div>
@@ -43,7 +43,7 @@ export default function ReachableBaseMeter({ reachable, total, modeA }: Props) {
         </div>
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: '0.375rem',
-          background: 'rgba(74,222,128,0.15)', color: '#4ade80',
+          background: 'rgba(74,222,128,0.15)', color: '#15803d',
           border: '1px solid rgba(74,222,128,0.3)',
           borderRadius: '100px', padding: '0.2rem 0.625rem',
           fontSize: '0.7rem', fontWeight: 700, width: 'fit-content',
@@ -63,7 +63,7 @@ export default function ReachableBaseMeter({ reachable, total, modeA }: Props) {
       background: 'linear-gradient(160deg, rgba(124,92,252,0.12) 0%, var(--surface) 65%)',
       border: '1px solid rgba(124,92,252,0.25)',
       borderRadius: '18px', padding: '1.375rem',
-      boxShadow: '0 6px 20px -10px rgba(0,0,0,0.45)',
+      boxShadow: '0 6px 20px -10px rgba(16,24,40,0.12)',
       height: '100%', display: 'flex', flexDirection: 'column',
     }}>
       <div style={{
@@ -71,7 +71,7 @@ export default function ReachableBaseMeter({ reachable, total, modeA }: Props) {
         background: 'linear-gradient(135deg, #7C5CFC 0%, #a78bfa 100%)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         fontSize: '1.125rem', marginBottom: '0.875rem',
-        boxShadow: '0 4px 14px -4px rgba(124,92,252,0.6)',
+        boxShadow: '0 4px 14px -4px rgba(124,92,252,0.35)',
       }}>
         📈
       </div>
@@ -87,7 +87,7 @@ export default function ReachableBaseMeter({ reachable, total, modeA }: Props) {
         <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>/ {TARGET.toLocaleString()}</span>
       </div>
 
-      <div style={{ height: '8px', background: 'rgba(255,255,255,0.08)', borderRadius: '100px', overflow: 'hidden', marginBottom: '0.625rem' }}>
+      <div style={{ height: '8px', background: 'rgba(21,21,31,0.08)', borderRadius: '100px', overflow: 'hidden', marginBottom: '0.625rem' }}>
         <div style={{
           width: `${pct}%`, height: '100%',
           background: 'linear-gradient(90deg, #7C5CFC 0%, #a78bfa 100%)',
