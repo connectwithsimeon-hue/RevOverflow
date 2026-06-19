@@ -54,15 +54,15 @@ export default function Home() {
 
         <div style={{ textAlign: 'center', maxWidth: 760, margin: '0 auto' }}>
           <h1 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 'clamp(2.75rem, 5.5vw, 4.25rem)', fontWeight: 800, lineHeight: 1.08, letterSpacing: '-0.025em', margin: '0 0 1.5rem' }}>
-            Your AI Revenue Operator<br />
+            Bring Back the<br />
             <span style={{ background: 'linear-gradient(135deg, #a78bfa 0%, #7C5CFC 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              Brings Customers Back.
+              Customers You Already Have.
             </span>
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '1.125rem', lineHeight: 1.75, maxWidth: 580, margin: '0 auto 2.5rem' }}>
-            Connect your POS (Square, Clover, or Toast). Yara — your AI Revenue Operator — scores every customer,
-            writes personalised win-back messages, and sends them automatically.
-            You see exactly how much revenue she generates.
+            Connect your POS (Square, Clover, or Toast). Yara finds the customers who haven't come back,
+            writes them a personal message, and sends it automatically.
+            You see exactly how much revenue she brings in.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <Link href="/signup" style={{ backgroundColor: 'var(--violet)', color: '#fff', borderRadius: '10px', fontWeight: 700, padding: '0.9375rem 2.25rem', fontSize: '1.0625rem', textDecoration: 'none' }}>
@@ -162,7 +162,7 @@ export default function Home() {
               {
                 step: '02',
                 title: 'Yara scores everyone',
-                body: 'Your AI Revenue Operator ranks every customer by Recency, Frequency, and Value. She knows exactly who to target, when, and with what message.',
+                body: 'Yara ranks every customer by how recently and often they bought, and how much they spent. She knows exactly who to target, when, and with what message.',
                 icon: '✦',
               },
               {

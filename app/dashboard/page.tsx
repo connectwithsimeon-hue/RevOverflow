@@ -600,7 +600,7 @@ export default async function DashboardPage({
                 <div style={{ width: 40, height: 40, borderRadius: '10px', background: 'linear-gradient(135deg, #7C5CFC 0%, #a78bfa 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem' }}>✦</div>
                 <div>
                   <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700 }}>Yara</div>
-                  <div style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem' }}>AI Revenue Operator</div>
+                  <div style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem' }}>Brings your customers back</div>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-2">
