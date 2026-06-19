@@ -3,7 +3,7 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: 'RevOverflow — We Bring Your Customers Back',
-  description: 'RevOverflow connects to your Square and automatically wins back the customers who drifted away — with proof of every dollar it makes you.',
+  description: 'RevOverflow connects to your POS (Square, Clover, or Toast) and automatically wins back the customers who drifted away — with proof of every dollar it makes you.',
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://revoverflow.com'),
 }
 
