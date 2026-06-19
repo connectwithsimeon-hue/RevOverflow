@@ -67,7 +67,7 @@ export default function DashboardSidebar({ active, plan }: { active: Route; plan
           background: 'linear-gradient(135deg, #7C5CFC 0%, #a78bfa 100%)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.875rem', flexShrink: 0,
         }}>✦</span>
-        Rev<span style={{ color: 'var(--violet)' }}>Overflow</span>
+        <span>Rev<span style={{ color: 'var(--violet)' }}>Overflow</span></span>
       </Link>
 
       <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>

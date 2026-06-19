@@ -72,13 +72,6 @@ export default function Home() {
       {/* ── HERO ────────────────────────────────────────────────────────────── */}
       <section className="max-w-6xl mx-auto px-6 pt-20 pb-16">
 
-        {/* Guarantee badge */}
-        <div className="flex justify-center lg:justify-start mb-10">
-          <div style={{ backgroundColor: 'rgba(74,222,128,0.08)', border: '1px solid rgba(74,222,128,0.25)', borderRadius: '100px', padding: '0.4rem 1.125rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ color: '#15803d', fontSize: '0.8125rem', fontWeight: 600 }}>✓ 3× ROI Guarantee in 60 days — or your money back</span>
-          </div>
-        </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
           {/* Left: copy */}
@@ -89,7 +82,7 @@ export default function Home() {
                 Customers You Already Have.
               </span>
             </h1>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '1.125rem', lineHeight: 1.75, maxWidth: 480, margin: '0 0 2.5rem' }} className="mx-auto lg:mx-0">
+            <p style={{ color: 'var(--text-secondary)', fontSize: '1.125rem', lineHeight: 1.75 }} className="max-w-none lg:max-w-[480px] mx-auto lg:mx-0 mb-10">
               Connect your POS (Square, Clover, or Toast). Yara finds the customers who haven't come back,
               writes them a personal message, and sends it automatically.
               You see exactly how much revenue she brings in.
