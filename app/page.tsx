@@ -40,6 +40,7 @@ function useLiveBars(base: number[]) {
 
 export default function Home() {
   const barHeights = useLiveBars(REVENUE_BARS)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
     <div style={{ backgroundColor: 'var(--ink)', color: 'var(--text-primary)', minHeight: '100vh' }}>
@@ -57,7 +58,9 @@ export default function Home() {
             <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '1.25rem' }}>
               Rev<span style={{ color: 'var(--violet)' }}>Overflow</span>
             </span>
-            <div className="flex items-center gap-6">
+
+            {/* Desktop links */}
+            <div className="hidden lg:flex items-center gap-6">
               <a href="#how-it-works" style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', textDecoration: 'none' }}>How it works</a>
               <a href="#pricing" style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', textDecoration: 'none' }}>Pricing</a>
               <Link href="/login" style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', textDecoration: 'none' }}>Log in</Link>
@@ -65,7 +68,57 @@ export default function Home() {
                 Get started free
               </Link>
             </div>
+
+            {/* Mobile hamburger toggle */}
+            <button
+              aria-label="Toggle menu"
+              onClick={() => setMobileMenuOpen(v => !v)}
+              className="lg:hidden"
+              style={{
+                width: 36, height: 36, display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center', gap: '5px',
+                background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+              }}
+            >
+              <span style={{
+                display: 'block', width: 20, height: 2, borderRadius: 2, background: 'var(--text-primary)',
+                transition: 'transform 0.2s ease, opacity 0.2s ease',
+                transform: mobileMenuOpen ? 'translateY(7px) rotate(45deg)' : 'none',
+              }} />
+              <span style={{
+                display: 'block', width: 20, height: 2, borderRadius: 2, background: 'var(--text-primary)',
+                transition: 'opacity 0.2s ease',
+                opacity: mobileMenuOpen ? 0 : 1,
+              }} />
+              <span style={{
+                display: 'block', width: 20, height: 2, borderRadius: 2, background: 'var(--text-primary)',
+                transition: 'transform 0.2s ease, opacity 0.2s ease',
+                transform: mobileMenuOpen ? 'translateY(-7px) rotate(-45deg)' : 'none',
+              }} />
+            </button>
           </div>
+
+          {/* Mobile dropdown panel */}
+          {mobileMenuOpen && (
+            <div className="lg:hidden" style={{ borderTop: '1px solid var(--border)', padding: '0.5rem 1.5rem 1.25rem' }}>
+              <div className="flex flex-col">
+                <a href="#how-it-works" onClick={() => setMobileMenuOpen(false)} style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem', textDecoration: 'none', padding: '0.75rem 0', borderBottom: '1px solid var(--border)' }}>How it works</a>
+                <a href="#pricing" onClick={() => setMobileMenuOpen(false)} style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem', textDecoration: 'none', padding: '0.75rem 0', borderBottom: '1px solid var(--border)' }}>Pricing</a>
+                <Link href="/login" onClick={() => setMobileMenuOpen(false)} style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem', textDecoration: 'none', padding: '0.75rem 0', borderBottom: '1px solid var(--border)' }}>Log in</Link>
+                <Link
+                  href="/signup"
+                  onClick={() => setMobileMenuOpen(false)}
+                  style={{
+                    backgroundColor: 'var(--violet)', color: '#fff', borderRadius: '8px',
+                    fontSize: '0.9375rem', fontWeight: 600, padding: '0.75rem', textDecoration: 'none',
+                    textAlign: 'center', marginTop: '0.875rem',
+                  }}
+                >
+                  Get started free
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 
