@@ -12,6 +12,7 @@ import {
   ToastCustomerRaw,
   ToastOrderRaw,
 } from '@/lib/toast'
+import { upsertPosCustomer } from '@/lib/customer-match'
 
 // Toast's Orders API is per-business-date (one call per day, no date-range
 // query), so a deep historical backfill is expensive. 90 days covers
@@ -52,12 +53,19 @@ export async function POST(request: NextRequest) {
     )
 
     if (rawCustomers.length > 0) {
-      const rows = rawCustomers.map((c) => ({
-        merchant_id: merchantId,
-        ...mapToastCustomer(c),
-        updated_at: new Date().toISOString(),
-      }))
-      await service.from('customers').upsert(rows, { onConflict: 'merchant_id,toast_customer_id', ignoreDuplicates: false })
+      // One-by-one (not a bulk upsert) so each customer can be merged
+      // against an existing row from a different connected POS by
+      // phone/email — keeps a merchant's customer base unified even when
+      // Square, Clover, and Toast are all connected at once.
+      for (const c of rawCustomers) {
+        const mapped = mapToastCustomer(c)
+        await upsertPosCustomer(service, merchantId, 'toast', {
+          posCustomerId: mapped.toast_customer_id,
+          name: mapped.name,
+          email: mapped.email,
+          phone: mapped.phone,
+        })
+      }
     }
 
     await service.from('merchants').update({ sync_progress: 20 }).eq('id', merchantId)
@@ -87,22 +95,21 @@ export async function POST(request: NextRequest) {
               .select('id')
               .eq('merchant_id', merchantId)
               .eq('toast_customer_id', check.customerId)
-              .single()
+              .maybeSingle()
 
             if (cRow?.id) {
               customerId = cRow.id
             } else if (check.customer) {
-              // Customer appeared on an order but wasn't in the CRM list — upsert it now.
-              const { data: newCust } = await service
-                .from('customers')
-                .upsert({
-                  merchant_id: merchantId,
-                  ...mapToastCustomer(check.customer as any),
-                  updated_at: new Date().toISOString(),
-                }, { onConflict: 'merchant_id,toast_customer_id' })
-                .select('id')
-                .single()
-              customerId = newCust?.id ?? null
+              // Customer appeared on an order but wasn't in the CRM list —
+              // upsert it now, merged against any existing row from a
+              // different connected POS by phone/email.
+              const mapped = mapToastCustomer(check.customer as any)
+              customerId = await upsertPosCustomer(service, merchantId, 'toast', {
+                posCustomerId: mapped.toast_customer_id,
+                name: mapped.name,
+                email: mapped.email,
+                phone: mapped.phone,
+              })
             }
           }
 

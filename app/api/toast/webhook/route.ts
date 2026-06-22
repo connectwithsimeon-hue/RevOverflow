@@ -19,6 +19,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { toastApiBase, getToastAccessToken, toastHeaders, mapToastChecks, mapToastLineItems, ToastOrderRaw } from '@/lib/toast'
 import { attributeRevenueIfCampaignSent } from '@/lib/outcome'
+import { upsertPosCustomer } from '@/lib/customer-match'
 
 export async function POST(request: NextRequest) {
   const configuredSecret = process.env.TOAST_WEBHOOK_SECRET
@@ -79,24 +80,19 @@ export async function POST(request: NextRequest) {
           .select('id')
           .eq('merchant_id', merchantId)
           .eq('toast_customer_id', check.customerId)
-          .single()
+          .maybeSingle()
 
         if (cRow?.id) {
           customerId = cRow.id
         } else if (check.customer) {
-          const { data: newCust } = await service
-            .from('customers')
-            .upsert({
-              merchant_id: merchantId,
-              toast_customer_id: check.customer.guid,
-              name: [check.customer.firstName, check.customer.lastName].filter(Boolean).join(' ') || null,
-              email: check.customer.email || null,
-              phone: check.customer.phone || null,
-              updated_at: new Date().toISOString(),
-            }, { onConflict: 'merchant_id,toast_customer_id' })
-            .select('id')
-            .single()
-          customerId = newCust?.id ?? null
+          // Merged against any existing row from a different connected POS
+          // by phone/email, instead of always inserting a fresh row.
+          customerId = await upsertPosCustomer(service, merchantId, 'toast', {
+            posCustomerId: check.customer.guid,
+            name: [check.customer.firstName, check.customer.lastName].filter(Boolean).join(' ') || null,
+            email: check.customer.email || null,
+            phone: check.customer.phone || null,
+          })
         }
       }
 

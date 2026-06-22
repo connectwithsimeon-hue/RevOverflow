@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { decrypt } from '@/lib/encryption'
 import { cloverApiBase, cloverHeaders, mapCloverCustomer, mapCloverOrder, mapCloverLineItems, fetchAllPages, CloverCustomerRaw, CloverOrderRaw } from '@/lib/clover'
+import { upsertPosCustomer } from '@/lib/customer-match'
 
 export async function POST(request: NextRequest) {
   const { authUserId } = await request.json()
@@ -36,12 +37,19 @@ export async function POST(request: NextRequest) {
     )
 
     if (rawCustomers.length > 0) {
-      const rows = rawCustomers.map((c) => ({
-        merchant_id: merchantId,
-        ...mapCloverCustomer(c),
-        updated_at: new Date().toISOString(),
-      }))
-      await service.from('customers').upsert(rows, { onConflict: 'merchant_id,clover_customer_id', ignoreDuplicates: false })
+      // One-by-one (not a bulk upsert) so each customer can be merged
+      // against an existing row from a different connected POS by
+      // phone/email — keeps a merchant's customer base unified even when
+      // Square, Clover, and Toast are all connected at once.
+      for (const c of rawCustomers) {
+        const mapped = mapCloverCustomer(c)
+        await upsertPosCustomer(service, merchantId, 'clover', {
+          posCustomerId: mapped.clover_customer_id,
+          name: mapped.name,
+          email: mapped.email,
+          phone: mapped.phone,
+        })
+      }
     }
 
     await service.from('merchants').update({ sync_progress: 30 }).eq('id', merchantId)

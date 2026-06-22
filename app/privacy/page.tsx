@@ -7,7 +7,7 @@ export default function PrivacyPage() {
 
         <section style={{ marginBottom: '2.5rem' }}>
           <h2 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.75rem' }}>1. Who We Are</h2>
-          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8 }}>RevOverflow is operated by SiMaYa Labs. We provide AI-powered revenue and customer retention tools for small businesses. This policy explains how we collect, use, and protect information when you use our platform.</p>
+          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8 }}>RevOverflow provides AI-powered revenue and customer retention tools for small businesses. This policy explains how we collect, use, and protect information when you use our platform.</p>
         </section>
 
         <section style={{ marginBottom: '2.5rem' }}>

@@ -214,9 +214,9 @@ export default function Home() {
       <div style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '1.25rem 0', backgroundColor: 'var(--surface)' }}>
         <div className="max-w-6xl mx-auto px-6 flex flex-wrap items-center justify-center gap-8">
           {[
-            '✓ Works with Square POS',
+            '✓ Works with Square, Clover & Toast',
             '✓ No technical setup',
-            '✓ 3× ROI in 60 days — guaranteed',
+            '✓ 3× ROI in 60 days, or you\'re eligible for a refund',
             '✓ Cancel anytime',
             '✓ TCPA compliant',
           ].map(item => (
@@ -233,29 +233,29 @@ export default function Home() {
               Set it up once. Yara works forever.
             </h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: '1.0625rem', maxWidth: 520, margin: '0 auto' }}>
-              No campaigns to write. No lists to manage. No manual work — ever.
+              Measure who's worth reaching. Capture the ones your POS doesn't see. Recycle them into repeat revenue.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {[
               {
-                step: '01',
-                title: 'Connect your POS (Square, Clover, or Toast)',
-                body: 'One click — RevOverflow reads your customer history, orders, and purchase patterns securely. Setup takes under 2 minutes.',
-                icon: '🔗',
+                step: '01 · Measure',
+                title: 'Yara measures every customer',
+                body: 'Connect your POS (Square, Clover, or Toast). Yara scores every customer by how recently and often they bought, and sets up a control group from day one — so every dollar she earns you is verifiable, not estimated.',
+                icon: '📊',
               },
               {
-                step: '02',
-                title: 'Yara scores everyone',
-                body: 'Yara ranks every customer by how recently and often they bought, and how much they spent. She knows exactly who to target, when, and with what message.',
-                icon: '✦',
+                step: '02 · Capture',
+                title: 'Capture the customers your POS misses',
+                body: 'Walk-ins and cash customers never make it into your POS. A VIP signup page and an in-store counter card or window sticker — printed and shipped to you — turn a QR scan into a name, email, and phone number Yara can use.',
+                icon: '🎯',
               },
               {
-                step: '03',
-                title: 'Customers return',
-                body: 'Yara sends personalised SMS and email campaigns automatically. A 15% control group never gets a message — so you can see the exact revenue Yara earns you.',
-                icon: '💰',
+                step: '03 · Recycle',
+                title: 'Recycle them into repeat revenue',
+                body: 'Yara sends personalized SMS and email automatically — win-back offers, birthdays, VIP perks — and shows you the revenue she recovers, net of what a held-out control group would have spent anyway.',
+                icon: '🔁',
               },
             ].map((item) => (
               <div key={item.step} style={{ position: 'relative' }}>
@@ -276,11 +276,11 @@ export default function Home() {
           <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🛡️</div>
           <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 'clamp(1.875rem, 3.5vw, 2.5rem)', fontWeight: 800, marginBottom: '1.25rem' }}>
             3× ROI in 60 days.<br />
-            <span style={{ color: '#15803d' }}>Or we refund every dollar.</span>
+            <span style={{ color: '#15803d' }}>Or you're eligible for a refund.</span>
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '1.0625rem', lineHeight: 1.75, maxWidth: 540, margin: '0 auto 2rem' }}>
             If Yara doesn't generate at least 3× your subscription cost in verified, attributed revenue
-            within 60 days — we'll refund your money, no questions asked.
+            within 60 days, you're eligible for a refund. See <a href="/terms#guarantee" style={{ color: 'var(--violet)', textDecoration: 'underline' }}>guarantee terms</a> for eligibility.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
             {[
@@ -323,7 +323,7 @@ export default function Home() {
                 You have customer data. Yara turns it into revenue.
               </h3>
               <p style={{ color: 'var(--text-secondary)', lineHeight: 1.75, marginBottom: '1.75rem', fontSize: '0.9375rem' }}>
-                If you've been running Square for a while, your data is already there. Connect once — Yara starts working immediately.
+                If you've been running Square, Clover, or Toast for a while, your data is already there. Connect once — Yara starts working immediately.
               </p>
               {['RFV customer scoring — know who is about to leave', 'AI-written win-back SMS & email per customer', 'Birthday, new customer, VIP & cross-sell campaigns', 'Control-group revenue proof', '3x ROI guarantee in 60 days'].map(f => (
                 <div key={f} className="flex items-start gap-2 mb-2.5">
@@ -344,55 +344,13 @@ export default function Home() {
               <p style={{ color: 'var(--text-secondary)', lineHeight: 1.75, marginBottom: '1.75rem', fontSize: '0.9375rem' }}>
                 No customer list? No problem. RevOverflow gives you everything you need to capture emails and phone numbers from day one.
               </p>
-              {['QR-code opt-in poster for your counter', 'VIP loyalty signup page with your branding', 'SMS double opt-in — fully TCPA compliant', 'Referral capture — customers bring friends', 'Auto-upgrades to Mode A once you hit 1,000 customers'].map(f => (
+              {['QR-code opt-in counter cards & window stickers — printed and shipped free', 'VIP loyalty signup page with your branding', 'SMS double opt-in — fully TCPA compliant', 'Referral capture — customers bring friends', 'Auto-upgrades to Mode A once you hit 1,000 customers'].map(f => (
                 <div key={f} className="flex items-start gap-2 mb-2.5">
                   <span style={{ color: 'var(--violet)', fontWeight: 700, flexShrink: 0, marginTop: 1 }}>→</span>
                   <span style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem' }}>{f}</span>
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── TESTIMONIALS ────────────────────────────────────────────────────── */}
-      <section style={{ padding: '5rem 0', backgroundColor: 'var(--surface)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
-        <div className="max-w-6xl mx-auto px-6">
-          <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 'clamp(1.5rem, 3vw, 2rem)', fontWeight: 800, textAlign: 'center', marginBottom: '3rem' }}>
-            What merchants are saying
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {[
-              {
-                quote: "Yara sent 340 win-back emails in one night. By Friday we had 47 customers back and $3,200 in revenue we would have lost forever.",
-                name: 'Marcus B.',
-                biz: 'Barbershop · Atlanta, GA',
-                result: '+$3,200 in week 1',
-              },
-              {
-                quote: "I was skeptical about AI writing my customer messages. Then I read one Yara sent — it mentioned exactly what the customer always orders. I couldn't have written it better myself.",
-                name: 'Sandra L.',
-                biz: 'Café · Chicago, IL',
-                result: '52% win-back rate',
-              },
-              {
-                quote: "The ROI guarantee sold me. $297 a month and Yara needs to make me $891. She made us $4,100 in the first month. Best investment I've made in years.",
-                name: 'Tony R.',
-                biz: 'Pizza restaurant · Brooklyn, NY',
-                result: '13× ROI, month 1',
-              },
-            ].map((t) => (
-              <div key={t.name} style={{ backgroundColor: 'var(--ink)', border: '1px solid var(--border)', borderRadius: '16px', padding: '2rem' }}>
-                <p style={{ color: 'var(--text-primary)', lineHeight: 1.75, fontSize: '0.9375rem', marginBottom: '1.5rem' }}>"{t.quote}"</p>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{t.name}</div>
-                    <div style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem' }}>{t.biz}</div>
-                  </div>
-                  <span style={{ background: 'rgba(74,222,128,0.1)', color: '#15803d', borderRadius: '6px', padding: '0.25rem 0.625rem', fontSize: '0.75rem', fontWeight: 700 }}>{t.result}</span>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </section>
@@ -465,7 +423,7 @@ export default function Home() {
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '1.0625rem', lineHeight: 1.75, marginBottom: '2.5rem' }}>
             Connect your POS in 2 minutes. Yara scores your customers and gets to work the same day.
-            No technical setup. No contracts. 3× ROI in 60 days — guaranteed.
+            No technical setup. No contracts. 3× ROI in 60 days, or you're eligible for a refund.
           </p>
           <Link href="/signup" style={{ backgroundColor: 'var(--violet)', color: '#fff', borderRadius: '12px', fontWeight: 700, padding: '1rem 2.75rem', fontSize: '1.125rem', textDecoration: 'none', display: 'inline-block' }}>
             Start free — no credit card needed
@@ -479,7 +437,7 @@ export default function Home() {
           <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '1rem' }}>
             Rev<span style={{ color: 'var(--violet)' }}>Overflow</span>
           </span>
-          <span style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem' }}>© 2026 SiMaYa Labs. All rights reserved.</span>
+          <span style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem' }}>© 2026 RevOverflow. All rights reserved.</span>
           <div className="flex gap-6">
             <a href="#" style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', textDecoration: 'none' }}>Privacy</a>
             <a href="#" style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', textDecoration: 'none' }}>Terms</a>

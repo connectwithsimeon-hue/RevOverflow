@@ -50,14 +50,19 @@ export default async function DashboardPage({
 
   if (!merchant) redirect('/login')
 
-  const posProvider: 'square' | 'clover' | 'toast' | null = merchant.square_merchant_id
-    ? 'square'
-    : merchant.clover_merchant_id
-      ? 'clover'
-      : merchant.toast_restaurant_guid
-        ? 'toast'
-        : null
-  const isConnected = posProvider !== null
+  // A merchant can connect more than one POS at once — up to all 3 adapters
+  // RevOverflow has today. Customer rows from each are merged into one
+  // unified base by lib/customer-match.ts, so connecting more than one is
+  // safe and encouraged for merchants who actually run more than one system.
+  const connectedProviders: ('square' | 'clover' | 'toast')[] = [
+    merchant.square_merchant_id ? ('square' as const) : null,
+    merchant.clover_merchant_id ? ('clover' as const) : null,
+    merchant.toast_restaurant_guid ? ('toast' as const) : null,
+  ].filter((p): p is 'square' | 'clover' | 'toast' => p !== null)
+  const isConnected = connectedProviders.length > 0
+  // Used only where the UI still needs to name a single provider (e.g. the
+  // sync-progress label) — picks the first connected one.
+  const posProvider: 'square' | 'clover' | 'toast' | null = connectedProviders[0] ?? null
   const syncStatus  = merchant.sync_status as string
   const syncProgress = merchant.sync_progress as number
 
@@ -272,18 +277,28 @@ export default async function DashboardPage({
 
           {/* Quick action buttons */}
           <div className="flex gap-3 flex-wrap">
-            {isConnected && syncStatus !== 'in_progress' && (
-              <a href={posProvider === 'clover' ? '/api/clover/sync-trigger' : posProvider === 'toast' ? '/api/toast/sync-trigger' : '/api/square/sync-trigger'} style={btnStyle('ghost')}>↻ Sync</a>
-            )}
+            {syncStatus !== 'in_progress' && connectedProviders.map((p) => (
+              <a
+                key={p}
+                href={p === 'clover' ? '/api/clover/sync-trigger' : p === 'toast' ? '/api/toast/sync-trigger' : '/api/square/sync-trigger'}
+                style={btnStyle('ghost')}
+              >
+                ↻ Sync{connectedProviders.length > 1 ? ` ${p === 'clover' ? 'Clover' : p === 'toast' ? 'Toast' : 'Square'}` : ''}
+              </a>
+            ))}
             {hasScores && atRisk > 0 && (
               <Link href="/campaigns" style={btnStyle('violet')}>✦ Launch Campaign</Link>
             )}
-            {!isConnected && (
-              <>
-                <a href="/api/square/connect" style={btnStyle('violet')}>Connect Square →</a>
-                <a href="/api/clover/connect" style={btnStyle('ghost')}>Connect Clover →</a>
-                <Link href="/dashboard/connect-toast" style={btnStyle('ghost')}>Connect Toast →</Link>
-              </>
+            {/* Connect buttons — only shown for POS systems not yet connected.
+                A merchant can connect more than one at a time. */}
+            {!connectedProviders.includes('square') && (
+              <a href="/api/square/connect" style={btnStyle(isConnected ? 'ghost' : 'violet')}>Connect Square →</a>
+            )}
+            {!connectedProviders.includes('clover') && (
+              <a href="/api/clover/connect" style={btnStyle('ghost')}>Connect Clover →</a>
+            )}
+            {!connectedProviders.includes('toast') && (
+              <Link href="/dashboard/connect-toast" style={btnStyle('ghost')}>Connect Toast →</Link>
             )}
           </div>
         </div>
@@ -382,20 +397,30 @@ export default async function DashboardPage({
           {/* ── Left col: Segments + customers ──────────────────────────── */}
           <div className="lg:col-span-2">
 
-            {/* Connect prompt */}
-            {!isConnected && (
+            {/* Connect prompt — shown until all 3 POS adapters are connected.
+                A merchant running more than one system at once can connect
+                each in turn; every customer still lands in one merged base. */}
+            {connectedProviders.length < 3 && (
               <div style={{ background: 'var(--surface)', border: '1px solid rgba(124,92,252,0.3)', borderRadius: '16px', padding: '2.5rem', textAlign: 'center', marginBottom: '1.5rem' }}>
                 <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🔗</div>
                 <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.25rem', fontWeight: 800, marginBottom: '0.75rem' }}>
-                  Connect your POS
+                  {isConnected ? 'Connect another POS' : 'Connect your POS'}
                 </h2>
-                <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: '1.5rem', fontSize: '0.9375rem', maxWidth: 360, margin: '0 auto 1.5rem' }}>
-                  One click — we read your customers, score everyone, and show Yara who to target first.
+                <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: '1.5rem', fontSize: '0.9375rem', maxWidth: 380, margin: '0 auto 1.5rem' }}>
+                  {isConnected
+                    ? `Connected: ${connectedProviders.map(p => p === 'clover' ? 'Clover' : p === 'toast' ? 'Toast' : 'Square').join(', ')}. Run more than one system? Connect the rest — every customer lands in the same base.`
+                    : 'One click — we read your customers, score everyone, and show Yara who to target first.'}
                 </p>
                 <div className="flex items-center justify-center gap-3 flex-wrap">
-                  <a href="/api/square/connect" style={btnStyle('violet')}>Connect Square</a>
-                  <a href="/api/clover/connect" style={btnStyle('ghost')}>Connect Clover</a>
-                  <Link href="/dashboard/connect-toast" style={btnStyle('ghost')}>Connect Toast</Link>
+                  {!connectedProviders.includes('square') && (
+                    <a href="/api/square/connect" style={btnStyle(isConnected ? 'ghost' : 'violet')}>Connect Square</a>
+                  )}
+                  {!connectedProviders.includes('clover') && (
+                    <a href="/api/clover/connect" style={btnStyle('ghost')}>Connect Clover</a>
+                  )}
+                  {!connectedProviders.includes('toast') && (
+                    <Link href="/dashboard/connect-toast" style={btnStyle('ghost')}>Connect Toast</Link>
+                  )}
                 </div>
               </div>
             )}
@@ -404,7 +429,13 @@ export default async function DashboardPage({
             {syncStatus === 'in_progress' && (
               <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '1.25rem', marginBottom: '1.5rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                  <span style={{ color: '#92400e', fontWeight: 600 }}>↻ Syncing {posProvider === 'clover' ? 'Clover' : posProvider === 'toast' ? 'Toast' : 'Square'} data… {syncProgress}%</span>
+                  {/* sync_status/sync_progress are shared columns on `merchants`,
+                      not tracked per-POS, so once more than one is connected
+                      we can't reliably say which one is mid-sync — name it
+                      only when there's exactly one connected provider. */}
+                  <span style={{ color: '#92400e', fontWeight: 600 }}>
+                    ↻ Syncing {connectedProviders.length === 1 ? (posProvider === 'clover' ? 'Clover' : posProvider === 'toast' ? 'Toast' : 'Square') + ' ' : ''}data… {syncProgress}%
+                  </span>
                 </div>
                 <div style={{ background: 'rgba(21,21,31,0.05)', borderRadius: '100px', height: 6 }}>
                   <div style={{ background: 'var(--violet)', borderRadius: '100px', height: 6, width: `${syncProgress}%`, transition: 'width 0.5s ease' }} />

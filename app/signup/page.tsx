@@ -97,7 +97,10 @@ export default function SignupPage() {
       </div>
 
       <p style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', marginTop: '1.5rem', textAlign: 'center', maxWidth: '360px' }}>
-        By creating an account you agree to our Terms of Service and Privacy Policy.
+        By creating an account you agree to our{' '}
+        <Link href="/terms" style={{ color: 'var(--violet-light)', textDecoration: 'underline' }}>Terms of Service</Link>{' '}
+        and{' '}
+        <Link href="/privacy" style={{ color: 'var(--violet-light)', textDecoration: 'underline' }}>Privacy Policy</Link>.
       </p>
     </div>
   )

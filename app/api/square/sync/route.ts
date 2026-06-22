@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { decrypt } from '@/lib/encryption'
+import { upsertPosCustomer } from '@/lib/customer-match'
 
 export async function POST(request: NextRequest) {
   const { authUserId } = await request.json()
@@ -49,18 +50,20 @@ export async function POST(request: NextRequest) {
       customerCursor = data.cursor
 
       if (customers.length > 0) {
-        const rows = customers.map((c: Record<string, any>) => ({
-          merchant_id: merchantId,
-          square_customer_id: c.id,
-          name: [c.given_name, c.family_name].filter(Boolean).join(' ') || null,
-          email: c.email_address || null,
-          phone: c.phone_number || null,
-          birthday: c.birthday || null,
-          created_at: c.created_at,
-          updated_at: new Date().toISOString(),
-        }))
-
-        await service.from('customers').upsert(rows, { onConflict: 'merchant_id,square_customer_id', ignoreDuplicates: false })
+        // One-by-one (not a bulk upsert) so each customer can be merged
+        // against an existing row from a different connected POS by
+        // phone/email — keeps a merchant's customer base unified even when
+        // Square, Clover, and Toast are all connected at once.
+        for (const c of customers as Record<string, any>[]) {
+          await upsertPosCustomer(service, merchantId, 'square', {
+            posCustomerId: c.id,
+            name: [c.given_name, c.family_name].filter(Boolean).join(' ') || null,
+            email: c.email_address || null,
+            phone: c.phone_number || null,
+            birthday: c.birthday || null,
+            createdAt: c.created_at,
+          })
+        }
         totalCustomers += customers.length
       }
     } while (customerCursor)

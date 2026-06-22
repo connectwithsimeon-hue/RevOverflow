@@ -17,6 +17,7 @@ import { WebhooksHelper } from 'square'
 import { createServiceClient } from '@/lib/supabase/server'
 import { decrypt } from '@/lib/encryption'
 import { attributeRevenueIfCampaignSent } from '@/lib/outcome'
+import { upsertPosCustomer } from '@/lib/customer-match'
 
 // ── Main handler ─────────────────────────────────────────────────────────────
 export async function POST(request: NextRequest) {
@@ -108,31 +109,25 @@ export async function POST(request: NextRequest) {
       .select('id')
       .eq('merchant_id', merchantId)
       .eq('square_customer_id', o.customer_id)
-      .single()
+      .maybeSingle()
 
     if (existingCustomer) {
       customerId = existingCustomer.id
     } else {
-      // Fetch customer details from Square and create them
+      // Fetch customer details from Square and create them — merged against
+      // any existing row from a different connected POS by phone/email.
       const custRes = await fetch(`${squareBase}/v2/customers/${o.customer_id}`, { headers })
       if (custRes.ok) {
         const { customer: c } = await custRes.json()
         if (c) {
-          const { data: newCustomer } = await service
-            .from('customers')
-            .upsert({
-              merchant_id: merchantId,
-              square_customer_id: c.id,
-              name: [c.given_name, c.family_name].filter(Boolean).join(' ') || null,
-              email: c.email_address || null,
-              phone: c.phone_number || null,
-              birthday: c.birthday || null,
-              created_at: c.created_at,
-              updated_at: new Date().toISOString(),
-            }, { onConflict: 'merchant_id,square_customer_id' })
-            .select('id')
-            .single()
-          customerId = newCustomer?.id ?? null
+          customerId = await upsertPosCustomer(service, merchantId, 'square', {
+            posCustomerId: c.id,
+            name: [c.given_name, c.family_name].filter(Boolean).join(' ') || null,
+            email: c.email_address || null,
+            phone: c.phone_number || null,
+            birthday: c.birthday || null,
+            createdAt: c.created_at,
+          })
         }
       }
     }

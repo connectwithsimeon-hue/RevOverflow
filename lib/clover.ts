@@ -2,9 +2,10 @@
  * Clover POS adapter — shared helpers
  *
  * Mirrors the Square adapter (app/api/square/*) so RevOverflow can pull
- * customers + orders from either POS into the same `customers` / `orders` /
- * `order_items` tables. Merchants connect ONE POS (Square or Clover) —
- * whichever they actually use.
+ * customers + orders from any connected POS into the same `customers` /
+ * `orders` / `order_items` tables. A merchant can connect Square, Clover,
+ * and Toast at once — lib/customer-match.ts merges by phone/email so the
+ * same real person doesn't end up as separate rows per POS.
  *
  * OAuth (v2):
  *   Authorize: {CLOVER_BASE_URL}/oauth/v2/authorize?client_id=...&redirect_uri=...

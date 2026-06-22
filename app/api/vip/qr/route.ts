@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import QRCode from 'qrcode'
+import { ensureVipSlug } from '@/lib/vip-slug'
 
 export async function GET(request: NextRequest) {
   const supabase = createClient()
@@ -24,18 +25,7 @@ export async function GET(request: NextRequest) {
   if (!merchant) return NextResponse.json({ error: 'No merchant' }, { status: 404 })
 
   // Auto-generate a slug if the merchant doesn't have one yet
-  let slug = merchant.vip_slug
-  if (!slug) {
-    slug = merchant.business_name
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-|-$/g, '')
-      .slice(0, 30)
-    // Ensure uniqueness by appending merchant id suffix
-    slug = `${slug}-${merchant.id.slice(0, 6)}`
-    await service.from('merchants').update({ vip_slug: slug }).eq('id', merchant.id)
-  }
+  const slug = await ensureVipSlug(service, merchant)
 
   const appUrl  = process.env.NEXT_PUBLIC_APP_URL ?? 'https://revoverflow.com'
   const vipUrl  = `${appUrl}/vip/${slug}`

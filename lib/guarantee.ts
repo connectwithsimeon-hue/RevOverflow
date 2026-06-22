@@ -5,15 +5,18 @@
  * in 60 days. If at day 60 revenue_recovered < 3 × monthly_plan_cost, the
  * merchant is eligible for a refund review.
  *
- * "Revenue recovered" = sum of order revenue from customers who were in the
- * at_risk or lapsed segment when a campaign was sent to them, and who
- * subsequently placed an order within 30 days of receiving that campaign.
- *
- * This is approximated via the outcome_log: every win-back send is logged,
- * and every subsequent order from that customer is attributed.
+ * "Revenue recovered" = control-group-verified incremental revenue across
+ * every campaign the merchant sent since activation. Each campaign holds out
+ * a control group that never receives the message; revenueRecovered only
+ * counts conversions above what that control group's own baseline rate
+ * predicts. This uses the exact same math as the Campaigns page
+ * (lib/attribution.ts), so the number that can trigger a refund is computed
+ * identically to the number merchants already see per-campaign — no naive
+ * "anyone who bought within 30 days" counting.
  */
 
 import { createServiceClient } from '@/lib/supabase/server'
+import { computeCampaignAttribution } from '@/lib/attribution'
 
 export const PLAN_MONTHLY_COST: Record<string, number> = {
   capture: 97,
@@ -44,7 +47,7 @@ export async function computeGuaranteeStatus(merchantId: string): Promise<Guaran
 
   const { data: merchant } = await service
     .from('merchants')
-    .select('plan, created_at, square_merchant_id')
+    .select('plan, created_at, square_merchant_id, clover_merchant_id, toast_restaurant_guid')
     .eq('id', merchantId)
     .single()
 
@@ -52,24 +55,47 @@ export async function computeGuaranteeStatus(merchantId: string): Promise<Guaran
 
   const plan = merchant.plan || 'capture'
   const planCost = PLAN_MONTHLY_COST[plan] ?? 97
-  const eligible = GUARANTEE_PLANS.has(plan) && !!merchant.square_merchant_id
+  const hasPosConnected = !!(merchant.square_merchant_id || merchant.clover_merchant_id || merchant.toast_restaurant_guid)
+
+  // The 3x guarantee is only a fair, mathematically defensible promise once
+  // Yara has enough reachable customers to actually run win-back campaigns
+  // against — this mirrors the dashboard's Mode A/B threshold (1,000+
+  // reachable). Below that, there isn't enough audience for 3x ROI to be a
+  // reasonable floor, so the merchant isn't eligible yet regardless of plan.
+  const REACHABLE_THRESHOLD = 1000
+  const { count: reachableCount } = await service
+    .from('customers')
+    .select('id', { count: 'exact', head: true })
+    .eq('merchant_id', merchantId)
+    .eq('is_reachable', true)
+
+  const eligible = GUARANTEE_PLANS.has(plan) && hasPosConnected && (reachableCount ?? 0) >= REACHABLE_THRESHOLD
 
   const startDate = new Date(merchant.created_at)
   const now = new Date()
   const daysSinceStart = Math.floor((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
   const daysRemaining = Math.max(0, 60 - daysSinceStart)
 
-  // Sum attributed revenue from outcome_log where action_type = 'revenue_attributed'
-  const { data: outcomeRows } = await service
-    .from('outcome_log')
-    .select('revenue_amount')
+  // Control-group-verified revenue: sum the incremental (control-adjusted)
+  // attributed revenue across every campaign this merchant has sent since
+  // activation, using the same formula as the Campaigns page.
+  const { data: campaignsSent } = await service
+    .from('campaigns')
+    .select('id')
     .eq('merchant_id', merchantId)
-    .eq('action_type', 'revenue_attributed')
-    .gte('created_at', startDate.toISOString())
+    .not('sent_at', 'is', null)
+    .gte('sent_at', startDate.toISOString())
 
-  const revenueRecovered = (outcomeRows ?? []).reduce((sum, r) => {
-    return sum + parseFloat(String(r.revenue_amount ?? 0))
-  }, 0)
+  let revenueRecovered = 0
+  for (const campaign of campaignsSent ?? []) {
+    const { data: sends } = await service
+      .from('campaign_sends')
+      .select('is_control_group, converted_at, conversion_value')
+      .eq('campaign_id', campaign.id)
+
+    const attribution = computeCampaignAttribution(sends)
+    if (attribution) revenueRecovered += attribution.attributedRevenue
+  }
 
   const targetRevenue = planCost * 3
   const roiMultiple = planCost > 0 ? revenueRecovered / planCost : 0

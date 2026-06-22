@@ -78,7 +78,7 @@ export default async function AdminPage() {
             <h1 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '1.75rem', marginBottom: '0.25rem' }}>
               🛡️ Admin Panel
             </h1>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>SiMaYa Labs · RevOverflow</p>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>RevOverflow</p>
           </div>
           <a href="/dashboard" style={{ color: 'var(--violet-light)', textDecoration: 'none', fontSize: '0.875rem' }}>← Back to dashboard</a>
         </div>
