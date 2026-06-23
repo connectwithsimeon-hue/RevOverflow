@@ -71,11 +71,8 @@ export default function DashboardSidebar({ active, plan }: { active: Route; plan
         textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', gap: '0.5rem',
         padding: '0 0.5rem', marginBottom: '2rem',
       }}>
-        <span style={{
-          width: 30, height: 30, borderRadius: '8px',
-          background: 'linear-gradient(135deg, #7C5CFC 0%, #a78bfa 100%)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.875rem', flexShrink: 0,
-        }}>✦</span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/ro-icon.png" alt="" width={30} height={30} style={{ borderRadius: '8px', flexShrink: 0 }} />
         <span>Rev<span style={{ color: 'var(--violet)' }}>Overflow</span></span>
       </Link>
 
