@@ -44,11 +44,22 @@ function FloatCard({ label, value, sub, subColor, anim, children }: {
   )
 }
 
+// Real POS logo with a clean text fallback until the image file is added to
+// /public. Drop square.svg / clover.svg / toast.svg into public/ and the real
+// marks appear automatically — no code change needed.
+function PosLogo({ name, src, h = 24 }: { name: string; src: string; h?: number }) {
+  const [err, setErr] = useState(false)
+  if (err) {
+    return <span style={{ fontWeight: 800, fontSize: '0.9375rem', color: 'var(--text-secondary)', letterSpacing: '0.01em' }}>{name}</span>
+  }
+  return <img src={src} alt={name} style={{ height: h, width: 'auto', objectFit: 'contain', opacity: 0.9 }} onError={() => setErr(true)} />
+}
+
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <div style={{ backgroundColor: 'var(--ink)', color: 'var(--text-primary)', minHeight: '100vh' }}>
+    <div style={{ backgroundColor: 'var(--ink)', color: 'var(--text-primary)', minHeight: '100vh', backgroundImage: 'radial-gradient(1000px 520px at 88% -8%, rgba(124,92,252,0.12), transparent 62%)', backgroundRepeat: 'no-repeat' }}>
       <style>{`
         @keyframes heroFloatA { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
         @keyframes heroFloatB { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
@@ -170,16 +181,16 @@ export default function Home() {
             <div className="flex flex-wrap gap-x-5 gap-y-2 justify-center lg:justify-start" style={{ marginTop: '1.125rem', color: 'var(--text-secondary)', fontSize: '0.8125rem', fontWeight: 500 }}>
               <span>✓ No credit card</span><span>✓ Setup in minutes</span><span>✓ Cancel anytime</span>
             </div>
-            <div className="flex items-center gap-4 justify-center lg:justify-start" style={{ marginTop: '1.5rem' }}>
+            <div className="flex items-center gap-4 justify-center lg:justify-start flex-wrap" style={{ marginTop: '1.5rem' }}>
               <span style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '100px', padding: '0.375rem 0.875rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Connect in minutes</span>
-              {['Square', 'Clover', 'Toast'].map((p) => (
-                <span key={p} style={{ fontWeight: 800, fontSize: '0.9375rem', color: 'var(--text-primary)', opacity: 0.55 }}>{p}</span>
-              ))}
+              <PosLogo name="Square" src="/square.png" h={20} />
+              <PosLogo name="Clover" src="/clover.png" h={20} />
+              <PosLogo name="Toast" src="/toast.png" h={20} />
             </div>
           </div>
 
           {/* Right: product dashboard mockup + floating stat cards */}
-          <div className="hidden lg:block" style={{ position: 'relative', paddingRight: 40 }}>
+          <div className="hidden md:block" style={{ position: 'relative', paddingRight: 40 }}>
             <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: '18px', boxShadow: '0 30px 60px -28px rgba(16,24,40,0.30)', overflow: 'hidden', animation: 'heroFloatA 8s ease-in-out infinite' }}>
 
               {/* Topbar */}
@@ -279,7 +290,7 @@ export default function Home() {
             </div>
 
             {/* Floating stat cards */}
-            <div style={{ position: 'absolute', top: 28, right: -8, display: 'flex', flexDirection: 'column', gap: 12, width: 150 }}>
+            <div className="hidden lg:flex" style={{ position: 'absolute', top: 28, right: -8, flexDirection: 'column', gap: 12, width: 150 }}>
               <FloatCard label="Revenue Generated" value="$21,350" anim="heroFloatB 9s ease-in-out infinite"><Sparkline color="#15803d" w={120} h={26} /></FloatCard>
               <FloatCard label="Campaigns Running" value="5" sub="● live" subColor="#15803d" anim="heroFloatC 10s ease-in-out infinite" />
               <FloatCard label="Customers Reached" value="2,374" anim="heroFloatB 11s ease-in-out infinite">
@@ -299,20 +310,13 @@ export default function Home() {
       {/* ── TRUST BAR ───────────────────────────────────────────────────────── */}
       <div style={{ borderTop: '1px solid var(--border)', padding: '2.5rem 0 1.5rem' }}>
         <div className="max-w-6xl mx-auto px-6">
-          <div style={{ textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.12em', marginBottom: '1.5rem' }}>
-            TRUSTED BY 1,000+ BUSINESSES TO GROW REVENUE
+          <div style={{ textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.12em', marginBottom: '1.25rem' }}>
+            WORKS WITH THE POS YOU ALREADY USE
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4" style={{ opacity: 0.55 }}>
-            {[
-              { name: 'Salon Azure', font: "'Plus Jakarta Sans', sans-serif", w: 700, ls: '0.02em' },
-              { name: 'Bubble & Bean', font: 'Georgia, serif', w: 700, ls: '0' },
-              { name: 'TRIM + TAME', font: "'Plus Jakarta Sans', sans-serif", w: 800, ls: '0.15em' },
-              { name: 'SOAK', font: 'Georgia, serif', w: 700, ls: '0.3em' },
-              { name: 'Sparkle', font: 'Georgia, serif', w: 700, ls: '0' },
-              { name: 'PURE', font: "'Plus Jakarta Sans', sans-serif", w: 400, ls: '0.35em' },
-            ].map((b) => (
-              <span key={b.name} style={{ fontFamily: b.font, fontWeight: b.w as number, letterSpacing: b.ls, fontSize: '1.0625rem', color: 'var(--text-primary)' }}>{b.name}</span>
-            ))}
+          <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-4">
+            <PosLogo name="Square" src="/square.png" h={26} />
+            <PosLogo name="Clover" src="/clover.png" h={26} />
+            <PosLogo name="Toast" src="/toast.png" h={26} />
           </div>
         </div>
       </div>
