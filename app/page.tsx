@@ -55,8 +55,11 @@ export default function Home() {
       <nav style={{ borderBottom: '1px solid var(--border)', position: 'sticky', top: 0, zIndex: 50 }}>
         <div style={{ backgroundColor: 'rgba(247,247,251,0.92)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)' }}>
           <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
-            <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '1.25rem' }}>
-              Rev<span style={{ color: 'var(--violet)' }}>Overflow</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <img src="/ro-icon.png" alt="RevOverflow" width={28} height={28} style={{ borderRadius: '8px' }} />
+              <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '1.25rem' }}>
+                Rev<span style={{ color: 'var(--violet)' }}>Overflow</span>
+              </span>
             </span>
 
             {/* Desktop links */}
@@ -434,8 +437,11 @@ export default function Home() {
       {/* ── FOOTER ──────────────────────────────────────────────────────────── */}
       <footer style={{ borderTop: '1px solid var(--border)', padding: '2.5rem 0' }}>
         <div className="max-w-6xl mx-auto px-6 flex flex-wrap items-center justify-between gap-4">
-          <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '1rem' }}>
-            Rev<span style={{ color: 'var(--violet)' }}>Overflow</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '0.4375rem' }}>
+            <img src="/ro-icon.png" alt="RevOverflow" width={22} height={22} style={{ borderRadius: '6px' }} />
+            <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '1rem' }}>
+              Rev<span style={{ color: 'var(--violet)' }}>Overflow</span>
+            </span>
           </span>
           <span style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem' }}>© 2026 RevOverflow. All rights reserved.</span>
           <div className="flex gap-6">

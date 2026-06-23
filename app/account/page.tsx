@@ -367,6 +367,103 @@ export default async function AccountPage() {
             )}
           </section>
 
+          {/* ── Branding ── */}
+          <section style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.75rem' }}>
+            <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+              🖼️ Branding
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '1.25rem', lineHeight: 1.6 }}>
+              Upload your logo and it'll be printed on your counter card and window sticker (Decals & Glass Prints).
+              If you don't upload one, those prints use the default RevOverflow logo instead.
+            </p>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+              <div style={{
+                width: 84, height: 84, borderRadius: '12px', border: '1px solid var(--border)',
+                backgroundColor: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                overflow: 'hidden', flexShrink: 0,
+              }}>
+                {merchant.logo_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={merchant.logo_url} alt="Your logo" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src="/ro-icon.png" alt="Default RevOverflow logo" style={{ width: 48, height: 48, objectFit: 'contain', opacity: 0.6 }} />
+                )}
+              </div>
+
+              <div style={{ flex: 1, minWidth: '240px' }}>
+                <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>
+                  {merchant.logo_url ? 'Your logo is in use on your prints.' : 'Using the default RevOverflow logo — upload yours to replace it.'}
+                </div>
+
+                <form
+                  action={async (formData: FormData) => {
+                    'use server'
+                    const { createServiceClient: sc, createClient: cc } = await import('@/lib/supabase/server')
+                    const sb = cc()
+                    const { data: { user: u } } = await sb.auth.getUser()
+                    if (!u) return
+                    const s = sc()
+                    const { data: m } = await s.from('merchants').select('id').eq('auth_user_id', u.id).single()
+                    if (!m) return
+
+                    const file = formData.get('logo') as File | null
+                    if (file && file.size > 0) {
+                      const LOGO_BUCKET = 'merchant-logos'
+                      await s.storage.createBucket(LOGO_BUCKET, { public: true }).catch(() => {})
+                      const ext = (file.name.split('.').pop() || 'png').toLowerCase()
+                      const path = `${m.id}/logo.${ext}`
+                      const buf = Buffer.from(await file.arrayBuffer())
+                      const { error: uploadError } = await s.storage
+                        .from(LOGO_BUCKET)
+                        .upload(path, buf, { contentType: file.type || 'image/png', upsert: true })
+                      if (!uploadError) {
+                        const { data: { publicUrl } } = s.storage.from(LOGO_BUCKET).getPublicUrl(path)
+                        // Cache-bust so the new logo shows immediately if the filename is unchanged
+                        await s.from('merchants').update({ logo_url: `${publicUrl}?v=${Date.now()}`, updated_at: new Date().toISOString() }).eq('id', m.id)
+                      }
+                    }
+                    const { redirect: r } = await import('next/navigation')
+                    r('/account?saved=logo')
+                  }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}
+                >
+                  <input
+                    type="file"
+                    name="logo"
+                    accept="image/png,image/jpeg,image/svg+xml,image/webp"
+                    style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}
+                  />
+                  <button type="submit" style={{ backgroundColor: 'var(--violet)', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 700, padding: '0.625rem 1.125rem', fontSize: '0.875rem', cursor: 'pointer', fontFamily: 'inherit' }}>
+                    Upload logo
+                  </button>
+                </form>
+
+                {merchant.logo_url && (
+                  <form
+                    action={async () => {
+                      'use server'
+                      const { createServiceClient: sc, createClient: cc } = await import('@/lib/supabase/server')
+                      const sb = cc()
+                      const { data: { user: u } } = await sb.auth.getUser()
+                      if (!u) return
+                      const s = sc()
+                      await s.from('merchants').update({ logo_url: null, updated_at: new Date().toISOString() }).eq('auth_user_id', u.id)
+                      const { redirect: r } = await import('next/navigation')
+                      r('/account?saved=logo-removed')
+                    }}
+                    style={{ marginTop: '0.625rem' }}
+                  >
+                    <button type="submit" style={{ background: 'transparent', color: 'var(--text-secondary)', border: 'none', textDecoration: 'underline', fontSize: '0.8125rem', cursor: 'pointer', fontFamily: 'inherit', padding: 0 }}>
+                      Remove logo and use default
+                    </button>
+                  </form>
+                )}
+              </div>
+            </div>
+          </section>
+
           {/* ── Referral Link ── */}
           <section style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.75rem' }}>
             <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.5rem' }}>

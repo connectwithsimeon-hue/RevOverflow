@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
   const service = createServiceClient()
   const { data: merchant } = await service
     .from('merchants')
-    .select('id, business_name, plan, vip_slug')
+    .select('id, business_name, plan, vip_slug, logo_url')
     .eq('auth_user_id', user.id)
     .single()
   if (!merchant) return NextResponse.json({ error: 'No merchant' }, { status: 404 })
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
   }
 
   // 3. Generate the design and upload it somewhere Gelato can fetch via URL
-  const svg = await generateDecalSvg({ businessName: merchant.business_name, vipUrl, productType })
+  const svg = await generateDecalSvg({ businessName: merchant.business_name, vipUrl, productType, logoUrl: merchant.logo_url })
   const path = `${merchant.id}/${order.id}.svg`
 
   // Bucket may not exist yet on a fresh project — create it (public, so

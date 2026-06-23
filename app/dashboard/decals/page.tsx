@@ -43,9 +43,9 @@ export default async function DecalsPage() {
               Turn walk-ins into reachable customers
             </h1>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem', maxWidth: '560px' }}>
-              A counter card (just sits by the register, no adhesive) or a window sticker, printed with your business
-              name and a QR code straight to your VIP signup page. Customers scan, sign up, and the next time they
-              pay you, Yara already has their contact info. Free with your plan — we print and ship it to you.
+              A counter card (just sits by the register, no adhesive) or a window sticker, printed with a QR code
+              straight to your VIP signup page. Customers scan, sign up, and the next time they pay you, Yara
+              already has their contact info. Free with your plan — we print and ship it to you.
             </p>
           </div>
 

@@ -113,7 +113,7 @@ export default function DecalOrderWidget({ merchantBusinessName, eligible }: { m
             >
               <div style={{ fontWeight: 700, fontSize: '0.9375rem', marginBottom: '0.25rem' }}>{PRODUCT_LABEL[type]}</div>
               <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
-                {type === 'table_decal' ? 'Paper card, just sits at the counter, 4×6 in' : 'Adhesive sticker for windows/doors, 8×8 in'}
+                {type === 'table_decal' ? 'Paper card, just sits at the counter, 4×6 in' : 'Adhesive sticker for windows/doors, 8×10 in'}
               </div>
             </button>
           ))}
