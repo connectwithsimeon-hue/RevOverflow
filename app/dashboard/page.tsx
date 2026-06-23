@@ -140,6 +140,12 @@ export default async function DashboardPage({
   // Guarantee status (runs fast — only reads outcome_log)
   const guarantee = await computeGuaranteeStatus(merchant.id)
 
+  // Revenue Recovered = the dollars Yara actually generated, control-group
+  // verified (same math as the Campaigns page). This is the North Star metric
+  // and leads the dashboard — never gross sales, which RevOverflow didn't cause.
+  const revenueRecovered = guarantee?.revenueRecovered ?? 0
+  const roiMultiple = guarantee?.roiMultiple ?? 0
+
   const hasScores = (segmentRows?.length || 0) > 0
 
   // ── Campaigns stats ───────────────────────────────────────────────────────
@@ -308,15 +314,21 @@ export default async function DashboardPage({
           <div className="grid grid-cols-2 gap-4">
             <KpiCard
               icon="💰" gradient="linear-gradient(135deg, #7C5CFC 0%, #a78bfa 100%)" accent="#7C5CFC"
-              label="Revenue This Month"
-              value={`$${thisMonthRev.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
-              trendPct={lastMonthRev > 0 ? revChange : undefined}
+              label="Revenue Recovered by Yara"
+              value={`$${revenueRecovered.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
+              footnote={
+                revenueRecovered > 0
+                  ? (guarantee?.eligible ? `${roiMultiple.toFixed(1)}× ROI · control-group verified` : 'control-group verified')
+                  : 'set a goal to get started'
+              }
+              footnoteColor={revenueRecovered > 0 ? '#15803d' : undefined}
             />
             <KpiCard
-              icon="👥" gradient="linear-gradient(135deg, #60a5fa 0%, #38bdf8 100%)" accent="#60a5fa"
-              label="Total Customers"
-              value={totalCustomers.toLocaleString()}
-              footnote={`${reachable.toLocaleString()} reachable`}
+              icon="📊" gradient="linear-gradient(135deg, #60a5fa 0%, #38bdf8 100%)" accent="#60a5fa"
+              label="Total Sales This Month"
+              value={`$${thisMonthRev.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`}
+              trendPct={lastMonthRev > 0 ? revChange : undefined}
+              footnote={`${totalCustomers.toLocaleString()} customers · ${reachable.toLocaleString()} reachable`}
             />
             <KpiCard
               icon="⚠️" gradient="linear-gradient(135deg, #fbbf24 0%, #fb923c 100%)" accent="#fbbf24"
@@ -336,6 +348,9 @@ export default async function DashboardPage({
           <ReachableBaseMeter reachable={reachable} total={totalCustomers} modeA={modeA} />
         </div>
 
+        {/* ── Goal Mode — the revenue loop leads the dashboard ──────────── */}
+        {isConnected && hasScores && <GoalModeWidget />}
+
         {/* ── Guarantee banner ──────────────────────────────────────────── */}
         {guarantee?.eligible && (
           <GuaranteeBanner {...guarantee} />
@@ -350,9 +365,6 @@ export default async function DashboardPage({
           hasVipSetup={hasVipSetup}
           reachable={reachable}
         />
-
-        {/* ── Goal Mode — autonomous execution toward revenue target ─────── */}
-        {isConnected && hasScores && <GoalModeWidget />}
 
         {/* ── Yara Trust Score (collapses to a header — expands on click) ── */}
         {isConnected && hasScores && <TrustScoreWidget />}

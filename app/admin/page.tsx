@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { PLAN_MONTHLY_COST } from '@/lib/guarantee'
 
 const ADMIN_EMAIL = 'cleanrideapp@gmail.com'
 
@@ -39,15 +40,37 @@ export default async function AdminPage() {
     countMap[row.merchant_id] = (countMap[row.merchant_id] ?? 0) + 1
   }
 
+  // Control-group-verified revenue Yara has generated across ALL merchants.
+  // One cheap query: incremental conversion value on non-control sends that
+  // actually converted (mirrors lib/attribution on the treated side).
+  const { data: convRows } = await service
+    .from('campaign_sends')
+    .select('conversion_value')
+    .eq('is_control_group', false)
+    .not('converted_at', 'is', null)
+  const totalRevenueRecovered = (convRows ?? []).reduce((s, r) => s + parseFloat(r.conversion_value ?? '0'), 0)
+
   const totalMerchants = merchants?.length ?? 0
   const totalCreditsOut = (ledger ?? []).filter(l => l.amount < 0).reduce((s, l) => s + Math.abs(l.amount), 0)
-  const paidMerchants = (merchants ?? []).filter(m => m.plan !== 'starter').length
+  const paidMerchants = (merchants ?? []).filter(m => m.plan && m.plan !== 'starter').length
+
+  // MRR = sum of each paying merchant's monthly plan cost.
+  const mrr = (merchants ?? []).reduce((s, m) => s + (PLAN_MONTHLY_COST[m.plan as string] ?? 0), 0)
+
+  // Active = merchant has finished an initial sync (data is live).
+  const activeMerchants = (merchants ?? []).filter(m => m.sync_status === 'complete').length
+
+  const fmtMoney = (n: number) =>
+    n.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 })
 
   function planBadge(plan: string) {
     const colors: Record<string, string> = {
       starter: '#6b7280',
-      brain: '#7c5cfc',
-      empire: '#f59e0b',
+      capture: '#0ea5e9',
+      core:    '#7c5cfc',
+      brain:   '#a855f7',
+      empire:  '#f59e0b',
+      network: '#ec4899',
     }
     return colors[plan] ?? '#6b7280'
   }
@@ -86,13 +109,15 @@ export default async function AdminPage() {
         {/* Summary cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '2.5rem' }}>
           {[
+            { label: 'Monthly recurring revenue', value: fmtMoney(mrr), accent: true },
+            { label: 'Revenue recovered for merchants', value: fmtMoney(totalRevenueRecovered), accent: true },
             { label: 'Total merchants', value: totalMerchants },
             { label: 'Paid plans', value: paidMerchants },
-            { label: 'Free (Starter)', value: totalMerchants - paidMerchants },
+            { label: 'Active (synced)', value: activeMerchants },
             { label: 'Credits used (last 50 txns)', value: totalCreditsOut.toLocaleString() },
           ].map(card => (
-            <div key={card.label} style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '14px', padding: '1.25rem 1.5rem' }}>
-              <div style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.25rem' }}>{card.value}</div>
+            <div key={card.label} style={{ backgroundColor: 'var(--surface)', border: card.accent ? '1px solid rgba(124,92,252,0.4)' : '1px solid var(--border)', borderRadius: '14px', padding: '1.25rem 1.5rem' }}>
+              <div style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.25rem', color: card.accent ? 'var(--violet-light)' : 'inherit' }}>{card.value}</div>
               <div style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem' }}>{card.label}</div>
             </div>
           ))}

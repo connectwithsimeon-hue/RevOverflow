@@ -132,16 +132,20 @@ export default function Home() {
 
           {/* Left: copy */}
           <div className="text-center lg:text-left">
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4375rem', background: 'rgba(124,92,252,0.1)', border: '1px solid rgba(124,92,252,0.25)', borderRadius: '100px', padding: '0.3125rem 0.875rem', marginBottom: '1.5rem' }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#4ade80', display: 'inline-block', animation: 'livePulse 2s infinite' }} />
+              <span style={{ color: 'var(--violet)', fontSize: '0.8125rem', fontWeight: 700 }}>Meet Yara — your AI Revenue Manager</span>
+            </div>
             <h1 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 'clamp(2.75rem, 4.5vw, 3.75rem)', fontWeight: 800, lineHeight: 1.08, letterSpacing: '-0.025em', margin: '0 0 1.5rem' }}>
-              Bring Back the<br />
+              Tell Yara your goal.<br />
               <span style={{ background: 'linear-gradient(135deg, #a78bfa 0%, #7C5CFC 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                Customers You Already Have.
+                She grows your revenue.
               </span>
             </h1>
             <p style={{ color: 'var(--text-secondary)', fontSize: '1.125rem', lineHeight: 1.75 }} className="max-w-none lg:max-w-[480px] mx-auto lg:mx-0 mb-10">
-              Connect your POS (Square, Clover, or Toast). Yara finds the customers who haven't come back,
-              writes them a personal message, and sends it automatically.
-              You see exactly how much revenue she brings in.
+              Connect Square, Clover, or Toast and tell Yara how much more you want to make this month.
+              She finds the opportunities, brings customers back, runs the promotions, and shows you
+              every dollar she generates. For less than the cost of one employee.
             </p>
             <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
               <Link href="/signup" style={{ backgroundColor: 'var(--violet)', color: '#fff', borderRadius: '10px', fontWeight: 700, padding: '0.9375rem 2.25rem', fontSize: '1.0625rem', textDecoration: 'none' }}>
@@ -162,14 +166,14 @@ export default function Home() {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4375rem' }}>
                   <span style={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: '#4ade80', display: 'inline-block', animation: 'livePulse 2s infinite' }} />
-                  <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Revenue This Month</div>
+                  <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Revenue Recovered by Yara</div>
                 </div>
-                <span style={{ background: 'rgba(74,222,128,0.12)', color: '#15803d', borderRadius: '6px', padding: '0.25rem 0.625rem', fontSize: '0.75rem', fontWeight: 700 }}>+41% vs last month</span>
+                <span style={{ background: 'rgba(74,222,128,0.12)', color: '#15803d', borderRadius: '6px', padding: '0.25rem 0.625rem', fontSize: '0.75rem', fontWeight: 700 }}>84% to goal</span>
               </div>
               <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '3rem', fontWeight: 800, lineHeight: 1, marginBottom: '0.375rem' }}>
-                $<AnimatedNumber target={12480} />
+                $<AnimatedNumber target={4200} />
               </div>
-              <div style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', marginBottom: '1.5rem' }}>$4,200 attributed directly to Yara campaigns</div>
+              <div style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', marginBottom: '1.5rem' }}>Goal: $5,000 this month · verified against a held-out control group</div>
               <div className="flex items-end gap-1" style={{ height: 52 }}>
                 {barHeights.map((h, i) => (
                   <div key={i} style={{
@@ -233,32 +237,32 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-6">
           <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
             <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 'clamp(1.875rem, 3.5vw, 2.75rem)', fontWeight: 800, marginBottom: '1rem' }}>
-              Set it up once. Yara works forever.
+              Tell Yara your goal. She does the rest.
             </h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: '1.0625rem', maxWidth: 520, margin: '0 auto' }}>
-              Measure who's worth reaching. Capture the ones your POS doesn't see. Recycle them into repeat revenue.
+              Connect once, set a revenue target, and let Yara work toward it 24/7 — with proof of every dollar.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {[
               {
-                step: '01 · Measure',
-                title: 'Yara measures every customer',
-                body: 'Connect your POS (Square, Clover, or Toast). Yara scores every customer by how recently and often they bought, and sets up a control group from day one — so every dollar she earns you is verifiable, not estimated.',
-                icon: '📊',
+                step: '01 · Connect',
+                title: 'Connect your POS, Yara learns your business',
+                body: 'Connect Square, Clover, or Toast in under 2 minutes. Yara instantly studies who your customers are, who is slipping away, and how much revenue is sitting in customers who stopped coming back.',
+                icon: '🔌',
               },
               {
-                step: '02 · Capture',
-                title: 'Capture the customers your POS misses',
-                body: 'Walk-ins and cash customers never make it into your POS. A VIP signup page and an in-store counter card or window sticker — printed and shipped to you — turn a QR scan into a name, email, and phone number Yara can use.',
+                step: '02 · Set your goal',
+                title: 'Tell Yara how much more you want to make',
+                body: 'Set a revenue goal for the month. Yara builds a plan to hit it — which customers to reach, what to offer, and the revenue each campaign is expected to bring in. You approve with one tap.',
                 icon: '🎯',
               },
               {
-                step: '03 · Recycle',
-                title: 'Recycle them into repeat revenue',
-                body: 'Yara sends personalized SMS and email automatically — win-back offers, birthdays, VIP perks — and shows you the revenue she recovers, net of what a held-out control group would have spent anyway.',
-                icon: '🔁',
+                step: '03 · Yara grows it',
+                title: 'Yara executes and proves the revenue',
+                body: 'Yara runs the win-backs, birthdays, and VIP offers automatically, then shows you Revenue Recovered — net of what a held-out control group would have spent anyway. Real dollars, not estimates.',
+                icon: '📈',
               },
             ].map((item) => (
               <div key={item.step} style={{ position: 'relative' }}>
@@ -421,11 +425,12 @@ export default function Home() {
       <section style={{ padding: '6rem 0', backgroundColor: 'var(--surface)', borderTop: '1px solid var(--border)' }}>
         <div className="max-w-2xl mx-auto px-6 text-center">
           <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 800, lineHeight: 1.15, marginBottom: '1.25rem' }}>
-            Your customers are out there.<br />
-            <span style={{ color: 'var(--violet)' }}>Yara will bring them back.</span>
+            Hire Yara today.<br />
+            <span style={{ color: 'var(--violet)' }}>Your AI Revenue Manager.</span>
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '1.0625rem', lineHeight: 1.75, marginBottom: '2.5rem' }}>
-            Connect your POS in 2 minutes. Yara scores your customers and gets to work the same day.
+            For less than the cost of one employee, Yara works 24/7 to grow your revenue.
+            Connect your POS in 2 minutes, set your goal, and she gets to work the same day.
             No technical setup. No contracts. 3× ROI in 60 days, or you're eligible for a refund.
           </p>
           <Link href="/signup" style={{ backgroundColor: 'var(--violet)', color: '#fff', borderRadius: '12px', fontWeight: 700, padding: '1rem 2.75rem', fontSize: '1.125rem', textDecoration: 'none', display: 'inline-block' }}>
@@ -445,8 +450,8 @@ export default function Home() {
           </span>
           <span style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem' }}>© 2026 RevOverflow. All rights reserved.</span>
           <div className="flex gap-6">
-            <a href="#" style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', textDecoration: 'none' }}>Privacy</a>
-            <a href="#" style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', textDecoration: 'none' }}>Terms</a>
+            <Link href="/privacy" style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', textDecoration: 'none' }}>Privacy</Link>
+            <Link href="/terms" style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', textDecoration: 'none' }}>Terms</Link>
           </div>
         </div>
       </footer>

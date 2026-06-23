@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'RevOverflow — We Bring Your Customers Back',
-  description: 'RevOverflow connects to your POS (Square, Clover, or Toast) and automatically wins back the customers who drifted away — with proof of every dollar it makes you.',
+  title: 'RevOverflow — Meet Yara, Your AI Revenue Manager',
+  description: 'Connect Square, Clover, or Toast and tell Yara your revenue goal. She finds the opportunities, brings customers back, runs the promotions, and proves every dollar she generates — for less than the cost of one employee.',
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://revoverflow.com'),
 }
 
