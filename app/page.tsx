@@ -19,6 +19,31 @@ function AnimatedNumber({ target, prefix = '', suffix = '' }: { target: number; 
   return <span>{prefix}{value.toLocaleString()}{suffix}</span>
 }
 
+// Small inline sparkline for the mockup stat cards.
+function Sparkline({ color = '#7C5CFC', w = 96, h = 30 }: { color?: string; w?: number; h?: number }) {
+  const pts = '0,25 12,21 24,23 36,15 48,17 60,9 72,12 84,4 96,6'
+  return (
+    <svg width={w} height={h} viewBox="0 0 96 30" preserveAspectRatio="none" style={{ display: 'block' }}>
+      <polygon points={`${pts} 96,30 0,30`} fill={color} opacity="0.12" />
+      <polyline points={pts} stroke={color} strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+// Floating mini stat card used along the right edge of the hero mockup.
+function FloatCard({ label, value, sub, subColor, anim, children }: {
+  label: string; value: string; sub?: string; subColor?: string; anim: string; children?: React.ReactNode
+}) {
+  return (
+    <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: 12, padding: '10px 12px', boxShadow: '0 12px 28px -14px rgba(16,24,40,0.25)', animation: anim }}>
+      <div style={{ fontSize: '0.5625rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: 3 }}>{label}</div>
+      <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '1.0625rem', lineHeight: 1 }}>{value}</div>
+      {sub && <div style={{ fontSize: '0.5625rem', fontWeight: 700, color: subColor || 'var(--text-secondary)', marginTop: 3 }}>{sub}</div>}
+      {children}
+    </div>
+  )
+}
+
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
@@ -113,75 +138,201 @@ export default function Home() {
           {/* Left: copy */}
           <div className="text-center lg:text-left">
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4375rem', background: 'rgba(124,92,252,0.1)', border: '1px solid rgba(124,92,252,0.25)', borderRadius: '100px', padding: '0.3125rem 0.875rem', marginBottom: '1.5rem' }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#4ade80', display: 'inline-block', animation: 'livePulse 2s infinite' }} />
+              <span style={{ color: 'var(--violet)', fontSize: '0.875rem' }}>✦</span>
               <span style={{ color: 'var(--violet)', fontSize: '0.8125rem', fontWeight: 700 }}>Meet Yara — your AI Revenue Manager</span>
             </div>
-            <h1 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 'clamp(2.75rem, 4.5vw, 3.75rem)', fontWeight: 800, lineHeight: 1.08, letterSpacing: '-0.025em', margin: '0 0 1.5rem' }}>
+            <h1 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 'clamp(2.5rem, 4.2vw, 3.5rem)', fontWeight: 800, lineHeight: 1.08, letterSpacing: '-0.025em', margin: '0 0 1.5rem' }}>
               Tell Yara your revenue goal.<br />
-              <span style={{ background: 'linear-gradient(135deg, #a78bfa 0%, #7C5CFC 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                She helps you hit it.
+              <span style={{ position: 'relative', display: 'inline-block' }}>
+                <span style={{ background: 'linear-gradient(135deg, #a78bfa 0%, #7C5CFC 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                  She helps you hit it.
+                </span>
+                <svg viewBox="0 0 300 12" preserveAspectRatio="none" style={{ position: 'absolute', left: 0, bottom: '-0.45rem', width: '100%', height: '0.7rem' }}>
+                  <path d="M3 8 C 80 2, 220 2, 297 7" stroke="#7C5CFC" strokeWidth="4" fill="none" strokeLinecap="round" />
+                </svg>
               </span>
             </h1>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '1.125rem', lineHeight: 1.75 }} className="max-w-none lg:max-w-[480px] mx-auto lg:mx-0 mb-10">
-              Connect Square, Clover, or Toast. Tell Yara how much revenue you want to generate this month,
-              and she&apos;ll identify opportunities, bring customers back, launch targeted promotions, and help
-              close the gap. Every action is tracked, so you can see exactly how much revenue she generates.
+            <p style={{ color: 'var(--text-secondary)', fontSize: '1.0625rem', lineHeight: 1.7 }} className="max-w-none lg:max-w-[480px] mx-auto lg:mx-0 mb-5">
+              Connect Square, Clover, or Toast and tell Yara how much revenue you want to generate this month.
+              She finds the opportunities, brings customers back, runs the promotions, and shows you every dollar she generates.
             </p>
-            <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
-              <Link href="/signup" style={{ backgroundColor: 'var(--violet)', color: '#fff', borderRadius: '10px', fontWeight: 700, padding: '0.9375rem 2.25rem', fontSize: '1.0625rem', textDecoration: 'none' }}>
-                Connect your POS — it's free to start
+            <div className="flex items-center gap-2 justify-center lg:justify-start mb-8" style={{ color: 'var(--violet)', fontWeight: 700, fontSize: '0.9375rem' }}>
+              <span>🛡️</span><span>For less than the cost of one employee.</span>
+            </div>
+            <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
+              <Link href="/signup" style={{ backgroundColor: 'var(--violet)', color: '#fff', borderRadius: '10px', fontWeight: 700, padding: '0.9375rem 1.875rem', fontSize: '1rem', textDecoration: 'none' }}>
+                Connect your POS — it&apos;s free to start →
               </Link>
-              <a href="#how-it-works" style={{ color: 'var(--text-secondary)', borderRadius: '10px', fontWeight: 600, padding: '0.9375rem 1.75rem', fontSize: '1.0625rem', border: '1px solid var(--border)', textDecoration: 'none' }}>
+              <a href="#how-it-works" style={{ color: 'var(--text-primary)', borderRadius: '10px', fontWeight: 600, padding: '0.9375rem 1.5rem', fontSize: '1rem', border: '1px solid var(--border)', textDecoration: 'none', background: 'var(--surface)' }}>
                 See how it works →
               </a>
             </div>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', marginTop: '1rem' }}>No credit card required · Setup in under 2 minutes</p>
+            <div className="flex flex-wrap gap-x-5 gap-y-2 justify-center lg:justify-start" style={{ marginTop: '1.125rem', color: 'var(--text-secondary)', fontSize: '0.8125rem', fontWeight: 500 }}>
+              <span>✓ No credit card</span><span>✓ Setup in minutes</span><span>✓ Cancel anytime</span>
+            </div>
+            <div className="flex items-center gap-4 justify-center lg:justify-start" style={{ marginTop: '1.5rem' }}>
+              <span style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '100px', padding: '0.375rem 0.875rem', fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Connect in minutes</span>
+              {['Square', 'Clover', 'Toast'].map((p) => (
+                <span key={p} style={{ fontWeight: 800, fontSize: '0.9375rem', color: 'var(--text-primary)', opacity: 0.55 }}>{p}</span>
+              ))}
+            </div>
           </div>
 
-          {/* Right: one clean goal card */}
-          <div className="flex justify-center lg:justify-end">
-            <div style={{ width: '100%', maxWidth: 380, backgroundColor: 'var(--surface)', border: '1px solid rgba(124,92,252,0.3)', borderRadius: '20px', padding: '2rem', boxShadow: '0 18px 44px -18px rgba(124,92,252,0.3)', animation: 'heroFloatA 7s ease-in-out infinite' }}>
+          {/* Right: product dashboard mockup + floating stat cards */}
+          <div className="hidden lg:block" style={{ position: 'relative', paddingRight: 40 }}>
+            <div style={{ background: '#fff', border: '1px solid var(--border)', borderRadius: '18px', boxShadow: '0 30px 60px -28px rgba(16,24,40,0.30)', overflow: 'hidden', animation: 'heroFloatA 8s ease-in-out infinite' }}>
 
-              {/* Header */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.75rem' }}>
-                <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#4ade80', display: 'inline-block', animation: 'livePulse 2s infinite' }} />
-                <span style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', fontWeight: 600 }}>Yara · working toward this month&apos;s goal</span>
+              {/* Topbar */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '11px 14px', borderBottom: '1px solid var(--border)' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <img src="/ro-icon.png" alt="" width={18} height={18} style={{ borderRadius: 5 }} />
+                  <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '0.8125rem' }}>Rev<span style={{ color: 'var(--violet)' }}>Overflow</span></span>
+                </span>
+                <span style={{ display: 'flex', gap: 6 }}>
+                  {['This month ▾', 'All locations ▾'].map((t) => (
+                    <span key={t} style={{ border: '1px solid var(--border)', borderRadius: 7, padding: '3px 8px', fontSize: '0.625rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{t}</span>
+                  ))}
+                </span>
               </div>
 
-              {/* Goal */}
-              <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.375rem' }}>Revenue goal</div>
-              <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>$5,000</div>
+              {/* Body: sidebar + main */}
+              <div style={{ display: 'flex' }}>
+                {/* Sidebar */}
+                <div style={{ width: 124, borderRight: '1px solid var(--border)', padding: '8px 6px', display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  {[
+                    { i: '🏠', l: 'Overview', a: true },
+                    { i: '✦', l: 'Opportunities' },
+                    { i: '📣', l: 'Campaigns' },
+                    { i: '👥', l: 'Customers' },
+                    { i: '📊', l: 'Revenue' },
+                    { i: '📄', l: 'Reports' },
+                    { i: '⚙️', l: 'Settings' },
+                  ].map((n) => (
+                    <div key={n.l} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 8px', borderRadius: 7, fontSize: '0.6875rem', fontWeight: n.a ? 700 : 500, color: n.a ? 'var(--violet)' : 'var(--text-secondary)', background: n.a ? 'rgba(124,92,252,0.1)' : 'transparent' }}>
+                      <span style={{ fontSize: '0.75rem' }}>{n.i}</span>{n.l}
+                    </div>
+                  ))}
+                  <div style={{ marginTop: 'auto', paddingTop: 10 }}>
+                    <div style={{ background: 'linear-gradient(135deg, rgba(124,92,252,0.12), rgba(124,92,252,0.04))', border: '1px solid rgba(124,92,252,0.2)', borderRadius: 9, padding: 8 }}>
+                      <div style={{ fontSize: '0.625rem', fontWeight: 700 }}>Yara <span style={{ color: '#4ade80' }}>●</span></div>
+                      <div style={{ fontSize: '0.5625rem', color: 'var(--text-secondary)', marginBottom: 4 }}>AI Revenue Manager</div>
+                      <Sparkline color="#7C5CFC" w={96} h={22} />
+                    </div>
+                  </div>
+                </div>
 
-              {/* Recovered so far */}
-              <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.375rem' }}>Generated so far</div>
-              <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '3.25rem', fontWeight: 800, lineHeight: 1, marginBottom: '1.25rem' }}>
-                $<AnimatedNumber target={4200} />
-              </div>
+                {/* Main */}
+                <div style={{ flex: 1, padding: '14px', minWidth: 0 }}>
+                  <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '0.9375rem' }}>Good morning, Alex 👋</div>
+                  <div style={{ color: 'var(--text-secondary)', fontSize: '0.6875rem', marginBottom: 12 }}>Here&apos;s how you&apos;re doing this month.</div>
 
-              {/* Progress bar */}
-              <div style={{ backgroundColor: 'rgba(21,21,31,0.06)', borderRadius: '100px', height: 10, overflow: 'hidden', marginBottom: '0.625rem' }}>
-                <div style={{ background: 'linear-gradient(90deg, #a78bfa, #7C5CFC)', borderRadius: '100px', height: 10, width: '84%' }} />
+                  {/* KPI row */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 12 }}>
+                    {[
+                      { l: 'Revenue Goal', v: '$25,000', s: 'Edit goal', sc: 'var(--violet)', icon: '🎯', ic: 'rgba(124,92,252,0.12)' },
+                      { l: 'Generated So Far', v: '$21,350', s: '85% to goal', sc: '#15803d', icon: '↑', ic: 'rgba(74,222,128,0.15)' },
+                      { l: 'Gap to Goal', v: '$3,650', s: '4 days left', sc: 'var(--text-secondary)', icon: '✦', ic: 'rgba(251,146,60,0.15)' },
+                    ].map((k) => (
+                      <div key={k.l} style={{ border: '1px solid var(--border)', borderRadius: 10, padding: '9px 10px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 5 }}>
+                          <span style={{ fontSize: '0.5625rem', color: 'var(--text-secondary)', fontWeight: 600 }}>{k.l}</span>
+                          <span style={{ width: 18, height: 18, borderRadius: 6, background: k.ic, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.625rem' }}>{k.icon}</span>
+                        </div>
+                        <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '1rem', lineHeight: 1 }}>{k.v}</div>
+                        <div style={{ fontSize: '0.5625rem', color: k.sc, fontWeight: 700, marginTop: 4 }}>{k.s}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Yara's Plan */}
+                  <div style={{ border: '1px solid var(--border)', borderRadius: 12, padding: '11px 12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                        <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '0.75rem' }}>Yara&apos;s Plan</span>
+                        <span style={{ background: 'var(--violet)', color: '#fff', borderRadius: 5, padding: '1px 5px', fontSize: '0.5rem', fontWeight: 800 }}>AI</span>
+                      </span>
+                      <span style={{ fontSize: '0.625rem', color: 'var(--violet)', fontWeight: 600 }}>View all</span>
+                    </div>
+                    <div style={{ fontSize: '0.625rem', color: 'var(--text-secondary)', marginBottom: 10 }}>Close the gap with these top opportunities.</div>
+
+                    {[
+                      { icon: '👥', ic: 'rgba(96,165,250,0.15)', t: 'Win back inactive customers', s: '312 customers · High chance to return', r: '$2,480' },
+                      { icon: '🎁', ic: 'rgba(244,114,182,0.15)', t: 'Launch birthday campaign', s: '128 upcoming birthdays', r: '$850' },
+                      { icon: '⭐', ic: 'rgba(251,191,36,0.15)', t: 'VIP promotion for top customers', s: '87 VIPs · Increase visit frequency', r: '$1,140' },
+                    ].map((row, idx) => (
+                      <div key={row.t} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0', borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}>
+                        <span style={{ width: 24, height: 24, borderRadius: 7, background: row.ic, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', flexShrink: 0 }}>{row.icon}</span>
+                        <span style={{ flex: 1, minWidth: 0 }}>
+                          <span style={{ display: 'block', fontWeight: 700, fontSize: '0.6875rem' }}>{row.t}</span>
+                          <span style={{ display: 'block', color: 'var(--text-secondary)', fontSize: '0.5625rem' }}>{row.s}</span>
+                        </span>
+                        <span style={{ textAlign: 'right', flexShrink: 0 }}>
+                          <span style={{ display: 'block', color: 'var(--text-secondary)', fontSize: '0.5rem' }}>Est. revenue</span>
+                          <span style={{ display: 'block', color: '#15803d', fontWeight: 800, fontSize: '0.75rem' }}>{row.r}</span>
+                        </span>
+                        <span style={{ border: '1px solid rgba(124,92,252,0.4)', color: 'var(--violet)', borderRadius: 6, padding: '3px 8px', fontSize: '0.5625rem', fontWeight: 700, flexShrink: 0 }}>Review</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8125rem', fontWeight: 600 }}>
-                <span style={{ color: '#15803d' }}>84% to goal</span>
-                <span style={{ color: 'var(--text-secondary)' }}>$800 to go</span>
-              </div>
+            </div>
+
+            {/* Floating stat cards */}
+            <div style={{ position: 'absolute', top: 28, right: -8, display: 'flex', flexDirection: 'column', gap: 12, width: 150 }}>
+              <FloatCard label="Revenue Generated" value="$21,350" anim="heroFloatB 9s ease-in-out infinite"><Sparkline color="#15803d" w={120} h={26} /></FloatCard>
+              <FloatCard label="Campaigns Running" value="5" sub="● live" subColor="#15803d" anim="heroFloatC 10s ease-in-out infinite" />
+              <FloatCard label="Customers Reached" value="2,374" anim="heroFloatB 11s ease-in-out infinite">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
+                  {['#7C5CFC', '#60a5fa', '#f472b6'].map((c, i) => (
+                    <span key={i} style={{ width: 18, height: 18, borderRadius: '50%', background: c, border: '2px solid #fff', marginLeft: i ? -8 : 0 }} />
+                  ))}
+                  <span style={{ fontSize: '0.625rem', color: 'var(--text-secondary)', fontWeight: 700, marginLeft: 2 }}>+2.1k</span>
+                </div>
+              </FloatCard>
+              <FloatCard label="ROI This Month" value="8.4×" anim="heroFloatC 12s ease-in-out infinite"><Sparkline color="#15803d" w={120} h={26} /></FloatCard>
             </div>
           </div>
         </div>
       </section>
 
       {/* ── TRUST BAR ───────────────────────────────────────────────────────── */}
-      <div style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '1.25rem 0', backgroundColor: 'var(--surface)' }}>
-        <div className="max-w-6xl mx-auto px-6 flex flex-wrap items-center justify-center gap-8">
+      <div style={{ borderTop: '1px solid var(--border)', padding: '2.5rem 0 1.5rem' }}>
+        <div className="max-w-6xl mx-auto px-6">
+          <div style={{ textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.12em', marginBottom: '1.5rem' }}>
+            TRUSTED BY 1,000+ BUSINESSES TO GROW REVENUE
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4" style={{ opacity: 0.55 }}>
+            {[
+              { name: 'Salon Azure', font: "'Plus Jakarta Sans', sans-serif", w: 700, ls: '0.02em' },
+              { name: 'Bubble & Bean', font: 'Georgia, serif', w: 700, ls: '0' },
+              { name: 'TRIM + TAME', font: "'Plus Jakarta Sans', sans-serif", w: 800, ls: '0.15em' },
+              { name: 'SOAK', font: 'Georgia, serif', w: 700, ls: '0.3em' },
+              { name: 'Sparkle', font: 'Georgia, serif', w: 700, ls: '0' },
+              { name: 'PURE', font: "'Plus Jakarta Sans', sans-serif", w: 400, ls: '0.35em' },
+            ].map((b) => (
+              <span key={b.name} style={{ fontFamily: b.font, fontWeight: b.w as number, letterSpacing: b.ls, fontSize: '1.0625rem', color: 'var(--text-primary)' }}>{b.name}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── FEATURE ROW ─────────────────────────────────────────────────────── */}
+      <div style={{ borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '1.75rem 0', backgroundColor: 'var(--surface)' }}>
+        <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            '✓ Works with Square, Clover & Toast',
-            '✓ No technical setup',
-            '✓ 3× ROI in 60 days, or you\'re eligible for a refund',
-            '✓ Cancel anytime',
-            '✓ TCPA compliant',
-          ].map(item => (
-            <span key={item} style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', fontWeight: 500 }}>{item}</span>
+            { icon: '📈', ic: 'rgba(124,92,252,0.12)', t: 'More Revenue', s: 'Focus on what matters most' },
+            { icon: '⚡', ic: 'rgba(74,222,128,0.15)', t: 'Save Time', s: 'Yara works 24/7 for you' },
+            { icon: '🛡️', ic: 'rgba(251,146,60,0.15)', t: 'Proven Results', s: 'See every dollar generated' },
+            { icon: '🔒', ic: 'rgba(96,165,250,0.15)', t: 'Enterprise Security', s: 'Your data is always protected' },
+          ].map((f) => (
+            <div key={f.t} className="flex items-center gap-3">
+              <span style={{ width: 40, height: 40, borderRadius: 10, background: f.ic, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.125rem', flexShrink: 0 }}>{f.icon}</span>
+              <span>
+                <span style={{ display: 'block', fontWeight: 700, fontSize: '0.875rem' }}>{f.t}</span>
+                <span style={{ display: 'block', color: 'var(--text-secondary)', fontSize: '0.75rem' }}>{f.s}</span>
+              </span>
+            </div>
           ))}
         </div>
       </div>
