@@ -76,9 +76,9 @@ export default function Home() {
             <button
               aria-label="Toggle menu"
               onClick={() => setMobileMenuOpen(v => !v)}
-              className="lg:hidden"
+              className="flex lg:hidden"
               style={{
-                width: 36, height: 36, display: 'flex', flexDirection: 'column',
+                width: 36, height: 36, flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center', gap: '5px',
                 background: 'none', border: 'none', cursor: 'pointer', padding: 0,
               }}
