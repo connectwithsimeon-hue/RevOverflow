@@ -19,27 +19,7 @@ function AnimatedNumber({ target, prefix = '', suffix = '' }: { target: number; 
   return <span>{prefix}{value.toLocaleString()}{suffix}</span>
 }
 
-// Weekly revenue bars for the hero preview. They grow in on load, then gently
-// drift up and down at random to feel like a live, ticking dashboard.
-const REVENUE_BARS = [28, 42, 36, 55, 40, 72, 58, 88, 64, 95, 78, 100]
-
-function useLiveBars(base: number[]) {
-  const [heights, setHeights] = useState<number[]>(() => base.map(() => 6))
-  useEffect(() => {
-    const intro = setTimeout(() => setHeights(base), 200)
-    const interval = setInterval(() => {
-      setHeights(() => base.map(h => {
-        const drift = (Math.random() - 0.5) * 14
-        return Math.max(14, Math.min(100, h + drift))
-      }))
-    }, 2600)
-    return () => { clearTimeout(intro); clearInterval(interval) }
-  }, [base])
-  return heights
-}
-
 export default function Home() {
-  const barHeights = useLiveBars(REVENUE_BARS)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
@@ -137,15 +117,15 @@ export default function Home() {
               <span style={{ color: 'var(--violet)', fontSize: '0.8125rem', fontWeight: 700 }}>Meet Yara — your AI Revenue Manager</span>
             </div>
             <h1 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 'clamp(2.75rem, 4.5vw, 3.75rem)', fontWeight: 800, lineHeight: 1.08, letterSpacing: '-0.025em', margin: '0 0 1.5rem' }}>
-              Tell Yara your goal.<br />
+              Tell Yara your revenue goal.<br />
               <span style={{ background: 'linear-gradient(135deg, #a78bfa 0%, #7C5CFC 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                She grows your revenue.
+                She helps you hit it.
               </span>
             </h1>
             <p style={{ color: 'var(--text-secondary)', fontSize: '1.125rem', lineHeight: 1.75 }} className="max-w-none lg:max-w-[480px] mx-auto lg:mx-0 mb-10">
-              Connect Square, Clover, or Toast and tell Yara how much more you want to make this month.
-              She finds the opportunities, brings customers back, runs the promotions, and shows you
-              every dollar she generates. For less than the cost of one employee.
+              Connect Square, Clover, or Toast. Tell Yara how much revenue you want to generate this month,
+              and she&apos;ll identify opportunities, bring customers back, launch targeted promotions, and help
+              close the gap. Every action is tracked, so you can see exactly how much revenue she generates.
             </p>
             <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
               <Link href="/signup" style={{ backgroundColor: 'var(--violet)', color: '#fff', borderRadius: '10px', fontWeight: 700, padding: '0.9375rem 2.25rem', fontSize: '1.0625rem', textDecoration: 'none' }}>
@@ -158,59 +138,33 @@ export default function Home() {
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', marginTop: '1rem' }}>No credit card required · Setup in under 2 minutes</p>
           </div>
 
-          {/* Right: live dashboard preview */}
-          <div className="flex flex-col gap-4">
+          {/* Right: one clean goal card */}
+          <div className="flex justify-center lg:justify-end">
+            <div style={{ width: '100%', maxWidth: 380, backgroundColor: 'var(--surface)', border: '1px solid rgba(124,92,252,0.3)', borderRadius: '20px', padding: '2rem', boxShadow: '0 18px 44px -18px rgba(124,92,252,0.3)', animation: 'heroFloatA 7s ease-in-out infinite' }}>
 
-            {/* Revenue card */}
-            <div style={{ backgroundColor: 'var(--surface)', border: '1px solid rgba(124,92,252,0.3)', borderRadius: '16px', padding: '1.75rem', boxShadow: '0 16px 40px -16px rgba(124,92,252,0.25)', animation: 'heroFloatA 7s ease-in-out infinite' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4375rem' }}>
-                  <span style={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: '#4ade80', display: 'inline-block', animation: 'livePulse 2s infinite' }} />
-                  <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Revenue Recovered by Yara</div>
-                </div>
-                <span style={{ background: 'rgba(74,222,128,0.12)', color: '#15803d', borderRadius: '6px', padding: '0.25rem 0.625rem', fontSize: '0.75rem', fontWeight: 700 }}>84% to goal</span>
+              {/* Header */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.75rem' }}>
+                <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#4ade80', display: 'inline-block', animation: 'livePulse 2s infinite' }} />
+                <span style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', fontWeight: 600 }}>Yara · working toward this month&apos;s goal</span>
               </div>
-              <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '3rem', fontWeight: 800, lineHeight: 1, marginBottom: '0.375rem' }}>
+
+              {/* Goal */}
+              <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.375rem' }}>Revenue goal</div>
+              <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>$5,000</div>
+
+              {/* Recovered so far */}
+              <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.375rem' }}>Generated so far</div>
+              <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '3.25rem', fontWeight: 800, lineHeight: 1, marginBottom: '1.25rem' }}>
                 $<AnimatedNumber target={4200} />
               </div>
-              <div style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', marginBottom: '1.5rem' }}>Goal: $5,000 this month · verified against a held-out control group</div>
-              <div className="flex items-end gap-1" style={{ height: 52 }}>
-                {barHeights.map((h, i) => (
-                  <div key={i} style={{
-                    flex: 1,
-                    height: `${h}%`,
-                    borderRadius: '3px 3px 0 0',
-                    backgroundColor: i >= 10 ? 'var(--violet)' : 'rgba(124,92,252,0.18)',
-                    transition: 'height 1s cubic-bezier(0.4,0,0.2,1)',
-                  }} />
-                ))}
-              </div>
-              <div style={{ color: 'var(--text-secondary)', fontSize: '0.7rem', marginTop: '0.375rem' }}>Last 12 weeks · bars = weekly revenue</div>
-            </div>
 
-            {/* Smaller stat cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.5rem', animation: 'heroFloatB 8s ease-in-out infinite', animationDelay: '0.3s' }}>
-                <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.625rem' }}>Customers won back</div>
-                <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '2.5rem', fontWeight: 800, lineHeight: 1 }}><AnimatedNumber target={127} /></div>
-                <div style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', marginTop: '0.25rem' }}>this month · 44% return rate</div>
-                <div style={{ marginTop: '0.75rem', backgroundColor: 'rgba(21,21,31,0.05)', borderRadius: '100px', height: 5 }}>
-                  <div style={{ backgroundColor: 'var(--violet)', borderRadius: '100px', height: 5, width: '44%' }} />
-                </div>
+              {/* Progress bar */}
+              <div style={{ backgroundColor: 'rgba(21,21,31,0.06)', borderRadius: '100px', height: 10, overflow: 'hidden', marginBottom: '0.625rem' }}>
+                <div style={{ background: 'linear-gradient(90deg, #a78bfa, #7C5CFC)', borderRadius: '100px', height: 10, width: '84%' }} />
               </div>
-              <div style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.5rem', animation: 'heroFloatC 9s ease-in-out infinite', animationDelay: '0.6s' }}>
-                <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.875rem' }}>Yara's latest messages</div>
-                {[
-                  { name: 'Maria T.', msg: 'Came back after 47 days · $68' },
-                  { name: 'James R.', msg: 'Used promo code · $112' },
-                  { name: 'Priya K.', msg: 'Birthday offer · $89' },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-2 mb-2 last:mb-0">
-                    <div style={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: '#4ade80', flexShrink: 0 }} />
-                    <span style={{ fontSize: '0.8125rem', fontWeight: 600 }}>{item.name}</span>
-                    <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem' }}>{item.msg}</span>
-                  </div>
-                ))}
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8125rem', fontWeight: 600 }}>
+                <span style={{ color: '#15803d' }}>84% to goal</span>
+                <span style={{ color: 'var(--text-secondary)' }}>$800 to go</span>
               </div>
             </div>
           </div>
