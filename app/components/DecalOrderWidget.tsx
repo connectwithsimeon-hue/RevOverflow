@@ -37,6 +37,9 @@ export default function DecalOrderWidget({ merchantBusinessName, eligible }: { m
   })
   const [submitting, setSubmitting] = useState(false)
   const [message, setMessage] = useState<{ type: 'ok' | 'error'; text: string } | null>(null)
+  const [previewKey, setPreviewKey] = useState(0)
+  const [previewLoaded, setPreviewLoaded] = useState(false)
+  const [previewError, setPreviewError] = useState(false)
 
   useEffect(() => {
     fetch('/api/decals')
@@ -44,6 +47,13 @@ export default function DecalOrderWidget({ merchantBusinessName, eligible }: { m
       .then(d => setOrders(d.orders ?? []))
       .finally(() => setLoadingOrders(false))
   }, [])
+
+  // Reset the preview's loading state whenever the product type changes so
+  // the spinner shows again while the new design renders.
+  useEffect(() => {
+    setPreviewLoaded(false)
+    setPreviewError(false)
+  }, [productType])
 
   function update(field: string, value: string) {
     setForm(prev => ({ ...prev, [field]: value }))
@@ -99,94 +109,144 @@ export default function DecalOrderWidget({ merchantBusinessName, eligible }: { m
           Order a print
         </h2>
 
-        <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem' }}>
-          {(['table_decal', 'glass_print'] as const).map(type => (
+        <div style={{ display: 'flex', gap: '1.75rem', flexWrap: 'wrap' }}>
+          <div style={{ flex: '1 1 320px', minWidth: 0 }}>
+            <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem' }}>
+              {(['table_decal', 'glass_print'] as const).map(type => (
+                <button
+                  key={type}
+                  onClick={() => setProductType(type)}
+                  style={{
+                    flex: 1, padding: '0.875rem 1rem', borderRadius: '10px', cursor: 'pointer',
+                    border: productType === type ? '2px solid var(--violet)' : '1px solid var(--border)',
+                    backgroundColor: productType === type ? 'rgba(124,92,252,0.08)' : 'var(--ink)',
+                    fontFamily: 'inherit', textAlign: 'left',
+                  }}
+                >
+                  <div style={{ fontWeight: 700, fontSize: '0.9375rem', marginBottom: '0.25rem' }}>{PRODUCT_LABEL[type]}</div>
+                  <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
+                    {type === 'table_decal' ? 'Paper card, just sits at the counter, 4×6 in' : 'Adhesive sticker for windows/doors, 8×10 in'}
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+              <div>
+                <label style={labelStyle}>Recipient name</label>
+                <input style={inputStyle} value={form.shippingName} onChange={e => update('shippingName', e.target.value)} />
+              </div>
+              <div>
+                <label style={labelStyle}>Email</label>
+                <input style={inputStyle} type="email" value={form.email} onChange={e => update('email', e.target.value)} />
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={labelStyle}>Address line 1</label>
+              <input style={inputStyle} value={form.addressLine1} onChange={e => update('addressLine1', e.target.value)} />
+            </div>
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={labelStyle}>Address line 2 (optional)</label>
+              <input style={inputStyle} value={form.addressLine2} onChange={e => update('addressLine2', e.target.value)} />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+              <div>
+                <label style={labelStyle}>City</label>
+                <input style={inputStyle} value={form.city} onChange={e => update('city', e.target.value)} />
+              </div>
+              <div>
+                <label style={labelStyle}>State</label>
+                <input style={inputStyle} value={form.state} onChange={e => update('state', e.target.value)} />
+              </div>
+              <div>
+                <label style={labelStyle}>ZIP / Postal code</label>
+                <input style={inputStyle} value={form.postCode} onChange={e => update('postCode', e.target.value)} />
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+              <div>
+                <label style={labelStyle}>Country (2-letter code)</label>
+                <input style={inputStyle} value={form.country} onChange={e => update('country', e.target.value.toUpperCase())} maxLength={2} />
+              </div>
+              <div>
+                <label style={labelStyle}>Phone (optional)</label>
+                <input style={inputStyle} value={form.phone} onChange={e => update('phone', e.target.value)} />
+              </div>
+            </div>
+
+            {message && (
+              <div style={{
+                marginBottom: '1rem', padding: '0.75rem 1rem', borderRadius: '8px', fontSize: '0.875rem',
+                backgroundColor: message.type === 'ok' ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
+                color: message.type === 'ok' ? '#10b981' : '#ef4444',
+                border: `1px solid ${message.type === 'ok' ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}`,
+              }}>
+                {message.text}
+              </div>
+            )}
+
             <button
-              key={type}
-              onClick={() => setProductType(type)}
+              onClick={submit}
+              disabled={submitting}
               style={{
-                flex: 1, padding: '0.875rem 1rem', borderRadius: '10px', cursor: 'pointer',
-                border: productType === type ? '2px solid var(--violet)' : '1px solid var(--border)',
-                backgroundColor: productType === type ? 'rgba(124,92,252,0.08)' : 'var(--ink)',
-                fontFamily: 'inherit', textAlign: 'left',
+                backgroundColor: 'var(--violet)', color: '#fff', border: 'none', borderRadius: '10px',
+                fontWeight: 700, padding: '0.75rem 1.5rem', fontSize: '0.9375rem', cursor: submitting ? 'default' : 'pointer',
+                opacity: submitting ? 0.6 : 1, fontFamily: 'inherit',
               }}
             >
-              <div style={{ fontWeight: 700, fontSize: '0.9375rem', marginBottom: '0.25rem' }}>{PRODUCT_LABEL[type]}</div>
-              <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
-                {type === 'table_decal' ? 'Paper card, just sits at the counter, 4×6 in' : 'Adhesive sticker for windows/doors, 8×10 in'}
-              </div>
+              {submitting ? 'Submitting…' : 'Order free print'}
             </button>
-          ))}
-        </div>
+          </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-          <div>
-            <label style={labelStyle}>Recipient name</label>
-            <input style={inputStyle} value={form.shippingName} onChange={e => update('shippingName', e.target.value)} />
-          </div>
-          <div>
-            <label style={labelStyle}>Email</label>
-            <input style={inputStyle} type="email" value={form.email} onChange={e => update('email', e.target.value)} />
+          <div style={{ flex: '0 1 260px', minWidth: '220px' }}>
+            <div style={{ position: 'sticky', top: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.625rem' }}>
+                <label style={{ ...labelStyle, marginBottom: 0 }}>Live preview</label>
+                <button
+                  onClick={() => { setPreviewLoaded(false); setPreviewError(false); setPreviewKey(k => k + 1) }}
+                  style={{
+                    fontSize: '0.75rem', fontWeight: 600, color: 'var(--violet)', background: 'none',
+                    border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'inherit',
+                  }}
+                  title="Refresh preview (e.g. after uploading a new logo)"
+                >
+                  Refresh
+                </button>
+              </div>
+              <div style={{
+                backgroundColor: '#f7f7fb', border: '1px solid var(--border)', borderRadius: '12px',
+                padding: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                minHeight: '220px', position: 'relative',
+              }}>
+                {!previewLoaded && !previewError && (
+                  <span style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>Rendering preview…</span>
+                )}
+                {previewError && (
+                  <span style={{ fontSize: '0.8125rem', color: '#ef4444', textAlign: 'center' }}>Couldn’t load preview. Try Refresh.</span>
+                )}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  key={`${productType}-${previewKey}`}
+                  src={`/api/decals/preview?productType=${productType}&t=${previewKey}`}
+                  alt={`Preview of your ${PRODUCT_LABEL[productType].toLowerCase()}`}
+                  onLoad={() => setPreviewLoaded(true)}
+                  onError={() => setPreviewError(true)}
+                  style={{
+                    maxWidth: '100%', maxHeight: '360px', borderRadius: '6px',
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+                    display: previewLoaded ? 'block' : 'none',
+                  }}
+                />
+              </div>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.625rem', lineHeight: 1.5 }}>
+                This is the exact design that gets printed and shipped — including your logo and real VIP QR code. Switch the product type above to preview the other size.
+              </p>
+            </div>
           </div>
         </div>
-
-        <div style={{ marginBottom: '1rem' }}>
-          <label style={labelStyle}>Address line 1</label>
-          <input style={inputStyle} value={form.addressLine1} onChange={e => update('addressLine1', e.target.value)} />
-        </div>
-        <div style={{ marginBottom: '1rem' }}>
-          <label style={labelStyle}>Address line 2 (optional)</label>
-          <input style={inputStyle} value={form.addressLine2} onChange={e => update('addressLine2', e.target.value)} />
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-          <div>
-            <label style={labelStyle}>City</label>
-            <input style={inputStyle} value={form.city} onChange={e => update('city', e.target.value)} />
-          </div>
-          <div>
-            <label style={labelStyle}>State</label>
-            <input style={inputStyle} value={form.state} onChange={e => update('state', e.target.value)} />
-          </div>
-          <div>
-            <label style={labelStyle}>ZIP / Postal code</label>
-            <input style={inputStyle} value={form.postCode} onChange={e => update('postCode', e.target.value)} />
-          </div>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
-          <div>
-            <label style={labelStyle}>Country (2-letter code)</label>
-            <input style={inputStyle} value={form.country} onChange={e => update('country', e.target.value.toUpperCase())} maxLength={2} />
-          </div>
-          <div>
-            <label style={labelStyle}>Phone (optional)</label>
-            <input style={inputStyle} value={form.phone} onChange={e => update('phone', e.target.value)} />
-          </div>
-        </div>
-
-        {message && (
-          <div style={{
-            marginBottom: '1rem', padding: '0.75rem 1rem', borderRadius: '8px', fontSize: '0.875rem',
-            backgroundColor: message.type === 'ok' ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)',
-            color: message.type === 'ok' ? '#10b981' : '#ef4444',
-            border: `1px solid ${message.type === 'ok' ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}`,
-          }}>
-            {message.text}
-          </div>
-        )}
-
-        <button
-          onClick={submit}
-          disabled={submitting}
-          style={{
-            backgroundColor: 'var(--violet)', color: '#fff', border: 'none', borderRadius: '10px',
-            fontWeight: 700, padding: '0.75rem 1.5rem', fontSize: '0.9375rem', cursor: submitting ? 'default' : 'pointer',
-            opacity: submitting ? 0.6 : 1, fontFamily: 'inherit',
-          }}
-        >
-          {submitting ? 'Submitting…' : 'Order free print'}
-        </button>
       </section>
 
       <section style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.75rem' }}>
