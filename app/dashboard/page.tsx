@@ -8,6 +8,7 @@ import { computeGuaranteeStatus } from '@/lib/guarantee'
 import YaraRecommendations from '@/app/components/YaraRecommendations'
 import TrustScoreWidget from '@/app/components/TrustScoreWidget'
 import GoalModeWidget from '@/app/components/GoalModeWidget'
+import AgentsWidget from '@/app/components/AgentsWidget'
 import DashboardSidebar from '@/app/components/DashboardSidebar'
 
 export const dynamic = 'force-dynamic'
@@ -403,6 +404,9 @@ export default async function DashboardPage({
 
         {/* ── Yara Recommendations (client component — fetches /api/insights) */}
         {isConnected && hasScores && <YaraRecommendations />}
+
+        {/* ── Yara's Revenue Agents (client component — fetches /api/agents) */}
+        {isConnected && hasScores && <AgentsWidget />}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
 
