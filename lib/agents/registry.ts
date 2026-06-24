@@ -62,7 +62,7 @@ async function loadContext(merchantId: string): Promise<AgentContext> {
   // scanning the whole history.
   const since = new Date(Date.now() - 180 * 86400000).toISOString()
 
-  const [{ data: customerRows }, { data: orderRows }, { data: itemRows }, { data: costRows }, { data: membershipRow }] = await Promise.all([
+  const [{ data: customerRows }, { data: orderRows }, { data: itemRows }, { data: costRows }, { data: membershipRow }, { data: reputationRow }] = await Promise.all([
     service
       .from('customers')
       .select('id, segment, rfv_score, total_orders, lifetime_value, avg_order_value, first_purchase_at, last_purchase_at, is_reachable, sms_opt_in, email_opt_in, birthday')
@@ -84,6 +84,11 @@ async function loadContext(merchantId: string): Promise<AgentContext> {
     service
       .from('memberships')
       .select('name, monthly_price, signup_url, current_members, active')
+      .eq('merchant_id', merchantId)
+      .maybeSingle(),
+    service
+      .from('reputation')
+      .select('google_place_id, rating, review_count, prev_rating, prev_review_count, recent_reviews')
       .eq('merchant_id', merchantId)
       .maybeSingle(),
   ])
@@ -128,6 +133,19 @@ async function loadContext(merchantId: string): Promise<AgentContext> {
       }
     : null
 
+  const reputation = reputationRow
+    ? {
+        connected: !!reputationRow.google_place_id,
+        rating: reputationRow.rating != null ? parseFloat(reputationRow.rating as string) : null,
+        reviewCount: (reputationRow.review_count as number | null) ?? null,
+        prevRating: reputationRow.prev_rating != null ? parseFloat(reputationRow.prev_rating as string) : null,
+        prevReviewCount: (reputationRow.prev_review_count as number | null) ?? null,
+        recentNegativeCount: Array.isArray(reputationRow.recent_reviews)
+          ? (reputationRow.recent_reviews as Array<{ rating: number }>).filter((r) => (r.rating ?? 5) <= 3).length
+          : 0,
+      }
+    : null
+
   return {
     merchantId,
     industry: merchant?.industry ?? null,
@@ -138,5 +156,6 @@ async function loadContext(merchantId: string): Promise<AgentContext> {
     orderItems,
     productCosts,
     membership,
+    reputation,
   }
 }

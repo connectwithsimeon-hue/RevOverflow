@@ -75,6 +75,7 @@ export interface AgentContext {
   orderItems: AgentOrderItem[]
   productCosts: Record<string, number>   // catalog_name -> unit cost (entered by merchant)
   membership: AgentMembership | null     // the merchant's defined membership offer, if any
+  reputation: AgentReputation | null     // Google reviews monitoring state, if connected
 }
 
 export interface AgentMembership {
@@ -82,6 +83,15 @@ export interface AgentMembership {
   monthlyPrice: number
   signupUrl: string | null
   currentMembers: number
+}
+
+export interface AgentReputation {
+  connected: boolean         // a Google listing is linked
+  rating: number | null
+  reviewCount: number | null
+  prevRating: number | null
+  prevReviewCount: number | null
+  recentNegativeCount: number // recent reviews at 3 stars or below
 }
 
 // ── Small shared helpers ───────────────────────────────────────────────────
