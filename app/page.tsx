@@ -20,10 +20,10 @@ const planItems = [
   { title: "VIP promotion for top customers", subtitle: "87 VIPs · increase visit frequency", revenue: "$1,140", icon: "⭐" },
 ];
 const valueItems = [
-  ["📈", "More Revenue", "Focus on what matters most"],
-  ["⚡", "Save Time", "Yara works 24/7 for you"],
-  ["🛡️", "Proven Results", "See every dollar generated"],
-  ["🔒", "Secure & Compliant", "Your data is always protected"],
+  ["/More_Revenue.png", "More Revenue", "Focus on what matters most"],
+  ["/Save_Time.png", "Save Time", "Yara works 24/7 for you"],
+  ["/Proven_Results.png", "Proven Results", "See every dollar generated"],
+  ["/Secure_Compliant.png", "Secure & Compliant", "Your data is always protected"],
 ];
 const steps: [string, string, string][] = [
   ["/Connect_Your_POS.png", "Connect your POS", "Securely connect Square, Clover, or Toast in minutes."],
@@ -262,11 +262,13 @@ export default function HomePage() {
       <section className="px-6">
         <div className="mx-auto grid max-w-7xl gap-4 rounded-3xl border border-slate-100 bg-white p-5 shadow-xl shadow-violet-50 md:grid-cols-4">
           {valueItems.map(([icon, title, desc]) => (
-            <div key={title} className="flex items-center gap-4 rounded-2xl p-4">
-              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-violet-50 text-xl">{icon}</div>
+            <div key={title} className="flex items-center gap-3 rounded-2xl p-4">
+              <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-violet-50">
+                <img src={icon} alt="" className="h-10 w-10 object-contain" />
+              </div>
               <div>
-                <p className="font-black">{title}</p>
-                <p className="text-sm text-slate-500">{desc}</p>
+                <p className="text-[15px] font-bold text-slate-900">{title}</p>
+                <p className="text-[13px] text-slate-500">{desc}</p>
               </div>
             </div>
           ))}
