@@ -282,10 +282,10 @@ export default function HomePage() {
           <div className="mt-12 grid gap-x-6 gap-y-10 md:grid-cols-5">
             {steps.map(([icon, title, desc], i) => (
               <div key={title} className="relative">
-                <div className="relative mb-5 flex h-16 w-16 items-center justify-center rounded-2xl border border-slate-100 bg-white shadow-sm">
-                  <img src={icon} alt="" className="h-10 w-10 object-contain" />
+                <div className="relative mb-5 flex h-20 w-20 items-center justify-center rounded-2xl border border-slate-100 bg-white shadow-sm">
+                  <img src={icon} alt="" className="h-14 w-14 object-contain" />
                   {i < steps.length - 1 && (
-                    <span className="absolute hidden -translate-y-1/2 md:block" style={{ top: "2rem", left: "5rem" }} aria-hidden="true">
+                    <span className="absolute hidden -translate-y-1/2 md:block" style={{ top: "2.5rem", left: "6rem" }} aria-hidden="true">
                       <svg width="40" height="12" viewBox="0 0 40 12" fill="none">
                         <line x1="0" y1="6" x2="30" y2="6" stroke="#c4b5fd" strokeWidth="2" strokeDasharray="4 4" />
                         <path d="M30 2 L36 6 L30 10" stroke="#c4b5fd" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
