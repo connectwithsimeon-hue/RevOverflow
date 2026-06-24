@@ -84,76 +84,111 @@ function RevenueLineChart() {
   );
 }
 
+function Spark({ color }: { color: string }) {
+  return (
+    <svg viewBox="0 0 100 26" preserveAspectRatio="none" className="mt-2 h-6 w-full">
+      <polygon points="0,20 14,16 28,18 42,11 56,14 70,7 84,9 100,3 100,26 0,26" fill={color} opacity="0.14" />
+      <polyline points="0,20 14,16 28,18 42,11 56,14 70,7 84,9 100,3" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+const kpiIcons = ["🎯", "📈", "⚡"];
+
 function DashboardMockup() {
   return (
-    <div className="relative rounded-[2rem] border border-violet-100 bg-white/90 p-5 shadow-2xl shadow-violet-100 backdrop-blur">
-      <div className="grid gap-4 lg:grid-cols-[150px_1fr_150px]">
-        <aside className="hidden rounded-3xl bg-slate-50 p-4 lg:block">
-          <img src="/ro-icon.png" alt="RevOverflow" className="mb-8 h-7 w-7 rounded-lg" />
+    <div className="rounded-3xl border border-violet-100 bg-white p-3.5 shadow-2xl shadow-violet-100">
+      <div className="grid gap-3 lg:grid-cols-[112px_1fr_124px]">
+        <aside className="hidden rounded-2xl bg-slate-50 p-2.5 lg:block">
+          <img src="/ro-icon.png" alt="" className="mb-4 h-6 w-6 rounded-md" />
           {["Overview", "Opportunities", "Campaigns", "Customers", "Revenue", "Reports", "Settings"].map((item, i) => (
-            <div key={item} className={`mb-2 rounded-xl px-3 py-3 text-xs font-semibold ${i === 0 ? "bg-violet-100 text-violet-700" : "text-slate-500"}`}>{item}</div>
+            <div key={item} className={`mb-1 rounded-lg px-2.5 py-1.5 text-[11px] font-semibold ${i === 0 ? "bg-violet-100 text-violet-700" : "text-slate-500"}`}>{item}</div>
           ))}
-          <div className="mt-10 rounded-2xl border border-violet-100 bg-white p-3">
-            <p className="text-xs font-bold text-slate-900">Yara 🟢</p>
-            <p className="text-[10px] text-slate-500">AI Revenue Manager</p>
-            <div className="mt-4 h-14 rounded-xl bg-gradient-to-t from-violet-200 to-white" />
+          <div className="mt-4 rounded-xl border border-violet-100 bg-white p-2.5">
+            <p className="text-[11px] font-bold text-slate-900">Yara 🟢</p>
+            <p className="text-[9px] text-slate-500">AI Revenue Manager</p>
+            <Spark color="#7c5cfc" />
           </div>
         </aside>
-        <main>
-          <div className="mb-6 flex items-center justify-between">
+
+        <main className="min-w-0">
+          <div className="mb-3 flex items-start justify-between gap-2">
             <div>
-              <h3 className="text-xl font-black text-slate-950">Good morning, Alex 👋</h3>
-              <p className="text-sm text-slate-500">Here’s how you’re doing this month.</p>
+              <h3 className="text-base font-black text-slate-950">Good morning, Alex 👋</h3>
+              <p className="text-[11px] text-slate-500">Here’s how you’re doing this month.</p>
             </div>
-            <div className="hidden gap-2 md:flex">
-              <span className="rounded-xl border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-500">This month</span>
-              <span className="rounded-xl border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-500">All locations</span>
+            <div className="hidden shrink-0 gap-1.5 sm:flex">
+              <span className="rounded-lg border border-slate-200 px-2 py-1 text-[9px] font-semibold text-slate-500">This month</span>
+              <span className="rounded-lg border border-slate-200 px-2 py-1 text-[9px] font-semibold text-slate-500">All locations</span>
             </div>
           </div>
-          <div className="grid gap-4 md:grid-cols-3">
-            {metrics.map((metric) => (
-              <div key={metric.label} className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-500">{metric.label}</p>
-                <p className="mt-3 text-2xl font-black text-slate-950">{metric.value}</p>
-                <p className="mt-2 text-xs font-bold text-violet-600">{metric.note}</p>
+
+          <div className="grid grid-cols-3 gap-2">
+            {metrics.map((metric, i) => (
+              <div key={metric.label} className="rounded-xl border border-slate-100 p-2.5">
+                <div className="flex items-start justify-between">
+                  <p className="text-[8px] font-bold uppercase tracking-wide text-slate-500">{metric.label}</p>
+                  <span className="grid h-4 w-4 place-items-center rounded-md bg-violet-50 text-[8px]">{kpiIcons[i]}</span>
+                </div>
+                <p className="mt-1 text-sm font-black text-slate-950">{metric.value}</p>
+                <p className={`mt-0.5 text-[9px] font-bold ${i === 0 ? "text-violet-600" : i === 1 ? "text-emerald-600" : "text-slate-500"}`}>{metric.note}</p>
               </div>
             ))}
           </div>
-          <div className="mt-5 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
-            <div className="mb-4 flex items-center justify-between">
-              <div>
-                <h4 className="font-black text-slate-950">Yara’s Plan <span className="rounded-full bg-violet-100 px-2 py-1 text-xs text-violet-700">AI</span></h4>
-                <p className="text-sm text-slate-500">Top opportunities to close your revenue gap.</p>
+
+          <div className="mt-3 rounded-2xl border border-slate-100 p-3">
+            <div className="mb-2 flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-black text-slate-950">Yara’s Plan</span>
+                <span className="rounded-md bg-violet-600 px-1.5 py-0.5 text-[8px] font-black text-white">AI</span>
               </div>
-              <span className="text-sm font-bold text-violet-600">View all</span>
+              <span className="text-[10px] font-bold text-violet-600">View all</span>
             </div>
-            <div className="space-y-3">
+            <p className="mb-2 text-[9px] text-slate-500">Top opportunities to close your revenue gap.</p>
+            <div className="space-y-2">
               {planItems.map((item) => (
-                <div key={item.title} className="flex items-center justify-between rounded-2xl border border-slate-100 p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="grid h-11 w-11 place-items-center rounded-2xl bg-violet-50">{item.icon}</div>
-                    <div>
-                      <p className="text-sm font-black text-slate-950">{item.title}</p>
-                      <p className="text-xs text-slate-500">{item.subtitle}</p>
-                    </div>
+                <div key={item.title} className="flex items-center gap-2 rounded-xl border border-slate-100 p-2">
+                  <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-violet-50 text-sm">{item.icon}</div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[11px] font-black text-slate-950">{item.title}</p>
+                    <p className="truncate text-[9px] text-slate-500">{item.subtitle}</p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-xs text-slate-500">Est. revenue</p>
-                    <p className="font-black text-emerald-600">{item.revenue}</p>
+                  <div className="shrink-0 text-right">
+                    <p className="text-[7px] text-slate-500">Est. revenue</p>
+                    <p className="text-[11px] font-black text-emerald-600">{item.revenue}</p>
                   </div>
+                  <span className="shrink-0 rounded-md border border-violet-300 px-2 py-1 text-[9px] font-bold text-violet-600">Review</span>
                 </div>
               ))}
             </div>
           </div>
         </main>
-        <aside className="hidden space-y-4 lg:block">
-          {[["Revenue Generated", "$21,350"], ["Campaigns Running", "5"], ["Customers Reached", "2,374"], ["ROI This Month", "8.4x"]].map(([label, value]) => (
-            <div key={label} className="rounded-2xl border border-violet-100 bg-white p-4 shadow-sm">
-              <p className="text-xs font-bold text-slate-500">{label}</p>
-              <p className="mt-2 text-xl font-black text-slate-950">{value}</p>
-              <div className="mt-4 h-8 rounded-xl bg-gradient-to-r from-violet-100 via-white to-emerald-100" />
+
+        <aside className="hidden space-y-2.5 lg:block">
+          <div className="rounded-xl border border-violet-100 p-2.5">
+            <p className="text-[9px] font-bold text-slate-500">Revenue Generated</p>
+            <p className="text-base font-black text-slate-950">$21,350</p>
+            <Spark color="#7c5cfc" />
+          </div>
+          <div className="rounded-xl border border-violet-100 p-2.5">
+            <p className="text-[9px] font-bold text-slate-500">Campaigns Running</p>
+            <p className="text-base font-black text-slate-950">5 <span className="align-middle text-[9px] text-emerald-600">● live</span></p>
+          </div>
+          <div className="rounded-xl border border-violet-100 p-2.5">
+            <p className="text-[9px] font-bold text-slate-500">Customers Reached</p>
+            <p className="text-base font-black text-slate-950">2,374</p>
+            <div className="mt-1.5 flex items-center">
+              {["#7c5cfc", "#60a5fa", "#f472b6"].map((c, i) => (
+                <span key={c} className="h-4 w-4 rounded-full border-2 border-white" style={{ background: c, marginLeft: i ? -7 : 0 }} />
+              ))}
+              <span className="ml-1 text-[9px] font-bold text-slate-500">+2.1k</span>
             </div>
-          ))}
+          </div>
+          <div className="rounded-xl border border-violet-100 p-2.5">
+            <p className="text-[9px] font-bold text-slate-500">ROI This Month</p>
+            <p className="text-base font-black text-slate-950">8.4x</p>
+            <Spark color="#059669" />
+          </div>
         </aside>
       </div>
     </div>
@@ -186,7 +221,7 @@ export default function HomePage() {
         <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[0.85fr_1.15fr]">
           <div>
             <div className="mb-6 inline-flex rounded-full border border-violet-200 bg-violet-50 px-4 py-2 text-sm font-bold text-violet-700">✨ Meet Yara — your AI Revenue Manager</div>
-            <h1 className="max-w-2xl text-5xl font-black leading-[1.02] tracking-tight text-slate-950 md:text-7xl">
+            <h1 className="max-w-2xl text-4xl font-black leading-[1.05] tracking-tight text-slate-950 md:text-6xl">
               Tell Yara Your Revenue Goal.
               <span className="block bg-gradient-to-r from-violet-500 to-violet-700 bg-clip-text text-transparent">She helps you hit it.</span>
             </h1>
