@@ -55,27 +55,39 @@ export function acquisitionAgent(ctx: AgentContext): AgentResult {
   const expectedNewCustomers = Math.floor(suggestedBudget / TARGET_CAC)
   const expectedRevenue = Math.round(expectedNewCustomers * avgLTV * FIRST_YEAR_RETENTION)
 
-  const recs: AgentRecommendation[] = [
-    {
-      title: `Launch a ${money(suggestedBudget)}/mo acquisition campaign`,
-      detail: `Your average customer is worth ${money(avgLTV)} over their lifetime. At a ${money(
-        TARGET_CAC,
-      )} target cost-per-customer, ${money(
-        suggestedBudget,
-      )}/mo could bring in about ${expectedNewCustomers} new customers and ${money(
-        expectedRevenue,
-      )} in first-year revenue.`,
-      estimatedRevenue: Math.round(expectedRevenue / 12),
-      cta: { label: 'Connect an ad account', href: '/dashboard' },
-    },
-  ]
+  // If the merchant has linked their OWN ad account, Yara pushes a lookalike
+  // audience to it and they run the ad (RevOverflow never touches ad spend).
+  if (ctx.adsConnected) {
+    return {
+      ...base,
+      status: 'active',
+      statusLabel: 'Active',
+      headline: `Audience synced — a ${money(suggestedBudget)}/mo campaign could add ~${expectedNewCustomers} customers.`,
+      recommendations: [
+        {
+          title: `Run a ${money(suggestedBudget)}/mo lookalike campaign`,
+          detail: `Your best-customer audience is synced to your ad account. Your average customer is worth ${money(avgLTV)}, so a ${money(suggestedBudget)}/mo budget at a ${money(TARGET_CAC)} target cost-per-customer could bring in about ${expectedNewCustomers} new customers and ${money(expectedRevenue)} in first-year revenue. You run and pay for the ad in your own account.`,
+          estimatedRevenue: Math.round(expectedRevenue / 12),
+          cta: { label: 'Review ad sync', href: '/account' },
+        },
+      ],
+    }
+  }
 
+  // Not connected yet — recommend linking an ad account (no money handled).
   return {
     ...base,
     status: 'active',
-    statusLabel: 'Ready to launch',
+    statusLabel: 'Connect ad account',
     headline: `Your average customer is worth ${money(avgLTV)} — acquisition is profitable.`,
-    recommendations: recs,
-    dataNeeded: 'Connect a Meta or Google ad account to let Yara execute and track spend.',
+    recommendations: [
+      {
+        title: 'Connect your ad account to start acquiring',
+        detail: `At a ${money(TARGET_CAC)} target cost-per-customer, ${money(suggestedBudget)}/mo could add ~${expectedNewCustomers} new customers and ${money(expectedRevenue)} in first-year revenue. Link your own Meta or Google ad account and Yara syncs a lookalike of your best customers to it — you run the ad, RevOverflow never touches your ad spend.`,
+        estimatedRevenue: Math.round(expectedRevenue / 12),
+        cta: { label: 'Connect an ad account', href: '/account' },
+      },
+    ],
+    dataNeeded: 'Link a Meta or Google ad account on the Account page so Yara can sync your audience.',
   }
 }

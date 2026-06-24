@@ -77,6 +77,7 @@ export interface AgentContext {
   membership: AgentMembership | null     // the merchant's defined membership offer, if any
   reputation: AgentReputation | null     // Google reviews monitoring state, if connected
   loyalty: AgentLoyalty | null           // the merchant's defined loyalty program, if any
+  adsConnected: boolean                  // merchant has linked a Meta or Google ad account
 }
 
 export interface AgentLoyalty {
