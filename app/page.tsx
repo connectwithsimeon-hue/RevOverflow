@@ -5,12 +5,12 @@ import PosLogo from "./components/PosLogo";
 import AgentIcon from "./components/AgentIcon";
 
 const agents: [string, string, string, string][] = [
-  ["/Win_Back_Agent.png", "/Reachable_Customers.png", "Win-Back Agent", "Finds customers who stopped visiting and brings them back."],
-  ["/VIP_Agent.png", "/Customer_Insights.png", "VIP Agent", "Increases visits and spend from your best customers."],
-  ["/Birthday_Agent.png", "/Smart_Campaigns.png", "Birthday Agent", "Captures high-converting birthday revenue, automatically."],
-  ["/Membership_Agent.png", "/Revenue_Goal_Tracking.png", "Membership Agent", "Turns your regulars into predictable recurring revenue."],
-  ["/Capacity_Agent.png", "/Save_Time.png", "Capacity Agent", "Fills your slow days by shifting demand off-peak."],
-  ["/Acquisition_Agent.png", "/AI_Powered_Opportunities.png", "Acquisition Agent", "Finds and brings in brand-new customers."],
+  ["/winBackAgent.png", "/Reachable_Customers.png", "Win-Back Agent", "Finds customers who stopped visiting and brings them back."],
+  ["/VipAgent.png", "/Customer_Insights.png", "VIP Agent", "Increases visits and spend from your best customers."],
+  ["/BirthdayAgent.png", "/Smart_Campaigns.png", "Birthday Agent", "Captures high-converting birthday revenue, automatically."],
+  ["/MembershipAgent.png", "/Revenue_Goal_Tracking.png", "Membership Agent", "Turns your regulars into predictable recurring revenue."],
+  ["/CapacityAgent.png", "/Save_Time.png", "Capacity Agent", "Fills your slow days by shifting demand off-peak."],
+  ["/AcquisitionAgent.png", "/AI_Powered_Opportunities.png", "Acquisition Agent", "Finds and brings in brand-new customers."],
 ];
 
 const navItems: [string, string][] = [
