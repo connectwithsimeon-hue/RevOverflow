@@ -7,7 +7,7 @@
 import Link from 'next/link'
 import { logout } from '@/app/actions/auth'
 
-type Route = 'dashboard' | 'campaigns' | 'customers' | 'products' | 'decals' | 'account'
+type Route = 'dashboard' | 'campaigns' | 'customers' | 'products' | 'membership' | 'decals' | 'account'
 
 const NAV: { key: Route; label: string; href: string; icon: JSX.Element }[] = [
   {
@@ -41,6 +41,14 @@ const NAV: { key: Route; label: string; href: string; icon: JSX.Element }[] = [
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" /><line x1="7" y1="7" x2="7.01" y2="7" />
+      </svg>
+    ),
+  },
+  {
+    key: 'membership', label: 'Membership', href: '/dashboard/membership',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 8v13H3V8" /><path d="M1 3h22v5H1z" /><path d="M10 12h4" />
       </svg>
     ),
   },

@@ -74,6 +74,14 @@ export interface AgentContext {
   orders: AgentOrder[]
   orderItems: AgentOrderItem[]
   productCosts: Record<string, number>   // catalog_name -> unit cost (entered by merchant)
+  membership: AgentMembership | null     // the merchant's defined membership offer, if any
+}
+
+export interface AgentMembership {
+  name: string
+  monthlyPrice: number
+  signupUrl: string | null
+  currentMembers: number
 }
 
 // ── Small shared helpers ───────────────────────────────────────────────────

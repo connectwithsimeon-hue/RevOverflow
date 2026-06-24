@@ -62,7 +62,7 @@ async function loadContext(merchantId: string): Promise<AgentContext> {
   // scanning the whole history.
   const since = new Date(Date.now() - 180 * 86400000).toISOString()
 
-  const [{ data: customerRows }, { data: orderRows }, { data: itemRows }, { data: costRows }] = await Promise.all([
+  const [{ data: customerRows }, { data: orderRows }, { data: itemRows }, { data: costRows }, { data: membershipRow }] = await Promise.all([
     service
       .from('customers')
       .select('id, segment, rfv_score, total_orders, lifetime_value, avg_order_value, first_purchase_at, last_purchase_at, is_reachable, sms_opt_in, email_opt_in, birthday')
@@ -81,6 +81,11 @@ async function loadContext(merchantId: string): Promise<AgentContext> {
       .from('product_costs')
       .select('catalog_name, unit_cost')
       .eq('merchant_id', merchantId),
+    service
+      .from('memberships')
+      .select('name, monthly_price, signup_url, current_members, active')
+      .eq('merchant_id', merchantId)
+      .maybeSingle(),
   ])
 
   const customers: AgentCustomer[] = (customerRows ?? []).map((c) => ({
@@ -114,6 +119,15 @@ async function loadContext(merchantId: string): Promise<AgentContext> {
   const productCosts: Record<string, number> = {}
   for (const c of costRows ?? []) productCosts[c.catalog_name] = parseFloat(c.unit_cost ?? '0')
 
+  const membership = membershipRow && membershipRow.active
+    ? {
+        name: membershipRow.name as string,
+        monthlyPrice: parseFloat(membershipRow.monthly_price ?? '0'),
+        signupUrl: (membershipRow.signup_url as string | null) ?? null,
+        currentMembers: (membershipRow.current_members as number) ?? 0,
+      }
+    : null
+
   return {
     merchantId,
     industry: merchant?.industry ?? null,
@@ -123,5 +137,6 @@ async function loadContext(merchantId: string): Promise<AgentContext> {
     orders,
     orderItems,
     productCosts,
+    membership,
   }
 }
