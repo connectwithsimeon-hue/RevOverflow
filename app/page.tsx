@@ -40,12 +40,6 @@ const features = [
   ["/Automated_Execution.png", "Automated Execution", "Yara runs approved campaigns so you can focus on your business."],
   ["/Reachable_Customers.png", "Reachable Customers", "Grow your customer base with QR capture and opt-in flows."],
 ];
-const topOpps: [string, string][] = [
-  ["Win back inactive", "$2,480"],
-  ["Birthday campaign", "$850"],
-  ["VIP promotion", "$1,140"],
-  ["Membership upgrade", "$2,950"],
-];
 const commandPoints = [
   "Real-time revenue tracking",
   "Revenue gap and forecast",
@@ -323,41 +317,81 @@ export default function HomePage() {
       </section>
 
       <section className="px-6 pb-24">
-        <div className="mx-auto grid max-w-7xl items-center gap-8 overflow-hidden rounded-[2rem] bg-slate-950 p-6 lg:grid-cols-2 lg:p-10">
-          <div className="p-4 text-white md:p-8">
-            <p className="text-xs font-black uppercase tracking-widest text-violet-300">Why RevOverflow</p>
+        <div className="mx-auto grid max-w-7xl items-center gap-8 overflow-hidden rounded-[2rem] bg-slate-950 p-6 lg:grid-cols-[0.8fr_1.2fr] lg:p-10">
+          <div className="p-2 text-white md:p-6">
+            <span className="inline-block rounded-full border border-white/15 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-violet-300">Why RevOverflow</span>
             <h2 className="mt-4 text-3xl font-bold tracking-tight">Not another marketing tool. A revenue solution.</h2>
-            <p className="mt-5 max-w-lg text-lg leading-8 text-slate-300">Most tools measure opens and clicks. RevOverflow measures revenue — and tells Yara exactly where to find more of it.</p>
+            <p className="mt-4 max-w-md text-base leading-7 text-slate-300">Most tools help you send campaigns. RevOverflow helps you close revenue gaps.</p>
           </div>
-          <div className="rounded-3xl bg-white p-5 shadow-2xl">
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-              {[["Revenue Goal", "$25,000", ""], ["Generated", "$21,350", "85% of goal"], ["Gap Remaining", "$3,650", "4 days left"], ["Forecast", "$24,600", "90% of goal"]].map(([l, v, s]) => (
-                <div key={l} className="rounded-2xl border border-slate-100 p-3">
-                  <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">{l}</p>
-                  <p className="mt-1 text-lg font-black text-slate-950">{v}</p>
-                  {s && <p className="text-[11px] font-bold text-emerald-600">{s}</p>}
-                </div>
-              ))}
-            </div>
-            <div className="mt-4 rounded-2xl border border-slate-100 p-4">
-              <div className="mb-2 flex items-center justify-between">
-                <p className="text-sm font-black text-slate-950">Revenue Over Time</p>
-                <p className="text-xs font-bold text-slate-500">Generated · <span className="text-violet-400">Forecast</span></p>
-              </div>
-              <RevenueLineChart />
-            </div>
-            <div className="mt-4 rounded-2xl border border-slate-100 p-4">
-              <p className="mb-3 text-sm font-black text-slate-950">Top Opportunities</p>
-              <div className="space-y-2">
-                {topOpps.map(([t, r]) => (
-                  <div key={t} className="flex items-center justify-between text-sm">
-                    <span className="text-slate-600">{t}</span>
-                    <span className="font-black text-emerald-600">{r}</span>
-                  </div>
+
+          {/* Product window mockup */}
+          <div className="overflow-hidden rounded-2xl bg-white shadow-2xl">
+            <div className="flex">
+              {/* icon rail */}
+              <div className="hidden w-9 shrink-0 flex-col items-center gap-3 border-r border-slate-100 py-4 sm:flex">
+                {["🏠", "✦", "📣", "👥", "📊", "📄", "⚙️"].map((d, i) => (
+                  <span key={i} className={`text-[11px] ${i === 0 ? "opacity-90" : "opacity-35"}`}>{d}</span>
                 ))}
-                <div className="flex items-center justify-between border-t border-slate-100 pt-2 text-sm">
-                  <span className="font-black text-slate-950">Total Potential</span>
-                  <span className="font-black text-violet-600">$7,420</span>
+              </div>
+
+              <div className="min-w-0 flex-1 p-4">
+                {/* header */}
+                <div className="mb-3 flex items-center justify-between gap-2">
+                  <span className="text-xs font-bold text-slate-900">Traditional Marketing Tools</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="rounded-lg border border-slate-200 px-2.5 py-1 text-[10px] font-semibold text-slate-500">RevOverflow ▾</span>
+                    <span className="grid h-6 w-6 place-items-center rounded-lg bg-violet-50 text-[9px]">🔒</span>
+                  </div>
+                </div>
+
+                {/* metric tiles */}
+                <div className="grid grid-cols-4 gap-2">
+                  {[["Revenue Goal", "$25,000", "Edit overrides", "text-violet-600"], ["Generated", "$21,350", "85% of goal", "text-emerald-600"], ["Gap Remaining", "$3,650", "4 days left", "text-slate-500"], ["Forecast", "$24,600", "90% of goal", "text-emerald-600"]].map(([l, v, s, c]) => (
+                    <div key={l} className="rounded-xl border border-slate-100 p-2.5">
+                      <p className="text-[8px] font-bold uppercase tracking-wide text-slate-500">{l}</p>
+                      <p className="mt-1 text-sm font-black text-slate-950">{v}</p>
+                      <p className={`mt-0.5 text-[8px] font-bold ${c}`}>{s}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* chart + opportunities */}
+                <div className="mt-3 grid gap-3 md:grid-cols-[1.4fr_1fr]">
+                  <div className="rounded-xl border border-slate-100 p-3">
+                    <div className="mb-2 flex items-center justify-between">
+                      <p className="text-[11px] font-bold text-slate-900">Revenue Over Time</p>
+                      <p className="text-[8px] font-semibold text-slate-500">— Generated · <span className="text-violet-400">- - Forecast</span></p>
+                    </div>
+                    <div className="flex gap-1.5">
+                      <div className="flex flex-col justify-between py-0.5 text-[7px] text-slate-400">
+                        <span>$30k</span><span>$20k</span><span>$10k</span><span>$0</span>
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <RevenueLineChart />
+                        <div className="mt-1 flex justify-between text-[7px] text-slate-400">
+                          <span>May 1</span><span>May 8</span><span>May 15</span><span>May 22</span><span>May 29</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl border border-slate-100 p-3">
+                    <p className="mb-2 text-[11px] font-bold text-slate-900">Top Opportunities</p>
+                    <div className="space-y-1.5">
+                      {[["👥", "Win back inactive", "$2,480"], ["🎁", "Birthday campaign", "$850"], ["⭐", "VIP promotion", "$1,140"], ["💎", "Membership upgrade", "$2,950"]].map(([ic, t, r]) => (
+                        <div key={t} className="flex items-center gap-1.5 text-[10px]">
+                          <span className="grid h-4 w-4 shrink-0 place-items-center rounded bg-violet-50 text-[8px]">{ic}</span>
+                          <span className="min-w-0 flex-1 truncate text-slate-600">{t}</span>
+                          <span className="shrink-0 font-black text-emerald-600">{r}</span>
+                        </div>
+                      ))}
+                      <div className="flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px]">
+                        <span className="font-black text-slate-950">Total Potential</span>
+                        <span className="font-black text-violet-600">$7,420</span>
+                      </div>
+                      <div className="mt-1 rounded-lg bg-violet-50 py-1.5 text-center text-[9px] font-bold text-violet-600">View all opportunities</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
