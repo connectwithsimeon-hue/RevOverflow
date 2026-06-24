@@ -62,7 +62,7 @@ async function loadContext(merchantId: string): Promise<AgentContext> {
   // scanning the whole history.
   const since = new Date(Date.now() - 180 * 86400000).toISOString()
 
-  const [{ data: customerRows }, { data: orderRows }, { data: itemRows }, { data: costRows }, { data: membershipRow }, { data: reputationRow }] = await Promise.all([
+  const [{ data: customerRows }, { data: orderRows }, { data: itemRows }, { data: costRows }, { data: membershipRow }, { data: reputationRow }, { data: loyaltyRow }] = await Promise.all([
     service
       .from('customers')
       .select('id, segment, rfv_score, total_orders, lifetime_value, avg_order_value, first_purchase_at, last_purchase_at, is_reachable, sms_opt_in, email_opt_in, birthday')
@@ -89,6 +89,11 @@ async function loadContext(merchantId: string): Promise<AgentContext> {
     service
       .from('reputation')
       .select('google_place_id, rating, review_count, prev_rating, prev_review_count, recent_reviews')
+      .eq('merchant_id', merchantId)
+      .maybeSingle(),
+    service
+      .from('loyalty_programs')
+      .select('reward_name, visits_required, active')
       .eq('merchant_id', merchantId)
       .maybeSingle(),
   ])
@@ -146,6 +151,13 @@ async function loadContext(merchantId: string): Promise<AgentContext> {
       }
     : null
 
+  const loyalty = loyaltyRow && loyaltyRow.active
+    ? {
+        rewardName: loyaltyRow.reward_name as string,
+        visitsRequired: (loyaltyRow.visits_required as number) ?? 10,
+      }
+    : null
+
   return {
     merchantId,
     industry: merchant?.industry ?? null,
@@ -157,5 +169,6 @@ async function loadContext(merchantId: string): Promise<AgentContext> {
     productCosts,
     membership,
     reputation,
+    loyalty,
   }
 }

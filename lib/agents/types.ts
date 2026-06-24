@@ -76,6 +76,12 @@ export interface AgentContext {
   productCosts: Record<string, number>   // catalog_name -> unit cost (entered by merchant)
   membership: AgentMembership | null     // the merchant's defined membership offer, if any
   reputation: AgentReputation | null     // Google reviews monitoring state, if connected
+  loyalty: AgentLoyalty | null           // the merchant's defined loyalty program, if any
+}
+
+export interface AgentLoyalty {
+  rewardName: string
+  visitsRequired: number
 }
 
 export interface AgentMembership {
