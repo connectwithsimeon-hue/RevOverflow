@@ -273,22 +273,29 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="how-it-works" className="px-6 py-24">
-        <div className="mx-auto max-w-7xl text-center">
-          <p className="text-xs font-black uppercase tracking-widest text-violet-600">How it works</p>
-          <h2 className="mt-3 text-4xl font-black tracking-tight">Set a goal. Yara does the rest.</h2>
-          <div className="mt-14 grid gap-x-4 gap-y-12 md:grid-cols-5">
+      <section id="how-it-works" className="px-6 py-20">
+        <div className="mx-auto max-w-6xl">
+          <div className="text-center">
+            <p className="text-xs font-bold uppercase tracking-widest text-violet-600">How it works</p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight">Set a goal. Yara does the rest.</h2>
+          </div>
+          <div className="mt-12 grid gap-x-6 gap-y-10 md:grid-cols-5">
             {steps.map(([icon, title, desc], i) => (
-              <div key={title} className="relative text-center">
-                <div className="relative mx-auto grid h-16 w-16 place-items-center rounded-3xl bg-violet-50">
-                  <img src={icon} alt="" className="h-11 w-11 object-contain" />
+              <div key={title} className="relative">
+                <div className="relative mb-5 flex h-16 w-16 items-center justify-center rounded-2xl border border-slate-100 bg-white shadow-sm">
+                  <img src={icon} alt="" className="h-10 w-10 object-contain" />
                   {i < steps.length - 1 && (
-                    <span className="absolute top-1/2 hidden -translate-y-1/2 text-2xl font-black text-violet-200 md:block" style={{ left: "calc(100% + 0.5rem)" }}>→</span>
+                    <span className="absolute hidden -translate-y-1/2 md:block" style={{ top: "2rem", left: "5rem" }} aria-hidden="true">
+                      <svg width="40" height="12" viewBox="0 0 40 12" fill="none">
+                        <line x1="0" y1="6" x2="30" y2="6" stroke="#c4b5fd" strokeWidth="2" strokeDasharray="4 4" />
+                        <path d="M30 2 L36 6 L30 10" stroke="#c4b5fd" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </span>
                   )}
                 </div>
-                <div className="mt-5 inline-block rounded-full bg-violet-100 px-3 py-1 text-xs font-black text-violet-700">Step {i + 1}</div>
-                <h3 className="mt-3 font-black">{title}</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-500">{desc}</p>
+                <div className="mb-2 flex h-6 w-6 items-center justify-center rounded-full bg-violet-600 text-xs font-bold text-white">{i + 1}</div>
+                <h3 className="text-[15px] font-bold text-slate-900">{title}</h3>
+                <p className="mt-1 text-[13px] leading-5 text-slate-500">{desc}</p>
               </div>
             ))}
           </div>
@@ -298,7 +305,7 @@ export default function HomePage() {
       <section id="features" className="px-6 pb-24">
         <div className="mx-auto max-w-7xl text-center">
           <p className="text-xs font-black uppercase tracking-widest text-violet-600">Built for local businesses</p>
-          <h2 className="mt-3 text-4xl font-black tracking-tight">Everything you need to grow revenue</h2>
+          <h2 className="mt-3 text-3xl font-bold tracking-tight">Everything you need to grow revenue</h2>
           <div className="mt-12 grid gap-5 md:grid-cols-3 lg:grid-cols-6">
             {features.map(([icon, title, desc]) => (
               <div key={title} className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
@@ -315,7 +322,7 @@ export default function HomePage() {
         <div className="mx-auto grid max-w-7xl items-center gap-8 overflow-hidden rounded-[2rem] bg-slate-950 p-6 lg:grid-cols-2 lg:p-10">
           <div className="p-4 text-white md:p-8">
             <p className="text-xs font-black uppercase tracking-widest text-violet-300">Why RevOverflow</p>
-            <h2 className="mt-4 text-4xl font-black tracking-tight">Not another marketing tool. A revenue solution.</h2>
+            <h2 className="mt-4 text-3xl font-bold tracking-tight">Not another marketing tool. A revenue solution.</h2>
             <p className="mt-5 max-w-lg text-lg leading-8 text-slate-300">Most tools measure opens and clicks. RevOverflow measures revenue — and tells Yara exactly where to find more of it.</p>
           </div>
           <div className="rounded-3xl bg-white p-5 shadow-2xl">
@@ -358,7 +365,7 @@ export default function HomePage() {
         <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2">
           <div>
             <p className="text-xs font-black uppercase tracking-widest text-violet-600">The command center</p>
-            <h2 className="mt-3 text-4xl font-black tracking-tight">Your business. Your goals. Yara keeps you on track.</h2>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight">Your business. Your goals. Yara keeps you on track.</h2>
             <p className="mt-5 max-w-lg text-lg leading-8 text-slate-600">See your revenue at a glance, track progress toward your goal, and watch Yara close the gap — all in one place.</p>
             <ul className="mt-7 space-y-4">
               {commandPoints.map((p) => (
@@ -378,7 +385,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl">
           <div className="mb-10 text-center">
             <p className="text-xs font-black uppercase tracking-widest text-violet-600">Simple pricing</p>
-            <h2 className="mt-3 text-4xl font-black tracking-tight">Choose the plan that fits your business</h2>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight">Choose the plan that fits your business</h2>
             <p className="mt-3 text-slate-500">Start free. Upgrade anytime. Cancel anytime.</p>
           </div>
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
@@ -403,7 +410,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-5xl">
           <div className="text-center">
             <p className="text-xs font-black uppercase tracking-widest text-violet-600">FAQ</p>
-            <h2 className="mt-3 text-4xl font-black tracking-tight">Frequently asked questions</h2>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight">Frequently asked questions</h2>
           </div>
           <div className="mt-10 grid gap-3 md:grid-cols-2">
             {faqs.map((q) => (
@@ -418,7 +425,7 @@ export default function HomePage() {
       <section className="px-6 pb-24">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 rounded-[2rem] bg-gradient-to-r from-violet-700 to-indigo-700 p-8 text-white shadow-2xl shadow-violet-200 md:flex-row md:p-12">
           <div>
-            <h2 className="text-3xl font-black">Ready to hit your revenue goal?</h2>
+            <h2 className="text-3xl font-bold">Ready to hit your revenue goal?</h2>
             <p className="mt-2 text-violet-100">Connect your POS in minutes and let Yara find your opportunities.</p>
           </div>
           <div className="flex gap-3">
@@ -431,9 +438,8 @@ export default function HomePage() {
       <footer className="bg-slate-950 px-6 py-14 text-white">
         <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-5">
           <div className="md:col-span-2">
-            <Link href="/" className="flex items-center gap-2.5">
-              <img src="/ro-icon-wp.png" alt="" className="h-9 w-auto" />
-              <img src="/ro-logo-wp.png" alt="RevOverflow" className="h-6 w-auto" />
+            <Link href="/" className="inline-block">
+              <span className="text-2xl font-extrabold tracking-tight text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>RevOverflow</span>
             </Link>
             <p className="mt-4 max-w-sm text-sm leading-6 text-slate-400">Yara is your AI Revenue Manager, helping local businesses grow revenue with the power of AI.</p>
           </div>
