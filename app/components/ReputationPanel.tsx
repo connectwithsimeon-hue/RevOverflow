@@ -10,6 +10,7 @@
 import { useEffect, useState } from 'react'
 
 interface Review { author: string; rating: number; text: string; relative: string }
+interface Candidate { placeId: string; name: string; address: string; rating: number | null; reviewCount: number | null }
 interface Reputation {
   google_place_id: string | null
   business_name: string | null
@@ -36,7 +37,12 @@ export default function ReputationPanel() {
   const [businessName, setBusinessName] = useState('')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [showHelp, setShowHelp] = useState(true)
+  const [showHelp, setShowHelp] = useState(false)
+  const [query, setQuery] = useState('')
+  const [candidates, setCandidates] = useState<Candidate[]>([])
+  const [searching, setSearching] = useState(false)
+  const [searched, setSearched] = useState(false)
+  const [showManual, setShowManual] = useState(false)
 
   useEffect(() => {
     fetch('/api/reputation')
@@ -51,18 +57,40 @@ export default function ReputationPanel() {
       .finally(() => setLoading(false))
   }, [])
 
-  async function connect() {
+  async function runSearch() {
+    if (!query.trim()) return
+    setSearching(true)
+    setSearched(false)
+    setCandidates([])
+    try {
+      const res = await fetch(`/api/reputation/search?q=${encodeURIComponent(query.trim())}`)
+      const d = await res.json()
+      setCandidates(d.candidates ?? [])
+      setConfigured(d.configured !== false)
+      setSearched(true)
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setSearching(false)
+    }
+  }
+
+  async function connectPlace(pid: string, name: string) {
     setSaving(true)
     try {
       const res = await fetch('/api/reputation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ placeId: placeId.trim(), businessName: businessName.trim() }),
+        body: JSON.stringify({ placeId: pid.trim(), businessName: name.trim() }),
       })
       const d = await res.json()
       if (d.error) { alert(d.error); return }
       setRep(d.reputation ?? null)
       setConfigured(d.configured !== false)
+      setPlaceId(pid)
+      setBusinessName(name)
+      setCandidates([])
+      setSearched(false)
     } catch (e) {
       console.error(e)
     } finally {
@@ -81,50 +109,103 @@ export default function ReputationPanel() {
     <div style={{ maxWidth: 680 }}>
       {/* Connect form */}
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '1.5rem', marginBottom: '1.5rem' }}>
-        <div style={{ fontWeight: 700, marginBottom: '1rem' }}>{connected ? 'Connected Google listing' : 'Connect your Google listing'}</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div>
-            <label style={labelStyle}>Business name</label>
-            <input style={inputStyle} value={businessName} onChange={(e) => setBusinessName(e.target.value)} placeholder="Your business name on Google" />
-          </div>
-          <div>
-            <label style={labelStyle}>Google Place ID</label>
-            <input style={inputStyle} value={placeId} onChange={(e) => setPlaceId(e.target.value)} placeholder="ChIJ…" />
+        <div style={{ fontWeight: 700, marginBottom: '0.25rem' }}>{connected ? 'Connected Google listing' : 'Find your business on Google'}</div>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', marginBottom: '1.25rem' }}>
+          {connected
+            ? `Connected to ${rep?.business_name || placeId}. Search again to change it.`
+            : 'Type your business name and city, then pick yours from the list — no Place ID needed.'}
+        </p>
 
-            <button
-              type="button"
-              onClick={() => setShowHelp((v) => !v)}
-              style={{ marginTop: '0.5rem', background: 'none', border: 'none', padding: 0, color: 'var(--violet)', fontWeight: 600, fontSize: '0.8125rem', cursor: 'pointer', fontFamily: 'inherit' }}
-            >
-              {showHelp ? '▾' : '▸'} How do I find my Place ID? (30 seconds)
-            </button>
-
-            {showHelp && (
-              <div style={{ marginTop: '0.625rem', background: 'rgba(124,92,252,0.06)', border: '1px solid rgba(124,92,252,0.2)', borderRadius: 12, padding: '1rem' }}>
-                <ol style={{ margin: '0 0 0.875rem', paddingLeft: '1.25rem', fontSize: '0.8125rem', color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-                  <li>Click <strong>Open Place ID Finder</strong> below (opens in a new tab).</li>
-                  <li>In the search box on the map, type your <strong>business name and city</strong> — e.g. &quot;Sparkle Car Wash, Austin&quot;.</li>
-                  <li>Click your business on the map. A small box pops up showing your <strong>Place ID</strong>.</li>
-                  <li>Copy the long ID that starts with <code style={{ background: 'rgba(0,0,0,0.05)', padding: '0 4px', borderRadius: 4 }}>ChIJ…</code> and paste it in the box above.</li>
-                </ol>
-                <a
-                  href="https://developers.google.com/maps/documentation/places/web-service/place-id"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ display: 'inline-block', background: 'var(--violet)', color: '#fff', borderRadius: 8, padding: '0.5rem 1rem', fontWeight: 700, fontSize: '0.8125rem', textDecoration: 'none' }}
-                >
-                  Open Place ID Finder →
-                </a>
-                <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.625rem', marginBottom: 0 }}>
-                  It&apos;s free and needs no login. Tip: it&apos;s the same business listing customers see when they Google you.
-                </p>
-              </div>
-            )}
-          </div>
-          <button onClick={connect} disabled={saving || !placeId.trim()} style={{ alignSelf: 'flex-start', background: 'var(--violet)', color: '#fff', border: 'none', borderRadius: 10, padding: '0.75rem 1.75rem', fontWeight: 700, fontSize: '0.9375rem', cursor: saving || !placeId.trim() ? 'default' : 'pointer', opacity: saving || !placeId.trim() ? 0.6 : 1, fontFamily: 'inherit' }}>
-            {saving ? 'Connecting…' : connected ? 'Update listing' : 'Connect & check reviews'}
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <input
+            style={{ ...inputStyle, flex: 1, minWidth: 220 }}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') runSearch() }}
+            placeholder="e.g. Sparkle Car Wash, Austin"
+          />
+          <button
+            onClick={runSearch}
+            disabled={searching || !query.trim()}
+            style={{ background: 'var(--violet)', color: '#fff', border: 'none', borderRadius: 10, padding: '0.625rem 1.5rem', fontWeight: 700, fontSize: '0.9375rem', cursor: searching || !query.trim() ? 'default' : 'pointer', opacity: searching || !query.trim() ? 0.6 : 1, fontFamily: 'inherit' }}
+          >
+            {searching ? 'Searching…' : 'Search'}
           </button>
         </div>
+
+        {searched && configured === false && (
+          <p style={{ fontSize: '0.8125rem', color: '#92400e', marginTop: '0.75rem' }}>
+            Business search switches on once a Google Places API key is added to the app environment.
+          </p>
+        )}
+
+        {candidates.length > 0 && (
+          <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {candidates.map((c) => (
+              <div key={c.placeId} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', border: '1px solid var(--border)', borderRadius: 12, padding: '0.75rem 1rem' }}>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontWeight: 600, fontSize: '0.9375rem' }}>{c.name}</div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{c.address}</div>
+                  {c.rating != null && <div style={{ fontSize: '0.75rem', color: '#f59e0b', fontWeight: 600 }}>★ {c.rating} · {(c.reviewCount ?? 0).toLocaleString()} reviews</div>}
+                </div>
+                <button
+                  onClick={() => connectPlace(c.placeId, c.name)}
+                  disabled={saving}
+                  style={{ flexShrink: 0, background: 'var(--violet)', color: '#fff', border: 'none', borderRadius: 8, padding: '0.5rem 1rem', fontWeight: 700, fontSize: '0.8125rem', cursor: saving ? 'default' : 'pointer', opacity: saving ? 0.6 : 1, fontFamily: 'inherit' }}
+                >
+                  This is us →
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {searched && candidates.length === 0 && configured !== false && (
+          <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', marginTop: '0.75rem' }}>
+            No matches found. Try adding your city, or use the manual option below.
+          </p>
+        )}
+
+        {/* Manual Place ID fallback */}
+        <button
+          type="button"
+          onClick={() => setShowManual((v) => !v)}
+          style={{ marginTop: '1.25rem', background: 'none', border: 'none', padding: 0, color: 'var(--text-secondary)', fontWeight: 600, fontSize: '0.8125rem', cursor: 'pointer', fontFamily: 'inherit' }}
+        >
+          {showManual ? '▾' : '▸'} Or enter your Place ID manually
+        </button>
+
+        {showManual && (
+          <div style={{ marginTop: '0.875rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div>
+              <label style={labelStyle}>Business name</label>
+              <input style={inputStyle} value={businessName} onChange={(e) => setBusinessName(e.target.value)} placeholder="Your business name on Google" />
+            </div>
+            <div>
+              <label style={labelStyle}>Google Place ID</label>
+              <input style={inputStyle} value={placeId} onChange={(e) => setPlaceId(e.target.value)} placeholder="ChIJ…" />
+              <button type="button" onClick={() => setShowHelp((v) => !v)} style={{ marginTop: '0.5rem', background: 'none', border: 'none', padding: 0, color: 'var(--violet)', fontWeight: 600, fontSize: '0.8125rem', cursor: 'pointer', fontFamily: 'inherit' }}>
+                {showHelp ? '▾' : '▸'} How do I find my Place ID?
+              </button>
+              {showHelp && (
+                <div style={{ marginTop: '0.625rem', background: 'rgba(124,92,252,0.06)', border: '1px solid rgba(124,92,252,0.2)', borderRadius: 12, padding: '1rem' }}>
+                  <ol style={{ margin: '0 0 0.875rem', paddingLeft: '1.25rem', fontSize: '0.8125rem', color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                    <li>Open the Place ID Finder below.</li>
+                    <li>Type your <strong>business name and city</strong>.</li>
+                    <li>Click your business; a box shows your <strong>Place ID</strong>.</li>
+                    <li>Copy the ID starting with <code style={{ background: 'rgba(0,0,0,0.05)', padding: '0 4px', borderRadius: 4 }}>ChIJ…</code> and paste it above.</li>
+                  </ol>
+                  <a href="https://developers.google.com/maps/documentation/places/web-service/place-id" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', background: 'var(--violet)', color: '#fff', borderRadius: 8, padding: '0.5rem 1rem', fontWeight: 700, fontSize: '0.8125rem', textDecoration: 'none' }}>
+                    Open Place ID Finder →
+                  </a>
+                </div>
+              )}
+            </div>
+            <button onClick={() => connectPlace(placeId, businessName)} disabled={saving || !placeId.trim()} style={{ alignSelf: 'flex-start', background: 'var(--violet)', color: '#fff', border: 'none', borderRadius: 10, padding: '0.75rem 1.75rem', fontWeight: 700, fontSize: '0.9375rem', cursor: saving || !placeId.trim() ? 'default' : 'pointer', opacity: saving || !placeId.trim() ? 0.6 : 1, fontFamily: 'inherit' }}>
+              {saving ? 'Connecting…' : 'Connect with Place ID'}
+            </button>
+          </div>
+        )}
       </div>
 
       {!configured && connected && (

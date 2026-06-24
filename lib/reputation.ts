@@ -12,7 +12,37 @@
 import { createServiceClient } from '@/lib/supabase/server'
 
 const PLACES_DETAILS_URL = 'https://maps.googleapis.com/maps/api/place/details/json'
+const PLACES_TEXTSEARCH_URL = 'https://maps.googleapis.com/maps/api/place/textsearch/json'
 const STALE_MS = 12 * 60 * 60 * 1000 // refresh at most every 12h
+
+export interface PlaceCandidate {
+  placeId: string
+  name: string
+  address: string
+  rating: number | null
+  reviewCount: number | null
+}
+
+/** Search for a business by name (+ city) so merchants never touch a Place ID. */
+export async function searchPlaces(query: string): Promise<PlaceCandidate[]> {
+  const key = process.env.GOOGLE_PLACES_API_KEY
+  if (!key || !query.trim()) return []
+  const url = `${PLACES_TEXTSEARCH_URL}?query=${encodeURIComponent(query)}&key=${key}`
+  try {
+    const res = await fetch(url, { cache: 'no-store' })
+    const data = await res.json()
+    if (data.status !== 'OK' || !Array.isArray(data.results)) return []
+    return (data.results as Array<Record<string, unknown>>).slice(0, 6).map((r) => ({
+      placeId: String(r.place_id ?? ''),
+      name: String(r.name ?? ''),
+      address: String(r.formatted_address ?? ''),
+      rating: typeof r.rating === 'number' ? (r.rating as number) : null,
+      reviewCount: typeof r.user_ratings_total === 'number' ? (r.user_ratings_total as number) : null,
+    }))
+  } catch {
+    return []
+  }
+}
 
 export interface PlaceReview {
   author: string
