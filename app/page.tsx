@@ -317,7 +317,7 @@ export default function HomePage() {
       </section>
 
       <section className="px-6 pb-24">
-        <div className="mx-auto grid max-w-7xl items-center gap-8 overflow-hidden rounded-[2rem] bg-slate-950 p-6 lg:grid-cols-[0.8fr_1.2fr] lg:p-10">
+        <div className="mx-auto grid max-w-7xl items-center gap-10 overflow-hidden rounded-[2rem] bg-slate-950 px-6 py-12 lg:grid-cols-[0.8fr_1.2fr] lg:px-12 lg:py-16">
           <div className="p-2 text-white md:p-6">
             <span className="inline-block rounded-full border border-white/15 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-violet-300">Why RevOverflow</span>
             <h2 className="mt-4 text-3xl font-bold tracking-tight">Not another marketing tool. A revenue solution.</h2>
