@@ -33,12 +33,12 @@ const steps: [string, string, string][] = [
   ["/See_Every_Dollar.png", "See every dollar", "Track exactly how much revenue she generates."],
 ];
 const features = [
-  ["🧠", "AI-Powered Opportunities", "Yara analyzes your data to identify the best opportunities to grow revenue."],
-  ["💬", "Smart Campaigns", "Personalized messages that bring customers back and drive visits."],
-  ["🎯", "Revenue Goal Tracking", "Set revenue goals and track progress in real time."],
-  ["👤", "Customer Insights", "Understand your customers and what actually works."],
-  ["⚡", "Automated Execution", "Yara runs approved campaigns so you can focus on your business."],
-  ["📲", "Reachable Customers", "Grow your customer base with QR capture and opt-in flows."],
+  ["/AI_Powered_Opportunities.png", "AI-Powered Opportunities", "Yara analyzes your data to identify the best opportunities to grow revenue."],
+  ["/Smart_Campaigns.png", "Smart Campaigns", "Personalized messages that bring customers back and drive visits."],
+  ["/Revenue_Goal_Tracking.png", "Revenue Goal Tracking", "Set revenue goals and track progress in real time."],
+  ["/Customer_Insights.png", "Customer Insights", "Understand your customers and what actually works."],
+  ["/Automated_Execution.png", "Automated Execution", "Yara runs approved campaigns so you can focus on your business."],
+  ["/Reachable_Customers.png", "Reachable Customers", "Grow your customer base with QR capture and opt-in flows."],
 ];
 const topOpps: [string, string][] = [
   ["Win back inactive", "$2,480"],
@@ -310,10 +310,12 @@ export default function HomePage() {
           <h2 className="mt-3 text-3xl font-bold tracking-tight">Everything you need to grow revenue</h2>
           <div className="mt-12 grid gap-5 md:grid-cols-3 lg:grid-cols-6">
             {features.map(([icon, title, desc]) => (
-              <div key={title} className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
-                <div className="mx-auto mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-violet-50 text-2xl">{icon}</div>
-                <h3 className="font-black">{title}</h3>
-                <p className="mt-3 text-sm leading-6 text-slate-500">{desc}</p>
+              <div key={title} className="rounded-3xl border border-slate-100 bg-white p-6 text-center shadow-sm">
+                <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-2xl bg-violet-50">
+                  <img src={icon} alt="" className="h-11 w-11 object-contain" />
+                </div>
+                <h3 className="text-[15px] font-bold text-slate-900">{title}</h3>
+                <p className="mt-2 text-[13px] leading-5 text-slate-500">{desc}</p>
               </div>
             ))}
           </div>
