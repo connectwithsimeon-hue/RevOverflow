@@ -1,7 +1,7 @@
 /**
  * ReachableBaseMeter
- * Compact vertical card showing a merchant's progress toward Mode A (1,000 reachable customers).
- * Mode A merchants see a "Revenue Activation" active-state card instead of the progress bar.
+ * Compact vertical card showing a merchant's progress toward Mode B (1,000 reachable customers).
+ * Mode B merchants see a "Revenue Activation" active-state card instead of the progress bar.
  * Designed to sit alongside the KPI card grid in the dashboard's top "two boards" section.
  */
 
@@ -48,7 +48,7 @@ export default function ReachableBaseMeter({ reachable, total, modeA }: Props) {
           borderRadius: '100px', padding: '0.2rem 0.625rem',
           fontSize: '0.7rem', fontWeight: 700, width: 'fit-content',
         }}>
-          ● Mode A Active
+          ● Mode B Active
         </div>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', lineHeight: 1.5, marginTop: '0.75rem', marginBottom: 0 }}>
           Yara is running automatically across your full base.
@@ -57,7 +57,7 @@ export default function ReachableBaseMeter({ reachable, total, modeA }: Props) {
     )
   }
 
-  // Mode B — compact progress card
+  // Mode A — compact progress card (still building the reachable base)
   return (
     <div style={{
       background: 'linear-gradient(160deg, rgba(124,92,252,0.12) 0%, var(--surface) 65%)',
@@ -97,7 +97,7 @@ export default function ReachableBaseMeter({ reachable, total, modeA }: Props) {
       </div>
 
       <p style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', margin: 0 }}>
-        {remaining.toLocaleString()} more to unlock Mode A · {total.toLocaleString()} total
+        {remaining.toLocaleString()} more to unlock Mode B · {total.toLocaleString()} total
       </p>
 
       <a

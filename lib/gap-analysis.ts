@@ -128,8 +128,8 @@ export async function computeGapAnalysis(
     opportunities.push({
       id: 'vip_growth',
       type: 'vip_growth',
-      title: `Grow your reachable list by ${remaining} to unlock Mode A`,
-      description: `You need ${remaining} more reachable customers to unlock Mode A — Revenue Activation. Put your QR code at the counter or share your referral link.`,
+      title: `Grow your reachable list by ${remaining} to unlock Mode B`,
+      description: `You need ${remaining} more reachable customers to unlock Mode B — Revenue Activation. Put your QR code at the counter or share your referral link.`,
       estimatedRevenue: remaining * forecast.assumptions.avgOrderValue * 0.5,
       effort: 'medium',
       urgency: 'soon',

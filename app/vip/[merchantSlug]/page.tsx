@@ -1,5 +1,5 @@
 /**
- * Mode B — VIP Signup Page
+ * Mode A — VIP Signup Page (data-capture phase)
  * URL: /vip/[merchantSlug]
  *
  * This is the public-facing page a customer sees when they scan the merchant's QR code.

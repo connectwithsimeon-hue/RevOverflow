@@ -1,7 +1,7 @@
 /**
  * Performance Floor Guarantee System
  *
- * Spec: Mode A merchants on Core/Brain/Empire/Network get a 3× ROI guarantee
+ * Spec: Mode B (Revenue Activation) merchants on Core/Brain/Empire/Network get a 3× ROI guarantee
  * in 60 days. If at day 60 revenue_recovered < 3 × monthly_plan_cost, the
  * merchant is eligible for a refund review.
  *
@@ -30,7 +30,7 @@ export const PLAN_MONTHLY_COST: Record<string, number> = {
 const GUARANTEE_PLANS = new Set(['core', 'brain', 'empire', 'network'])
 
 export interface GuaranteeStatus {
-  eligible: boolean          // Is this merchant on a guarantee plan in Mode A?
+  eligible: boolean          // Is this merchant on a guarantee plan in Mode B (Revenue Activation)?
   daysSinceStart: number     // Days since merchant first activated
   revenueRecovered: number   // $ attributed revenue so far
   planCost: number           // Monthly plan cost

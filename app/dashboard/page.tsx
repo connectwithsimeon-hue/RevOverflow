@@ -135,9 +135,11 @@ export default async function DashboardPage({
   const reachable = (segmentCounts['loyal'] || 0) + (segmentCounts['active'] || 0) +
     (segmentCounts['new'] || 0) + (segmentCounts['at_risk'] || 0) + (segmentCounts['lapsed'] || 0)
 
-  // Mode A = 1000+ reachable customers
-  const mode = reachable >= 1000 ? 'A' : 'B'
-  const modeA = mode === 'A'
+  // Mode A = the starting phase (Data Capture, < 1,000 reachable).
+  // Mode B = the advanced phase (Revenue Activation, 1,000+ reachable).
+  // modeA (boolean) means "is in the activation phase" — kept for component props.
+  const modeA = reachable >= 1000
+  const modeLetter = modeA ? 'B' : 'A'
 
   // VIP setup = merchant has a vip_slug set
   const hasVipSetup = !!merchant.vip_slug
@@ -272,15 +274,15 @@ export default async function DashboardPage({
               {/* Mode badge */}
               {hasScores && (
                 <span style={{
-                  background: mode === 'A' ? 'rgba(124,92,252,0.15)' : 'rgba(251,191,36,0.15)',
-                  color:      mode === 'A' ? 'var(--violet)'          : '#92400e',
-                  border:     `1px solid ${mode === 'A' ? 'rgba(124,92,252,0.4)' : 'rgba(251,191,36,0.4)'}`,
+                  background: modeA ? 'rgba(124,92,252,0.15)' : 'rgba(251,191,36,0.15)',
+                  color:      modeA ? 'var(--violet)'          : '#92400e',
+                  border:     `1px solid ${modeA ? 'rgba(124,92,252,0.4)' : 'rgba(251,191,36,0.4)'}`,
                   borderRadius: '100px',
                   padding: '0.25rem 0.75rem',
                   fontSize: '0.75rem',
                   fontWeight: 700,
                 }}>
-                  Mode {mode} {mode === 'A' ? '· Revenue Activation' : '· Data Capture'}
+                  Mode {modeLetter} {modeA ? '· Revenue Activation' : '· Data Capture'}
                 </span>
               )}
             </div>

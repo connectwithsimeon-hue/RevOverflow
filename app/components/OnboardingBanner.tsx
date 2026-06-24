@@ -27,8 +27,8 @@ export default function OnboardingBanner({
   hasVipSetup = false,
   reachable = 0,
 }: Props) {
-  // Mode A: standard 3-step flow (Connect → Score → Campaign)
-  const modeASteps: Step[] = [
+  // Activation flow (Mode B) — Connect → Score → Campaign
+  const activationSteps: Step[] = [
     {
       number: 1,
       label: 'Connect your POS',
@@ -52,8 +52,8 @@ export default function OnboardingBanner({
     },
   ]
 
-  // Mode B: grow-your-list flow (Connect → VIP page → Reach 1,000)
-  const modeBSteps: Step[] = [
+  // Capture flow (Mode A) — Connect → VIP page → Reach 1,000
+  const captureSteps: Step[] = [
     {
       number: 1,
       label: 'Connect your POS',
@@ -71,13 +71,13 @@ export default function OnboardingBanner({
     {
       number: 3,
       label: 'Grow to 1,000 reachable customers',
-      description: `You have ${reachable.toLocaleString()} so far. Reach 1,000 to unlock Mode A — Revenue Activation and Yara's full power.`,
+      description: `You have ${reachable.toLocaleString()} so far. Reach 1,000 to unlock Mode B — Revenue Activation and Yara's full power.`,
       done: reachable >= 1000,
       action: hasVipSetup && reachable < 1000 ? { label: 'View VIP page →', href: '/account#vip' } : undefined,
     },
   ]
 
-  const steps = modeA ? modeASteps : modeBSteps
+  const steps = modeA ? activationSteps : captureSteps
 
   // All steps done — hide banner
   if (steps.every(s => s.done)) return null
