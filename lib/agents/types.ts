@@ -73,6 +73,7 @@ export interface AgentContext {
   customers: AgentCustomer[]
   orders: AgentOrder[]
   orderItems: AgentOrderItem[]
+  productCosts: Record<string, number>   // catalog_name -> unit cost (entered by merchant)
 }
 
 // ── Small shared helpers ───────────────────────────────────────────────────

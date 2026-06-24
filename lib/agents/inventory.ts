@@ -9,6 +9,7 @@
 
 import type { AgentContext, AgentResult, AgentRecommendation } from './types'
 import { money } from './types'
+import { computeProductMargins } from '@/lib/margin'
 
 export function inventoryAgent(ctx: AgentContext): AgentResult {
   const base = {
@@ -40,22 +41,16 @@ export function inventoryAgent(ctx: AgentContext): AgentResult {
     }
   }
 
-  // Revenue by product.
-  const byProduct = new Map<string, number>()
-  for (const it of ctx.orderItems) {
-    const name = it.catalog_name?.trim() || 'Unnamed item'
-    byProduct.set(name, (byProduct.get(name) ?? 0) + it.quantity * it.unit_price)
-  }
-  const ranked = Array.from(byProduct.entries()).sort((a, b) => b[1] - a[1])
-  const top = ranked[0]
+  const margins = computeProductMargins(ctx.orderItems, ctx.productCosts)
+  const top = margins[0] // already sorted by revenue desc
+  const hasCosts = margins.some((m) => m.marginPct !== null)
 
   const recs: AgentRecommendation[] = []
   if (top) {
+    const marginNote = top.marginPct !== null ? ` at a ${top.marginPct}% margin` : ''
     recs.push({
-      title: `Feature your best seller: ${top[0]}`,
-      detail: `${top[0]} is your top revenue product (${money(
-        top[1],
-      )} in the last 180 days). Featuring it in win-back offers leans on what customers already want — higher conversion, less discounting.`,
+      title: `Feature your best seller: ${top.catalogName}`,
+      detail: `${top.catalogName} is your top revenue product (${money(top.revenue)} in the last 180 days${marginNote}). Featuring it in win-back offers leans on what customers already want — higher conversion, less discounting.`,
       cta: { label: 'Build an offer around it', href: '/campaigns' },
     })
   }
@@ -63,11 +58,13 @@ export function inventoryAgent(ctx: AgentContext): AgentResult {
   return {
     ...base,
     status: 'active',
-    statusLabel: 'Active (basic)',
+    statusLabel: hasCosts ? 'Active' : 'Active (basic)',
     headline: top
-      ? `${top[0]} is your top product — promote your proven winner.`
+      ? `${top.catalogName} is your top product — promote your proven winner.`
       : 'Yara is analyzing your product sales.',
     recommendations: recs,
-    dataNeeded: 'Add product COST data to unlock margin-protected promotions (never discount a low-margin item).',
+    dataNeeded: hasCosts
+      ? undefined
+      : 'Add product COST data on the Products page to unlock margin-protected promotions.',
   }
 }

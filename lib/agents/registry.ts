@@ -19,6 +19,7 @@ import { loyaltyAgent } from './loyalty'
 import { acquisitionAgent } from './acquisition'
 import { reputationAgent } from './reputation'
 import { inventoryAgent } from './inventory'
+import { profitAgent } from './profit'
 
 // Order here = display order on the dashboard. Core revenue drivers that run on
 // Square data come first; agents that need an extra data source come last.
@@ -30,10 +31,11 @@ const AGENTS: Array<(ctx: AgentContext) => AgentResult> = [
   birthdayAgent,
   membershipAgent,
   capacityAgent,
+  profitAgent,
+  inventoryAgent,
   loyaltyAgent,
   acquisitionAgent,
   reputationAgent,
-  inventoryAgent,
 ]
 
 export async function runAllAgents(merchantId: string): Promise<AgentResult[]> {
@@ -60,7 +62,7 @@ async function loadContext(merchantId: string): Promise<AgentContext> {
   // scanning the whole history.
   const since = new Date(Date.now() - 180 * 86400000).toISOString()
 
-  const [{ data: customerRows }, { data: orderRows }, { data: itemRows }] = await Promise.all([
+  const [{ data: customerRows }, { data: orderRows }, { data: itemRows }, { data: costRows }] = await Promise.all([
     service
       .from('customers')
       .select('id, segment, rfv_score, total_orders, lifetime_value, avg_order_value, first_purchase_at, last_purchase_at, is_reachable, sms_opt_in, email_opt_in, birthday')
@@ -75,6 +77,10 @@ async function loadContext(merchantId: string): Promise<AgentContext> {
       .select('catalog_name, category, quantity, unit_price')
       .eq('merchant_id', merchantId)
       .limit(5000),
+    service
+      .from('product_costs')
+      .select('catalog_name, unit_cost')
+      .eq('merchant_id', merchantId),
   ])
 
   const customers: AgentCustomer[] = (customerRows ?? []).map((c) => ({
@@ -105,6 +111,9 @@ async function loadContext(merchantId: string): Promise<AgentContext> {
     unit_price: parseFloat(i.unit_price ?? '0'),
   }))
 
+  const productCosts: Record<string, number> = {}
+  for (const c of costRows ?? []) productCosts[c.catalog_name] = parseFloat(c.unit_cost ?? '0')
+
   return {
     merchantId,
     industry: merchant?.industry ?? null,
@@ -113,5 +122,6 @@ async function loadContext(merchantId: string): Promise<AgentContext> {
     customers,
     orders,
     orderItems,
+    productCosts,
   }
 }
