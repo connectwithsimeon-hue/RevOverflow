@@ -2,6 +2,16 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import PosLogo from "./components/PosLogo";
+import AgentIcon from "./components/AgentIcon";
+
+const agents: [string, string, string, string][] = [
+  ["/Win_Back_Agent.png", "/Reachable_Customers.png", "Win-Back Agent", "Finds customers who stopped visiting and brings them back."],
+  ["/VIP_Agent.png", "/Customer_Insights.png", "VIP Agent", "Increases visits and spend from your best customers."],
+  ["/Birthday_Agent.png", "/Smart_Campaigns.png", "Birthday Agent", "Captures high-converting birthday revenue, automatically."],
+  ["/Membership_Agent.png", "/Revenue_Goal_Tracking.png", "Membership Agent", "Turns your regulars into predictable recurring revenue."],
+  ["/Capacity_Agent.png", "/Save_Time.png", "Capacity Agent", "Fills your slow days by shifting demand off-peak."],
+  ["/Acquisition_Agent.png", "/AI_Powered_Opportunities.png", "Acquisition Agent", "Finds and brings in brand-new customers."],
+];
 
 const navItems: [string, string][] = [
   ["How it works", "#how-it-works"],
@@ -300,13 +310,14 @@ export default function HomePage() {
 
       <section id="features" className="px-6 pb-24">
         <div className="mx-auto max-w-7xl text-center">
-          <p className="text-xs font-black uppercase tracking-widest text-violet-600">Built for local businesses</p>
-          <h2 className="mt-3 text-3xl font-bold tracking-tight">Everything you need to grow revenue</h2>
+          <p className="text-xs font-black uppercase tracking-widest text-violet-600">Meet Yara&apos;s team</p>
+          <h2 className="mt-3 text-3xl font-bold tracking-tight">A full team of revenue agents</h2>
+          <p className="mx-auto mt-3 max-w-xl text-[15px] text-slate-500">Each one is a specialist Yara puts to work on a different way to grow your revenue.</p>
           <div className="mt-12 grid gap-5 md:grid-cols-3 lg:grid-cols-6">
-            {features.map(([icon, title, desc]) => (
+            {agents.map(([src, fb, title, desc]) => (
               <div key={title} className="rounded-3xl border border-slate-100 bg-white p-6 text-center shadow-sm">
                 <div className="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-2xl bg-violet-50">
-                  <img src={icon} alt="" className="h-11 w-11 object-contain" />
+                  <AgentIcon src={src} fallback={fb} className="h-11 w-11 object-contain" />
                 </div>
                 <h3 className="text-[15px] font-bold text-slate-900">{title}</h3>
                 <p className="mt-2 text-[13px] leading-5 text-slate-500">{desc}</p>
