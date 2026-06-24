@@ -245,6 +245,19 @@ export default function CampaignsPage() {
           </p>
         </div>
 
+        {/* How redemption works — the one staff habit that makes attribution work */}
+        <div style={{ background: 'rgba(124,92,252,0.06)', border: '1px solid rgba(124,92,252,0.25)', borderRadius: 14, padding: '1rem 1.25rem', marginBottom: '1.5rem', display: 'flex', gap: '0.875rem', alignItems: 'flex-start' }}>
+          <span style={{ fontSize: '1.25rem', lineHeight: 1 }}>💡</span>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: '0.9375rem', marginBottom: '0.25rem' }}>How customers redeem (one habit to teach your staff)</div>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.8125rem', lineHeight: 1.55, margin: 0 }}>
+              Every message tells the customer to <strong>give their phone number at checkout</strong>. When your staff enters that number in your POS,
+              Yara matches the sale back to the exact person she texted — so your &ldquo;Revenue Recovered&rdquo; is real, even for walk-ins.
+              The one thing to train staff on: <strong>&ldquo;What&rsquo;s your number?&rdquo; at the register.</strong>
+            </p>
+          </div>
+        </div>
+
         {/* Empty state — no eligible customers */}
         {!result && customers.length === 0 && (
           <div style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '3rem', textAlign: 'center', maxWidth: '480px' }}>

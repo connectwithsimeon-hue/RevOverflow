@@ -55,8 +55,7 @@ Your rules:
 - Write like a real human who knows the customer — never robotic, never salesy
 - Use the customer's first name naturally (once, at the start)
 - Reference their actual history when you have it (visits, value, time away)
-- Keep SMS under 155 characters (so it fits in one message segment)
-- Always end SMS with: Reply STOP to opt out.
+- Keep SMS copy under 95 characters. A short redemption line and the opt-out are appended automatically — do NOT write them yourself.
 - Email subject lines are punchy and personal — under 50 characters
 - Email body is warm, brief, 2-3 short paragraphs, no walls of text
 - Never make up facts about the customer you weren't given
@@ -95,19 +94,30 @@ export async function generateYaraCopy(
     if (!jsonMatch) throw new Error('No JSON in response')
     const parsed = JSON.parse(jsonMatch[0])
 
-    // Enforce SMS length limit
-    let smsText = parsed.smsText || ''
-    if (!smsText.includes('Reply STOP')) {
-      smsText = smsText.replace(/\.\s*$/, '') + ' Reply STOP to opt out.'
-    }
-    if (smsText.length > 160) {
-      smsText = smsText.slice(0, 157) + '...'
-    }
+    // Build the SMS: warm copy + a fixed redemption + opt-out line. The
+    // redemption line ("give your number at checkout") is what attaches the
+    // customer to the sale in the POS, which is how the revenue gets attributed
+    // back to this exact person — even for an anonymous walk-in.
+    const REDEEM = 'Give your number at checkout to redeem.'
+    const STOP = 'Reply STOP to opt out.'
+    let copy = (parsed.smsText || '')
+      .trim()
+      .replace(/\s*reply stop[\s\S]*$/i, '')   // strip any opt-out the model added
+      .replace(REDEEM, '')                      // strip any redemption it echoed
+      .trim()
+    const suffix = ` ${REDEEM} ${STOP}`
+    const maxCopy = 160 - suffix.length
+    if (copy.length > maxCopy) copy = copy.slice(0, maxCopy - 1).trim()
+    const smsText = `${copy} ${REDEEM} ${STOP}`
+
+    // Email carries the same redemption instruction as a small note.
+    const baseEmail = parsed.emailBodyHtml || buildFallbackEmailHtml(customer, merchant)
+    const emailBodyHtml = `${baseEmail}<p style="font-size:13px;color:#6b7280;margin-top:18px;">To redeem: show this message and give the phone number you received it on at checkout.</p>`
 
     return {
       smsText,
       emailSubject: parsed.emailSubject || `We miss you at ${merchant.businessName}`,
-      emailBodyHtml: parsed.emailBodyHtml || buildFallbackEmailHtml(customer, merchant),
+      emailBodyHtml,
       offerSuggestion: parsed.offerSuggestion,
     }
   } catch {
@@ -170,20 +180,25 @@ function buildFallbackCopy(
   const biz = merchant.businessName
 
   const smsTemplates: Record<TriggerType, string> = {
-    win_back: `Hey ${name}! We miss you at ${biz}. It's been a while — come back and we'll make it worth your while. Reply STOP to opt out.`,
-    new_customer: `Hey ${name}, thanks for visiting ${biz}! We'd love to see you again soon. Reply STOP to opt out.`,
-    vip_reward: `Hey ${name}, you're one of our best customers at ${biz} and we want to say thank you. Reply STOP to opt out.`,
-    birthday: `Happy birthday ${name}! 🎉 The team at ${biz} has a special gift for you. Reply STOP to opt out.`,
-    cross_sell: `Hey ${name}! Next time you're at ${biz}, ask about something new you might love. Reply STOP to opt out.`,
+    win_back: `Hey ${name}! We miss you at ${biz} — come back, we'll make it worth your while.`,
+    new_customer: `Hey ${name}, thanks for visiting ${biz}! We'd love to see you again soon.`,
+    vip_reward: `Hey ${name}, you're one of our best at ${biz} — a little thank-you is waiting.`,
+    birthday: `Happy birthday ${name}! 🎉 ${biz} has a special gift for you.`,
+    cross_sell: `Hey ${name}! Next time at ${biz}, ask about something new you might love.`,
   }
 
-  const smsRaw = smsTemplates[trigger]
-  const smsText = smsRaw.length > 160 ? smsRaw.slice(0, 157) + '...' : smsRaw
+  const REDEEM = 'Give your number at checkout to redeem.'
+  const STOP = 'Reply STOP to opt out.'
+  let copy = smsTemplates[trigger]
+  const suffix = ` ${REDEEM} ${STOP}`
+  const maxCopy = 160 - suffix.length
+  if (copy.length > maxCopy) copy = copy.slice(0, maxCopy - 1).trim()
+  const smsText = `${copy} ${REDEEM} ${STOP}`
 
   return {
     smsText,
     emailSubject: `${name}, we miss you at ${biz}`,
-    emailBodyHtml: buildFallbackEmailHtml(customer, merchant),
+    emailBodyHtml: `${buildFallbackEmailHtml(customer, merchant)}<p style="font-size:13px;color:#6b7280;margin-top:18px;">To redeem: show this message and give the phone number you received it on at checkout.</p>`,
     offerSuggestion: '10% off next visit',
   }
 }
