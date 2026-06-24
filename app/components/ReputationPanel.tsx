@@ -36,6 +36,7 @@ export default function ReputationPanel() {
   const [businessName, setBusinessName] = useState('')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [showHelp, setShowHelp] = useState(true)
 
   useEffect(() => {
     fetch('/api/reputation')
@@ -89,9 +90,36 @@ export default function ReputationPanel() {
           <div>
             <label style={labelStyle}>Google Place ID</label>
             <input style={inputStyle} value={placeId} onChange={(e) => setPlaceId(e.target.value)} placeholder="ChIJ…" />
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.375rem' }}>
-              Find it with Google&apos;s free <a href="https://developers.google.com/maps/documentation/places/web-service/place-id" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--violet)' }}>Place ID Finder</a> — search your business, copy the ID.
-            </p>
+
+            <button
+              type="button"
+              onClick={() => setShowHelp((v) => !v)}
+              style={{ marginTop: '0.5rem', background: 'none', border: 'none', padding: 0, color: 'var(--violet)', fontWeight: 600, fontSize: '0.8125rem', cursor: 'pointer', fontFamily: 'inherit' }}
+            >
+              {showHelp ? '▾' : '▸'} How do I find my Place ID? (30 seconds)
+            </button>
+
+            {showHelp && (
+              <div style={{ marginTop: '0.625rem', background: 'rgba(124,92,252,0.06)', border: '1px solid rgba(124,92,252,0.2)', borderRadius: 12, padding: '1rem' }}>
+                <ol style={{ margin: '0 0 0.875rem', paddingLeft: '1.25rem', fontSize: '0.8125rem', color: 'var(--text-secondary)', lineHeight: 1.7 }}>
+                  <li>Click <strong>Open Place ID Finder</strong> below (opens in a new tab).</li>
+                  <li>In the search box on the map, type your <strong>business name and city</strong> — e.g. &quot;Sparkle Car Wash, Austin&quot;.</li>
+                  <li>Click your business on the map. A small box pops up showing your <strong>Place ID</strong>.</li>
+                  <li>Copy the long ID that starts with <code style={{ background: 'rgba(0,0,0,0.05)', padding: '0 4px', borderRadius: 4 }}>ChIJ…</code> and paste it in the box above.</li>
+                </ol>
+                <a
+                  href="https://developers.google.com/maps/documentation/places/web-service/place-id"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ display: 'inline-block', background: 'var(--violet)', color: '#fff', borderRadius: 8, padding: '0.5rem 1rem', fontWeight: 700, fontSize: '0.8125rem', textDecoration: 'none' }}
+                >
+                  Open Place ID Finder →
+                </a>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.625rem', marginBottom: 0 }}>
+                  It&apos;s free and needs no login. Tip: it&apos;s the same business listing customers see when they Google you.
+                </p>
+              </div>
+            )}
           </div>
           <button onClick={connect} disabled={saving || !placeId.trim()} style={{ alignSelf: 'flex-start', background: 'var(--violet)', color: '#fff', border: 'none', borderRadius: 10, padding: '0.75rem 1.75rem', fontWeight: 700, fontSize: '0.9375rem', cursor: saving || !placeId.trim() ? 'default' : 'pointer', opacity: saving || !placeId.trim() ? 0.6 : 1, fontFamily: 'inherit' }}>
             {saving ? 'Connecting…' : connected ? 'Update listing' : 'Connect & check reviews'}
