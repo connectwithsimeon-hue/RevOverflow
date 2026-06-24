@@ -215,19 +215,19 @@ export default function HomePage() {
         </div>
       </header>
 
-      <section className="relative overflow-hidden px-6 py-20">
+      <section className="relative overflow-hidden px-6 pt-14 pb-8">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,_#ddd6fe,_transparent_35%),radial-gradient(circle_at_left,_#f5f3ff,_transparent_30%)]" />
         <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[0.85fr_1.15fr]">
           <div>
             <div className="mb-6 inline-flex rounded-full border border-violet-200 bg-violet-50 px-4 py-2 text-sm font-bold text-violet-700">✨ Meet Yara — your AI Revenue Manager</div>
             <h1 className="max-w-xl text-4xl font-black leading-[1.08] tracking-tight text-slate-950 md:text-5xl">
               Tell Yara Your Revenue Goal.
-              <span className="mt-1 block bg-gradient-to-r from-violet-500 to-violet-700 bg-clip-text text-transparent">
-                She helps you{" "}
-                <span className="relative inline-block">
+              <span className="mt-1 block">
+                <span className="bg-gradient-to-r from-violet-500 to-violet-700 bg-clip-text text-transparent">She helps you </span>
+                <span className="relative inline-block whitespace-nowrap bg-gradient-to-r from-violet-500 to-violet-700 bg-clip-text text-transparent">
                   hit it.
-                  <svg viewBox="0 0 180 14" preserveAspectRatio="none" aria-hidden="true" className="absolute -bottom-1 left-0 h-3 w-full">
-                    <path d="M4 9 C 55 3, 125 3, 176 8" stroke="#7c5cfc" strokeWidth="5" fill="none" strokeLinecap="round" />
+                  <svg viewBox="0 0 120 14" preserveAspectRatio="none" aria-hidden="true" className="absolute -bottom-1.5 left-0 h-3 w-full">
+                    <path d="M3 9 C 35 3, 85 3, 117 8" stroke="#7c5cfc" strokeWidth="5" fill="none" strokeLinecap="round" />
                   </svg>
                 </span>
               </span>
@@ -251,7 +251,8 @@ export default function HomePage() {
             </div>
             <p className="mt-3 text-xs font-semibold text-violet-500">More POS integrations coming soon.</p>
           </div>
-          <div className="relative">
+          <div className="relative" style={{ animation: "royfloat 5.5s ease-in-out infinite" }}>
+            <style>{`@keyframes royfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}`}</style>
             <div aria-hidden="true" className="absolute -inset-6 -z-10 rounded-[3rem] bg-violet-300/30 blur-3xl" />
             <DashboardMockup />
           </div>
@@ -430,8 +431,9 @@ export default function HomePage() {
       <footer className="bg-slate-950 px-6 py-14 text-white">
         <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-5">
           <div className="md:col-span-2">
-            <Link href="/" className="flex items-center">
-              <img src="/ro-logo-white.png" alt="RevOverflow" className="h-10 w-auto" />
+            <Link href="/" className="flex items-center gap-2.5">
+              <img src="/ro-icon-wp.png" alt="" className="h-9 w-auto" />
+              <img src="/ro-logo-wp.png" alt="RevOverflow" className="h-6 w-auto" />
             </Link>
             <p className="mt-4 max-w-sm text-sm leading-6 text-slate-400">Yara is your AI Revenue Manager, helping local businesses grow revenue with the power of AI.</p>
           </div>
