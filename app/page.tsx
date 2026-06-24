@@ -52,11 +52,11 @@ const pricing = [
   { name: "Brain", price: "$597", desc: "For growing businesses", features: ["Up to 15,000 customers", "All campaign types", "AI revenue forecasting", "Priority support", "Up to 3 POS connections"] },
   { name: "Empire", price: "$1,197", desc: "For multi-location businesses", features: ["Unlimited customers", "All features included", "Multi-location analytics", "Dedicated support", "Unlimited POS connections"] },
 ];
-const faqs = [
-  "How does the 3x ROI guarantee work?",
-  "Which POS systems do you support?",
-  "How long does setup take?",
-  "Can I cancel anytime?",
+const faqs: [string, string][] = [
+  ["How does the 3x ROI guarantee work?", "If Yara doesn't generate at least 3× your subscription cost in verified, control-group-attributed revenue within 60 days, you're eligible for a refund. See our terms for full eligibility details."],
+  ["Which POS systems do you support?", "RevOverflow connects to Square, Clover, and Toast today, with more POS integrations coming soon."],
+  ["How long does setup take?", "Under 5 minutes. Connect your POS, set a revenue goal, and Yara starts finding opportunities the same day — no technical setup required."],
+  ["Can I cancel anytime?", "Yes. There are no contracts — you can cancel anytime from your account settings."],
 ];
 
 function Button({ children, variant = "primary", href }: { children: ReactNode; variant?: "primary" | "secondary"; href?: string }) {
@@ -450,11 +450,15 @@ export default function HomePage() {
             <p className="text-xs font-black uppercase tracking-widest text-violet-600">FAQ</p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight">Frequently asked questions</h2>
           </div>
-          <div className="mt-10 grid gap-3 md:grid-cols-2">
-            {faqs.map((q) => (
-              <div key={q} className="flex items-center justify-between rounded-2xl border border-slate-100 bg-white p-5 font-bold shadow-sm">
-                {q}<span className="text-violet-600">+</span>
-              </div>
+          <div className="mt-10 grid items-start gap-3 md:grid-cols-2">
+            {faqs.map(([q, a]) => (
+              <details key={q} className="group rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+                <summary className="flex cursor-pointer list-none items-center justify-between font-bold text-slate-900 [&::-webkit-details-marker]:hidden">
+                  <span>{q}</span>
+                  <span className="ml-4 shrink-0 text-xl leading-none text-violet-600 transition-transform duration-200 group-open:rotate-45">+</span>
+                </summary>
+                <p className="mt-3 text-sm leading-6 text-slate-500">{a}</p>
+              </details>
             ))}
           </div>
         </div>
