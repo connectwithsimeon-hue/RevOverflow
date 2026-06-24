@@ -8,6 +8,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import Link from 'next/link'
 
 const STEPS: { icon: string; title: string; body: string }[] = [
@@ -53,10 +54,10 @@ export default function HowToGuide() {
         <span aria-hidden="true">❓</span> How to use
       </button>
 
-      {open && (
+      {open && typeof document !== 'undefined' && createPortal(
         <div
           onClick={() => setOpen(false)}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(15,15,25,0.5)', zIndex: 100, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '4vh 1rem', overflowY: 'auto' }}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(15,15,25,0.5)', zIndex: 1000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '4vh 1rem', overflowY: 'auto' }}
         >
           <div
             onClick={(e) => e.stopPropagation()}
@@ -107,7 +108,8 @@ export default function HowToGuide() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   )
