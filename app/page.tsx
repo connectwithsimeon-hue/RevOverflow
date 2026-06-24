@@ -26,11 +26,11 @@ const valueItems = [
   ["🔒", "Secure & Compliant", "Your data is always protected"],
 ];
 const steps: [string, string, string][] = [
-  ["🔌", "Connect your POS", "Securely connect Square, Clover, or Toast in minutes."],
-  ["🎯", "Tell Yara your goal", "Set your monthly revenue goal and let Yara get to work."],
-  ["🧠", "Yara finds opportunities", "AI analyzes your data to find high-impact opportunities."],
-  ["✈️", "Yara takes action", "She runs personalized campaigns and promotions."],
-  ["📈", "See every dollar", "Track exactly how much revenue she generates."],
+  ["/Connect_Your_POS.png", "Connect your POS", "Securely connect Square, Clover, or Toast in minutes."],
+  ["/Tell_Yara_Your_Goal.png", "Tell Yara your goal", "Set your monthly revenue goal and let Yara get to work."],
+  ["/Yara_Finds_Opportunities.png", "Yara finds opportunities", "AI analyzes your data to find high-impact opportunities."],
+  ["/Yara_Takes_Action.png", "Yara takes action", "She runs personalized campaigns and promotions."],
+  ["/See_Every_Dollar.png", "See every dollar", "Track exactly how much revenue she generates."],
 ];
 const features = [
   ["🧠", "AI-Powered Opportunities", "Yara analyzes your data to identify the best opportunities to grow revenue."],
@@ -280,8 +280,8 @@ export default function HomePage() {
           <div className="mt-14 grid gap-x-4 gap-y-12 md:grid-cols-5">
             {steps.map(([icon, title, desc], i) => (
               <div key={title} className="relative text-center">
-                <div className="relative mx-auto grid h-16 w-16 place-items-center rounded-3xl bg-violet-50 text-2xl">
-                  {icon}
+                <div className="relative mx-auto grid h-16 w-16 place-items-center rounded-3xl bg-violet-50">
+                  <img src={icon} alt="" className="h-11 w-11 object-contain" />
                   {i < steps.length - 1 && (
                     <span className="absolute top-1/2 hidden -translate-y-1/2 text-2xl font-black text-violet-200 md:block" style={{ left: "calc(100% + 0.5rem)" }}>→</span>
                   )}
