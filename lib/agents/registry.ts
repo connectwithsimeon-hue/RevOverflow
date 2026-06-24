@@ -15,15 +15,16 @@ import { newCustomerAgent } from './newcustomer'
 import { birthdayAgent } from './birthday'
 import { membershipAgent } from './membership'
 import { capacityAgent } from './capacity'
-import { loyaltyAgent } from './loyalty'
 import { acquisitionAgent } from './acquisition'
 import { reputationAgent } from './reputation'
 import { inventoryAgent } from './inventory'
 import { profitAgent } from './profit'
+import { flashOfferAgent } from './flashoffer'
 
-// Order here = display order on the dashboard. Core revenue drivers that run on
-// Square data come first; agents that need an extra data source come last.
+// Order here = display order on the dashboard. The goal-closer leads; core
+// revenue drivers next; agents that need an extra data source last.
 const AGENTS: Array<(ctx: AgentContext) => AgentResult> = [
+  flashOfferAgent,
   winbackAgent,
   vipAgent,
   crosssellAgent,
@@ -33,7 +34,6 @@ const AGENTS: Array<(ctx: AgentContext) => AgentResult> = [
   capacityAgent,
   profitAgent,
   inventoryAgent,
-  loyaltyAgent,
   acquisitionAgent,
   reputationAgent,
 ]
@@ -48,7 +48,7 @@ async function loadContext(merchantId: string): Promise<AgentContext> {
 
   const { data: merchant } = await service
     .from('merchants')
-    .select('industry, plan, square_merchant_id, clover_merchant_id, toast_restaurant_guid, lightspeed_domain_prefix, meta_ad_account_id, google_ads_customer_id')
+    .select('industry, plan, square_merchant_id, clover_merchant_id, toast_restaurant_guid, lightspeed_domain_prefix, meta_ad_account_id, google_ads_customer_id, goal_amount, goal_month')
     .eq('id', merchantId)
     .single()
 
@@ -65,7 +65,7 @@ async function loadContext(merchantId: string): Promise<AgentContext> {
   // scanning the whole history.
   const since = new Date(Date.now() - 180 * 86400000).toISOString()
 
-  const [{ data: customerRows }, { data: orderRows }, { data: itemRows }, { data: costRows }, { data: membershipRow }, { data: reputationRow }, { data: loyaltyRow }] = await Promise.all([
+  const [{ data: customerRows }, { data: orderRows }, { data: itemRows }, { data: costRows }, { data: membershipRow }, { data: reputationRow }] = await Promise.all([
     service
       .from('customers')
       .select('id, segment, rfv_score, total_orders, lifetime_value, avg_order_value, first_purchase_at, last_purchase_at, is_reachable, sms_opt_in, email_opt_in, birthday')
@@ -92,11 +92,6 @@ async function loadContext(merchantId: string): Promise<AgentContext> {
     service
       .from('reputation')
       .select('google_place_id, rating, review_count, prev_rating, prev_review_count, recent_reviews')
-      .eq('merchant_id', merchantId)
-      .maybeSingle(),
-    service
-      .from('loyalty_programs')
-      .select('reward_name, visits_required, active')
       .eq('merchant_id', merchantId)
       .maybeSingle(),
   ])
@@ -154,12 +149,15 @@ async function loadContext(merchantId: string): Promise<AgentContext> {
       }
     : null
 
-  const loyalty = loyaltyRow && loyaltyRow.active
-    ? {
-        rewardName: loyaltyRow.reward_name as string,
-        visitsRequired: (loyaltyRow.visits_required as number) ?? 10,
-      }
-    : null
+  // ── Revenue goal + this-calendar-month revenue (for the Flash Offer agent) ──
+  const now = new Date()
+  const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+  const goalActive = merchant?.goal_month === currentMonth
+  const goalAmount = goalActive && merchant?.goal_amount ? parseFloat(merchant.goal_amount as string) : null
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime()
+  const monthRevenue = orders
+    .filter((o) => new Date(o.ordered_at).getTime() >= monthStart)
+    .reduce((s, o) => s + o.total_amount, 0)
 
   return {
     merchantId,
@@ -172,7 +170,8 @@ async function loadContext(merchantId: string): Promise<AgentContext> {
     productCosts,
     membership,
     reputation,
-    loyalty,
     adsConnected,
+    goalAmount,
+    monthRevenue,
   }
 }

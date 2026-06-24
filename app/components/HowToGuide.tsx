@@ -22,7 +22,6 @@ const STEPS: { icon: string; title: string; body: string }[] = [
 const SETUP_LINKS: { label: string; href: string; note: string }[] = [
   { label: 'Products', href: '/dashboard/products', note: 'Add product costs so Yara protects your margins' },
   { label: 'Membership', href: '/dashboard/membership', note: 'Turn regulars into recurring revenue' },
-  { label: 'Loyalty', href: '/dashboard/loyalty', note: 'Set a “reward every N visits” program' },
   { label: 'Reputation', href: '/dashboard/reputation', note: 'Connect Google to monitor your reviews' },
 ]
 
