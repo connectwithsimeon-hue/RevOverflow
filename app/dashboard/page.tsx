@@ -9,6 +9,7 @@ import YaraRecommendations from '@/app/components/YaraRecommendations'
 import TrustScoreWidget from '@/app/components/TrustScoreWidget'
 import GoalModeWidget from '@/app/components/GoalModeWidget'
 import AgentsWidget from '@/app/components/AgentsWidget'
+import HowToGuide from '@/app/components/HowToGuide'
 import DashboardSidebar from '@/app/components/DashboardSidebar'
 
 export const dynamic = 'force-dynamic'
@@ -32,6 +33,8 @@ export default async function DashboardPage({
     clover_error?: string
     toast_connected?: string
     toast_error?: string
+    lightspeed_connected?: string
+    lightspeed_error?: string
     page?: string
     billing?: string
     credits?: string
@@ -55,15 +58,16 @@ export default async function DashboardPage({
   // RevOverflow has today. Customer rows from each are merged into one
   // unified base by lib/customer-match.ts, so connecting more than one is
   // safe and encouraged for merchants who actually run more than one system.
-  const connectedProviders: ('square' | 'clover' | 'toast')[] = [
+  const connectedProviders: ('square' | 'clover' | 'toast' | 'lightspeed')[] = [
     merchant.square_merchant_id ? ('square' as const) : null,
     merchant.clover_merchant_id ? ('clover' as const) : null,
     merchant.toast_restaurant_guid ? ('toast' as const) : null,
-  ].filter((p): p is 'square' | 'clover' | 'toast' => p !== null)
+    merchant.lightspeed_domain_prefix ? ('lightspeed' as const) : null,
+  ].filter((p): p is 'square' | 'clover' | 'toast' | 'lightspeed' => p !== null)
   const isConnected = connectedProviders.length > 0
   // Used only where the UI still needs to name a single provider (e.g. the
   // sync-progress label) — picks the first connected one.
-  const posProvider: 'square' | 'clover' | 'toast' | null = connectedProviders[0] ?? null
+  const posProvider: 'square' | 'clover' | 'toast' | 'lightspeed' | null = connectedProviders[0] ?? null
   const syncStatus  = merchant.sync_status as string
   const syncProgress = merchant.sync_progress as number
 
@@ -206,6 +210,7 @@ export default async function DashboardPage({
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <HowToGuide />
             <Link href="/pricing" style={{ fontSize: '0.8125rem', background: 'var(--violet)', color: '#fff', padding: '0.5rem 1.125rem', borderRadius: '8px', textDecoration: 'none', fontWeight: 600 }}>
               Upgrade
             </Link>
@@ -247,6 +252,12 @@ export default async function DashboardPage({
         {searchParams.toast_error && (
           <Banner color="red" icon="✕">Toast error: {searchParams.toast_error}. <a href="/dashboard/connect-toast" style={{ color: '#1d4ed8' }}>Try again</a></Banner>
         )}
+        {searchParams.lightspeed_connected && (
+          <Banner color="green" icon="✓">Lightspeed connected — syncing your customers and sales now.</Banner>
+        )}
+        {searchParams.lightspeed_error && (
+          <Banner color="red" icon="✕">Lightspeed error: {searchParams.lightspeed_error}. <a href="/api/lightspeed/connect" style={{ color: '#1d4ed8' }}>Try again</a></Banner>
+        )}
         {searchParams.syncing && (
           <Banner color="violet" icon="↻">Syncing your data — refresh in about 30 seconds.</Banner>
         )}
@@ -287,10 +298,10 @@ export default async function DashboardPage({
             {syncStatus !== 'in_progress' && connectedProviders.map((p) => (
               <a
                 key={p}
-                href={p === 'clover' ? '/api/clover/sync-trigger' : p === 'toast' ? '/api/toast/sync-trigger' : '/api/square/sync-trigger'}
+                href={p === 'clover' ? '/api/clover/sync-trigger' : p === 'toast' ? '/api/toast/sync-trigger' : p === 'lightspeed' ? '/api/lightspeed/sync-trigger' : '/api/square/sync-trigger'}
                 style={btnStyle('ghost')}
               >
-                ↻ Sync{connectedProviders.length > 1 ? ` ${p === 'clover' ? 'Clover' : p === 'toast' ? 'Toast' : 'Square'}` : ''}
+                ↻ Sync{connectedProviders.length > 1 ? ` ${p === 'clover' ? 'Clover' : p === 'toast' ? 'Toast' : p === 'lightspeed' ? 'Lightspeed' : 'Square'}` : ''}
               </a>
             ))}
             {hasScores && atRisk > 0 && (
@@ -306,6 +317,9 @@ export default async function DashboardPage({
             )}
             {!connectedProviders.includes('toast') && (
               <Link href="/dashboard/connect-toast" style={btnStyle('ghost')}>Connect Toast →</Link>
+            )}
+            {!connectedProviders.includes('lightspeed') && (
+              <a href="/api/lightspeed/connect" style={btnStyle('ghost')}>Connect Lightspeed →</a>
             )}
           </div>
         </div>

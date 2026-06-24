@@ -25,12 +25,13 @@ import type { createServiceClient } from '@/lib/supabase/server'
 
 type ServiceClient = ReturnType<typeof createServiceClient>
 
-export type PosSource = 'square' | 'clover' | 'toast'
+export type PosSource = 'square' | 'clover' | 'toast' | 'lightspeed'
 
-const POS_ID_COLUMN: Record<PosSource, 'square_customer_id' | 'clover_customer_id' | 'toast_customer_id'> = {
+const POS_ID_COLUMN: Record<PosSource, 'square_customer_id' | 'clover_customer_id' | 'toast_customer_id' | 'lightspeed_customer_id'> = {
   square: 'square_customer_id',
   clover: 'clover_customer_id',
   toast: 'toast_customer_id',
+  lightspeed: 'lightspeed_customer_id',
 }
 
 export interface PosCustomerInput {

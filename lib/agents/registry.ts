@@ -48,14 +48,15 @@ async function loadContext(merchantId: string): Promise<AgentContext> {
 
   const { data: merchant } = await service
     .from('merchants')
-    .select('industry, plan, square_merchant_id, clover_merchant_id, toast_restaurant_guid, meta_ad_account_id, google_ads_customer_id')
+    .select('industry, plan, square_merchant_id, clover_merchant_id, toast_restaurant_guid, lightspeed_domain_prefix, meta_ad_account_id, google_ads_customer_id')
     .eq('id', merchantId)
     .single()
 
   const isConnected = !!(
     merchant?.square_merchant_id ||
     merchant?.clover_merchant_id ||
-    merchant?.toast_restaurant_guid
+    merchant?.toast_restaurant_guid ||
+    merchant?.lightspeed_domain_prefix
   )
 
   const adsConnected = !!(merchant?.meta_ad_account_id || merchant?.google_ads_customer_id)
