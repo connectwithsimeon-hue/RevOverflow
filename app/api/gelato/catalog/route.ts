@@ -39,7 +39,9 @@ export async function GET(request: NextRequest) {
       const data = await res.json().catch(() => ({}))
       if (!res.ok) return NextResponse.json({ configured: true, error: data?.message || `Gelato error ${res.status}`, raw: data })
 
-      const list = Array.isArray(data?.products) ? data.products : Array.isArray(data) ? data : []
+      const list = Array.isArray(data?.products) ? data.products
+        : Array.isArray(data?.data) ? data.data
+        : Array.isArray(data) ? data : []
       const products = list
         .map((p: Record<string, unknown>) => String(p.productUid ?? p.product_uid ?? ''))
         .filter(Boolean)
@@ -51,7 +53,9 @@ export async function GET(request: NextRequest) {
     const data = await res.json().catch(() => ({}))
     if (!res.ok) return NextResponse.json({ configured: true, error: data?.message || `Gelato error ${res.status}`, raw: data })
 
-    const list = Array.isArray(data) ? data : Array.isArray(data?.catalogs) ? data.catalogs : []
+    const list = Array.isArray(data) ? data
+      : Array.isArray(data?.catalogs) ? data.catalogs
+      : Array.isArray(data?.data) ? data.data : []
     const catalogs = list.map((c: Record<string, unknown>) => ({
       uid: String(c.catalogUid ?? c.catalog_uid ?? c.uid ?? ''),
       title: String(c.title ?? c.name ?? c.catalogUid ?? ''),
