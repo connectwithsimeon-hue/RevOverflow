@@ -56,11 +56,10 @@ const commandPoints = [
   "Top opportunities from Yara",
   "Campaign and performance insights",
 ];
-const pricing = [
-  { name: "Starter", price: "$97", desc: "For getting started", features: ["Up to 1,000 customers", "Email campaigns", "Basic reporting", "1 POS connection"] },
-  { name: "Core", price: "$297", desc: "Everything you need to grow", popular: true, features: ["Up to 5,000 customers", "SMS + email campaigns", "AI opportunities", "Advanced reporting", "Up to 2 POS connections"] },
-  { name: "Brain", price: "$597", desc: "For growing businesses", features: ["Up to 15,000 customers", "All campaign types", "AI revenue forecasting", "Priority support", "Up to 3 POS connections"] },
-  { name: "Empire", price: "$1,197", desc: "For multi-location businesses", features: ["Unlimited customers", "All features included", "Multi-location analytics", "Dedicated support", "Unlimited POS connections"] },
+const pricing: { name: string; price: string; desc: string; popular?: boolean; custom?: boolean; features: string[] }[] = [
+  { name: "Business", price: "$97", desc: "Pays for itself when Yara brings back ~3 customers", popular: true, features: ["Autonomous Yara + 12 revenue agents", "SMS + email campaigns, sent for you", "Revenue attribution & reporting", "500 credits / month", "3× ROI guarantee", "1 POS connection"] },
+  { name: "Business Pro", price: "$297", desc: "Pays for itself when Yara brings back ~10 customers", features: ["Everything in Business", "1,200 credits / month", "Up to 3 POS connections & locations", "24/7 priority support", "3× ROI guarantee"] },
+  { name: "Custom", price: "Let's talk", desc: "Multi-location & franchise", custom: true, features: ["Unlimited POS & locations", "Custom credit pool", "Dedicated success manager"] },
 ];
 const faqs: [string, string][] = [
   ["How does the 3x ROI guarantee work?", "If Yara doesn't generate at least 3× your subscription cost in verified, control-group-attributed revenue within 60 days, you're eligible for a refund. See our terms for full eligibility details."],
@@ -437,17 +436,21 @@ export default function HomePage() {
             <h2 className="mt-3 text-3xl font-bold tracking-tight">Choose the plan that fits your business</h2>
             <p className="mt-3 text-slate-500">Start free. Upgrade anytime. Cancel anytime.</p>
           </div>
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {pricing.map((plan) => (
               <div key={plan.name} className={`relative rounded-3xl border bg-white p-7 shadow-sm ${plan.popular ? "border-violet-400 shadow-xl shadow-violet-100" : "border-slate-100"}`}>
                 {plan.popular && <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-violet-600 px-4 py-1 text-xs font-black text-white">Most Popular</div>}
                 <h3 className="text-xl font-black">{plan.name}</h3>
                 <p className="mt-1 text-sm text-slate-500">{plan.desc}</p>
-                <div className="mt-6"><span className="text-4xl font-black">{plan.price}</span><span className="text-slate-500"> /month</span></div>
+                <div className="mt-6"><span className="text-4xl font-black">{plan.price}</span>{!plan.custom && <span className="text-slate-500"> /month</span>}</div>
                 <ul className="mt-6 space-y-3">
                   {plan.features.map((f) => (<li key={f} className="text-sm font-semibold text-slate-600">✓ {f}</li>))}
                 </ul>
-                <Link href="/signup" className={`mt-8 block w-full rounded-2xl px-5 py-4 text-center text-sm font-black ${plan.popular ? "bg-violet-600 text-white" : "border border-violet-200 text-violet-700"}`}>Start free</Link>
+                {plan.custom ? (
+                  <a href="mailto:simeon@revoverflow.com?subject=RevOverflow%20Custom%20plan" className="mt-8 block w-full rounded-2xl border border-violet-200 px-5 py-4 text-center text-sm font-black text-violet-700">Contact sales</a>
+                ) : (
+                  <Link href="/signup" className={`mt-8 block w-full rounded-2xl px-5 py-4 text-center text-sm font-black ${plan.popular ? "bg-violet-600 text-white" : "border border-violet-200 text-violet-700"}`}>Start free</Link>
+                )}
               </div>
             ))}
           </div>
