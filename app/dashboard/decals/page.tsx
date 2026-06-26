@@ -32,7 +32,7 @@ export default async function DecalsPage() {
           <div>
             <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 600 }}>In-Store</div>
             <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: '1.0625rem' }}>
-              Decals & Glass Prints
+              Counter Cards
             </div>
           </div>
         </div>
@@ -43,9 +43,9 @@ export default async function DecalsPage() {
               Turn walk-ins into reachable customers
             </h1>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem', maxWidth: '560px' }}>
-              A counter card (just sits by the register, no adhesive) or a window sticker, printed with a QR code
+              A sturdy A5 counter card (just sits by the register, no adhesive), printed with a QR code
               straight to your VIP signup page. Customers scan, sign up, and the next time they pay you, Yara
-              already has their contact info. Free with your plan — we print and ship it to you.
+              already has their contact info. Free with your plan — we print and ship two to you.
             </p>
           </div>
 

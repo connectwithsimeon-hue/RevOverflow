@@ -30,7 +30,7 @@ const STATUS_LABEL: Record<string, { label: string; color: string }> = {
 export default function DecalOrderWidget({ merchantBusinessName, eligible }: { merchantBusinessName: string; eligible: boolean }) {
   const [orders, setOrders] = useState<DecalOrder[]>([])
   const [loadingOrders, setLoadingOrders] = useState(true)
-  const [productType, setProductType] = useState<'table_decal' | 'glass_print'>('table_decal')
+  const productType = 'table_decal' as const
   const [form, setForm] = useState({
     shippingName: merchantBusinessName || '',
     addressLine1: '', addressLine2: '', city: '', state: '', postCode: '', country: 'US', phone: '', email: '',
@@ -111,24 +111,14 @@ export default function DecalOrderWidget({ merchantBusinessName, eligible }: { m
 
         <div style={{ display: 'flex', gap: '1.75rem', flexWrap: 'wrap' }}>
           <div style={{ flex: '1 1 320px', minWidth: 0 }}>
-            <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem' }}>
-              {(['table_decal', 'glass_print'] as const).map(type => (
-                <button
-                  key={type}
-                  onClick={() => setProductType(type)}
-                  style={{
-                    flex: 1, padding: '0.875rem 1rem', borderRadius: '10px', cursor: 'pointer',
-                    border: productType === type ? '2px solid var(--violet)' : '1px solid var(--border)',
-                    backgroundColor: productType === type ? 'rgba(124,92,252,0.08)' : 'var(--ink)',
-                    fontFamily: 'inherit', textAlign: 'left',
-                  }}
-                >
-                  <div style={{ fontWeight: 700, fontSize: '0.9375rem', marginBottom: '0.25rem' }}>{PRODUCT_LABEL[type]}</div>
-                  <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
-                    {type === 'table_decal' ? 'Paper card, just sits at the counter — A5, about 6×8 in' : 'Adhesive sticker for windows/doors, 8×10 in'}
-                  </div>
-                </button>
-              ))}
+            <div style={{
+              marginBottom: '1.5rem', padding: '0.875rem 1rem', borderRadius: '10px',
+              border: '1px solid var(--border)', backgroundColor: 'var(--ink)',
+            }}>
+              <div style={{ fontWeight: 700, fontSize: '0.9375rem', marginBottom: '0.25rem' }}>Counter card · A5</div>
+              <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
+                Sturdy card that sits by the register — no adhesive. We print and ship <strong>2 cards</strong> to you, free with your plan.
+              </div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
@@ -242,7 +232,7 @@ export default function DecalOrderWidget({ merchantBusinessName, eligible }: { m
                 />
               </div>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.625rem', lineHeight: 1.5 }}>
-                This is the exact design that gets printed and shipped — including your logo and real VIP QR code. Switch the product type above to preview the other size.
+                This is the exact design that gets printed and shipped — including your logo and real VIP QR code.
               </p>
             </div>
           </div>

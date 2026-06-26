@@ -100,7 +100,7 @@ export async function createGelatoOrder(params: CreateGelatoOrderParams): Promis
             itemReferenceId: `${params.orderReferenceId}-item`,
             productUid,
             files: [{ type: 'default', url: params.designUrl }],
-            quantity: 1,
+            quantity: 2,
           },
         ],
         shipmentMethodUid: 'normal',
