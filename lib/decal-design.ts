@@ -92,10 +92,10 @@ const THEME: Record<DecalProductType, ThemeConfig> = {
   table_decal: {
     width: 420, // A5 width (~5.8in / 148mm)
     height: 595, // A5 height (~8.3in / 210mm)
-    bg: '#16151f',
-    headlineColor: '#ffffff',
-    bodyColor: '#aab0c2',
-    footerColor: '#8b91a6',
+    bg: '#ffffff',          // white canvas so any merchant logo sits cleanly
+    headlineColor: '#1a1b2e',
+    bodyColor: '#6b7280',
+    footerColor: '#6b7280',
     headlineLine1: 'JOIN OUR',
     headlineLine2: 'REWARDS',
     dividerLabel: 'Scan to sign up in seconds',
