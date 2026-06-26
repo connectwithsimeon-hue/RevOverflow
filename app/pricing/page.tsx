@@ -195,7 +195,7 @@ export default function PricingPage() {
               Multi-location, franchise, or unusual volume? Unlimited POS &amp; locations, a custom credit pool, and a dedicated success manager.
             </div>
           </div>
-          <a href="mailto:sales@revoverflow.com?subject=RevOverflow%20Custom%20plan" style={{
+          <a href="mailto:simeon@revoverflow.com?subject=RevOverflow%20Custom%20plan" style={{
             backgroundColor: 'transparent', color: 'var(--text-primary)', border: '1px solid var(--border)',
             borderRadius: '10px', fontWeight: 700, padding: '0.75rem 1.5rem', fontSize: '0.9375rem',
             textDecoration: 'none', whiteSpace: 'nowrap',
