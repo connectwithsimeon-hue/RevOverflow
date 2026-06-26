@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { sendWhatsApp, formatWhatsAppMessage } from '@/lib/whatsapp'
 import { preCheckCompliance, recordMessageSent } from '@/lib/compliance'
-import { deductCredits, hasCredits } from '@/lib/credits'
+import { deductCredits, deductCampaignFee, hasCredits, CREDIT_COSTS } from '@/lib/credits'
 import { generateYaraCopy, type TriggerType } from '@/lib/yara'
 import { logCampaignSent } from '@/lib/outcome'
 
@@ -63,8 +63,8 @@ export async function POST(
     return NextResponse.json({ ok: false, error: 'No customers with phone numbers in this campaign' })
   }
 
-  // Credit gate: need 5 credits per WhatsApp message, at least enough for 1
-  const creditsNeeded = 5
+  // Credit gate: need at least 1 credit per WhatsApp message
+  const creditsNeeded = CREDIT_COSTS.sms_sent
   if ((merchant.credit_balance ?? 0) < creditsNeeded) {
     return NextResponse.json({
       error: 'insufficient_credits',
@@ -74,6 +74,9 @@ export async function POST(
       buyUrl: '/pricing',
     }, { status: 402 })
   }
+
+  // One-time campaign strategy fee — the "Yara built this" line.
+  await deductCampaignFee(merchant.id, `WhatsApp: ${campaign.name}`, campaign.id)
 
   let sent = 0
   let skipped = 0

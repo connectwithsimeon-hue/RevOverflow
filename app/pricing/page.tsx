@@ -2,110 +2,49 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { PLANS as PLAN_DEFS, CREDIT_PACKS, centsPerCredit } from '@/lib/plans'
 
 const PLANS = [
   {
-    id: 'capture',
-    name: 'Capture',
-    price: 97,
-    credits: 200,
-    description: 'Start knowing your customers',
+    id: 'business',
+    name: PLAN_DEFS.business.name,
+    price: PLAN_DEFS.business.priceMonthly!,
+    credits: PLAN_DEFS.business.credits,
+    description: 'Pays for itself when Yara brings back ~3 customers',
     features: [
-      'Square POS sync',
-      'RFV customer scoring & segmentation',
-      'Customer dashboard',
-      '200 Yara credits / month',
-      'Email support',
-    ],
-    highlight: false,
-    guarantee: false,
-  },
-  {
-    id: 'core',
-    name: 'Core',
-    price: 297,
-    credits: 1000,
-    description: 'Win back lapsed customers',
-    features: [
-      'Everything in Capture',
-      'AI-written win-back campaigns (all 5 triggers)',
-      'Control group revenue attribution',
-      'Campaign performance analytics',
-      '1,000 Yara credits / month',
+      'Autonomous Yara — finds & wins back customers for you',
+      'All 12 revenue agents working 24/7',
+      'SMS + email campaigns, written & sent automatically',
+      'Control-group revenue attribution',
+      `${PLAN_DEFS.business.credits} credits / month (~${PLAN_DEFS.business.credits} messages)`,
       '3× ROI guarantee in 60 days',
+      '1 POS connection · email support',
     ],
     highlight: true,
-    guarantee: true,
   },
   {
-    id: 'brain',
-    name: 'Brain',
-    price: 597,
-    credits: 3000,
-    description: 'Yara runs on autopilot',
+    id: 'business_pro',
+    name: PLAN_DEFS.business_pro.name,
+    price: PLAN_DEFS.business_pro.priceMonthly!,
+    credits: PLAN_DEFS.business_pro.credits,
+    description: 'Pays for itself when Yara brings back ~10 customers',
     features: [
-      'Everything in Core',
-      'Autonomous daily campaigns — no manual work',
-      'SMS + email delivery',
-      'Square promo code generator',
-      '3,000 Yara credits / month',
+      'Everything in Business',
+      `${PLAN_DEFS.business_pro.credits.toLocaleString()} credits / month`,
+      'Up to 3 POS connections & locations',
+      '24/7 priority support',
       '3× ROI guarantee in 60 days',
     ],
     highlight: false,
-    guarantee: true,
-  },
-  {
-    id: 'empire',
-    name: 'Empire',
-    price: 1197,
-    credits: 10000,
-    description: 'Multi-location operators',
-    features: [
-      'Everything in Brain',
-      'Multi-location support',
-      'Clover + Toast POS adapters',
-      '10,000 Yara credits / month',
-      'White-glove onboarding',
-      'Dedicated success manager',
-      '3× ROI guarantee in 60 days',
-    ],
-    highlight: false,
-    guarantee: true,
-  },
-  {
-    id: 'network',
-    name: 'Network',
-    price: 2997,
-    credits: 30000,
-    description: 'Franchise & multi-brand',
-    features: [
-      'Everything in Empire',
-      'Franchise / multi-brand dashboard',
-      'Revenue Commander features',
-      'Facebook audience sync',
-      '30,000 Yara credits / month',
-      'SLA guarantee',
-    ],
-    highlight: false,
-    guarantee: true,
   },
 ]
 
-const CREDIT_PACKS = [
-  { id: 'pack_1000',  credits: 1000,  price: 15,  perK: 15, tag: '' },
-  { id: 'pack_5000',  credits: 5000,  price: 60,  perK: 12, tag: 'Save 20%' },
-  { id: 'pack_15000', credits: 15000, price: 150, perK: 10, tag: 'Save 33%' },
-  { id: 'pack_50000', credits: 50000, price: 400, perK: 8,  tag: 'Save 47%' },
-]
+// CREDIT_PACKS come from lib/plans.ts (single source of truth).
 
 const CREDIT_ACTIONS = [
-  { action: 'AI win-back email generated',   cost: 2  },
-  { action: 'SMS message sent',              cost: 5  },
-  { action: 'Yara targeting decision',       cost: 1  },
-  { action: 'Campaign analysis report',      cost: 10 },
-  { action: 'Extra POS connection / month',  cost: 50 },
-  { action: 'Inbound reply handled by Yara', cost: 3  },
-  { action: 'Customer import (per 100)',      cost: 5  },
+  { action: 'Yara sends a text or email',      cost: 1  },
+  { action: 'Yara builds & runs a campaign',   cost: 10 },
+  { action: 'Yara handles an inbound reply',   cost: 2  },
 ]
 
 export default function PricingPage() {
@@ -241,8 +180,29 @@ export default function PricingPage() {
         </div>
 
         <p style={{ textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '1.25rem' }}>
-          All plans include a 14-day free trial. Cancel anytime. Credits roll over monthly.
+          14-day free trial on every plan. Cancel anytime. Plan credits reset each month; purchased credits never expire.
         </p>
+
+        {/* Custom / enterprise */}
+        <div style={{
+          marginTop: '1.5rem', backgroundColor: 'var(--surface)', border: '1px solid var(--border)',
+          borderRadius: '16px', padding: '1.5rem 1.75rem', display: 'flex', flexWrap: 'wrap',
+          alignItems: 'center', justifyContent: 'space-between', gap: '1rem',
+        }}>
+          <div>
+            <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 800, fontSize: '1.0625rem' }}>Custom</div>
+            <div style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', maxWidth: 520 }}>
+              Multi-location, franchise, or unusual volume? Unlimited POS &amp; locations, a custom credit pool, and a dedicated success manager.
+            </div>
+          </div>
+          <a href="mailto:sales@revoverflow.com?subject=RevOverflow%20Custom%20plan" style={{
+            backgroundColor: 'transparent', color: 'var(--text-primary)', border: '1px solid var(--border)',
+            borderRadius: '10px', fontWeight: 700, padding: '0.75rem 1.5rem', fontSize: '0.9375rem',
+            textDecoration: 'none', whiteSpace: 'nowrap',
+          }}>
+            Contact sales →
+          </a>
+        </div>
 
         {/* ── Credits section ── */}
         <hr style={{ border: 'none', borderTop: '1px solid var(--border)', margin: '3.5rem 0' }} />
@@ -251,7 +211,7 @@ export default function PricingPage() {
           Yara Credits
         </h2>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem', marginBottom: '2rem', maxWidth: '560px' }}>
-          Every plan includes credits each month. When Yara does more — sends more emails, texts customers, adds a new POS — she burns credits. Buy more anytime, just like you would with OpenAI or Anthropic.
+          Every plan includes credits each month. A credit is one unit of Yara&apos;s work — sending a text or email, building a campaign, or handling a reply. When she runs low, top up anytime. Base rate is 10¢ per credit, cheaper in bulk.
         </p>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: '2rem' }}>
@@ -294,7 +254,7 @@ export default function PricingPage() {
                   </div>
                   <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', marginBottom: '2px' }}>credits</div>
                   <div style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: '1.125rem', fontWeight: 700, margin: '6px 0 2px' }}>${pack.price}</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>${pack.perK} per 1,000</div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>{centsPerCredit(pack)}¢ per credit</div>
                   {pack.tag && (
                     <div style={{ display: 'inline-block', fontSize: '0.7rem', fontWeight: 700, backgroundColor: 'rgba(74,222,128,0.15)', color: '#15803d', padding: '2px 8px', borderRadius: '20px', marginBottom: '10px' }}>
                       {pack.tag}
@@ -312,7 +272,7 @@ export default function PricingPage() {
               ))}
             </div>
             <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', marginTop: '1rem', lineHeight: 1.6 }}>
-              Credits roll over monthly. Auto-refill available so Yara never stops mid-campaign. Unused credits never expire on Brain and Empire plans.
+              Plan credits reset each month. Purchased top-up credits never expire. Turn on auto-refill so Yara never stops mid-campaign.
             </p>
           </div>
         </div>
@@ -324,7 +284,7 @@ export default function PricingPage() {
           Works with your POS
         </h2>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9375rem', marginBottom: '1.5rem' }}>
-          First POS connection is free on every plan. Additional locations or systems use credits (50 / month each).
+          Business includes 1 POS connection. Business Pro supports up to 3 POS connections and locations. Need more? Custom has unlimited.
         </p>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>

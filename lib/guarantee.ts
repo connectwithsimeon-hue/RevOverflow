@@ -17,17 +17,19 @@
 
 import { createServiceClient } from '@/lib/supabase/server'
 import { computeCampaignAttribution } from '@/lib/attribution'
+import { isPaidPlan } from '@/lib/plans'
 
 export const PLAN_MONTHLY_COST: Record<string, number> = {
+  business:     97,
+  business_pro: 297,
+  custom:       997,
+  // Legacy plan ids (existing accounts)
   capture: 97,
-  core:    297,
-  brain:   597,
-  empire:  1197,
-  network: 2997,
+  core:    97,
+  brain:   297,
+  empire:  297,
+  network: 997,
 }
-
-// Plans with the 3× guarantee
-const GUARANTEE_PLANS = new Set(['core', 'brain', 'empire', 'network'])
 
 export interface GuaranteeStatus {
   eligible: boolean          // Is this merchant on a guarantee plan in Mode B (Revenue Activation)?
@@ -53,7 +55,7 @@ export async function computeGuaranteeStatus(merchantId: string): Promise<Guaran
 
   if (!merchant) return null
 
-  const plan = merchant.plan || 'capture'
+  const plan = merchant.plan || 'business'
   const planCost = PLAN_MONTHLY_COST[plan] ?? 97
   const hasPosConnected = !!(merchant.square_merchant_id || merchant.clover_merchant_id || merchant.toast_restaurant_guid)
 
@@ -69,7 +71,7 @@ export async function computeGuaranteeStatus(merchantId: string): Promise<Guaran
     .eq('merchant_id', merchantId)
     .eq('is_reachable', true)
 
-  const eligible = GUARANTEE_PLANS.has(plan) && hasPosConnected && (reachableCount ?? 0) >= REACHABLE_THRESHOLD
+  const eligible = isPaidPlan(plan) && hasPosConnected && (reachableCount ?? 0) >= REACHABLE_THRESHOLD
 
   const startDate = new Date(merchant.created_at)
   const now = new Date()

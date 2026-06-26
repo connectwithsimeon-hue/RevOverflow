@@ -5,6 +5,7 @@ import OnboardingBanner from '@/app/components/OnboardingBanner'
 import ReachableBaseMeter from '@/app/components/ReachableBaseMeter'
 import GuaranteeBanner from '@/app/components/GuaranteeBanner'
 import { computeGuaranteeStatus } from '@/lib/guarantee'
+import { isPaidPlan } from '@/lib/plans'
 import YaraRecommendations from '@/app/components/YaraRecommendations'
 import TrustScoreWidget from '@/app/components/TrustScoreWidget'
 import GoalModeWidget from '@/app/components/GoalModeWidget'
@@ -477,7 +478,7 @@ export default async function DashboardPage({
             )}
 
             {/* Yara Autopilot toggle */}
-            {isConnected && ['brain', 'empire'].includes(merchant.plan || '') && (
+            {isConnected && isPaidPlan(merchant.plan) && (
               <div style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem',
                 background: merchant.auto_campaigns_enabled ? 'rgba(124,92,252,0.1)' : 'var(--surface)',
@@ -676,7 +677,7 @@ export default async function DashboardPage({
                   <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: '1.5rem', color: 'var(--violet)' }}>{(merchant.credit_balance ?? 0).toLocaleString()}</div>
                 </div>
               </div>
-              {!['brain', 'empire'].includes(merchant.plan || '') && (
+              {!isPaidPlan(merchant.plan) && (
                 <Link href="/pricing" style={{ display: 'block', marginTop: '1rem', textAlign: 'center', background: 'var(--violet)', color: '#fff', borderRadius: '8px', padding: '0.625rem', fontSize: '0.875rem', fontWeight: 600, textDecoration: 'none' }}>
                   Unlock Yara Autopilot →
                 </Link>

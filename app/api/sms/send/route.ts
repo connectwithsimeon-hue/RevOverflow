@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { sendSms, buildWinBackSms } from '@/lib/sms'
-import { deductCredits, hasCredits } from '@/lib/credits'
+import { deductCredits, hasCredits, CREDIT_COSTS } from '@/lib/credits'
 
 export async function POST(request: NextRequest) {
   const supabase = createClient()
@@ -36,10 +36,10 @@ export async function POST(request: NextRequest) {
   }
 
   // Credit gate
-  if ((merchant.credit_balance ?? 0) < 5) {
+  if ((merchant.credit_balance ?? 0) < CREDIT_COSTS.sms_sent) {
     return NextResponse.json({
       error: 'insufficient_credits',
-      message: `You have ${merchant.credit_balance} credits but need at least 5 per SMS.`,
+      message: `You have ${merchant.credit_balance} credits but need at least ${CREDIT_COSTS.sms_sent} per SMS.`,
       creditsAvailable: merchant.credit_balance,
       buyUrl: '/pricing',
     }, { status: 402 })

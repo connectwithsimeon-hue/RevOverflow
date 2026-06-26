@@ -1,38 +1,42 @@
 /**
  * Yara Credits — shared helper functions
  *
- * Credit costs (matches pricing page):
- *   email sent        → 2 credits
- *   sms sent          → 5 credits
- *   targeting decision → 1 credit
- *   campaign analysis → 10 credits
- *   extra POS / month → 50 credits
- *   inbound reply     → 3 credits
- *   import per 100    → 5 credits
+ * 1 credit ≈ 1 message. Costs (locked 2026-06):
+ *   send a text or email   → 1 credit
+ *   Yara builds a campaign → 10 credits  (the "brain" fee — analyze, target, write)
+ *   inbound reply handled  → 2 credits
  *
- * Plan monthly allowances:
- *   capture → 500  | core → 2,000 | brain → 5,000 | empire → 15,000
+ * Sold at a base of 10¢/credit (cheaper in bulk). Our cost is ~1.15¢ per text,
+ * ~0.4¢ per email, and ~$0 for campaign strategy — so every credit is margin.
+ *
+ * Plan monthly allowances live in lib/plans.ts (the single source of truth):
+ *   business → 500  |  business_pro → 1,200
  */
 
 import { createServiceClient } from '@/lib/supabase/server'
+import { PLANS } from '@/lib/plans'
 
 export const CREDIT_COSTS = {
-  email_sent:     2,
-  sms_sent:       5,
-  decision:       1,
-  analysis:       10,
+  email_sent:     1,   // Yara writes + sends one email
+  sms_sent:       1,   // Yara writes + sends one text
+  campaign:       10,  // Yara analyzes + targets + builds a campaign (brain fee)
+  reply_handled:  2,   // Yara handles one inbound reply
+  decision:       1,   // single targeting decision (legacy / uncharged paths)
+  analysis:       10,  // deep analysis report
   extra_pos:      50,
-  reply_handled:  3,
   import_100:     5,
 } as const
 
 export type CreditAction = keyof typeof CREDIT_COSTS
 
 export const PLAN_CREDITS: Record<string, number> = {
-  capture: 500,
-  core:    2000,
-  brain:   5000,
-  empire:  15000,
+  business:     PLANS.business.credits,      // 500
+  business_pro: PLANS.business_pro.credits,  // 1,200
+  // Legacy ids → nearest current tier so old subscriptions still renew correctly
+  capture: PLANS.business.credits,
+  core:    PLANS.business.credits,
+  brain:   PLANS.business_pro.credits,
+  empire:  PLANS.business_pro.credits,
 }
 
 /** Returns the merchant's current credit balance */
@@ -88,6 +92,25 @@ export async function deductCredits(
     .eq('id', merchantId)
 
   return { ok: true, balance: newBalance }
+}
+
+/**
+ * Charge the one-time "campaign strategy" fee (10 credits) when an agent
+ * builds and launches a campaign — the visible "Yara's brain did work" line
+ * on the ledger, separate from the per-message sends. Best-effort: if the
+ * merchant is short on credits the campaign still proceeds (per-message
+ * checks gate actual sends), so a near-empty balance never hard-blocks Yara.
+ */
+export async function deductCampaignFee(
+  merchantId: string,
+  label: string,
+  campaignId?: string
+): Promise<void> {
+  try {
+    await deductCredits(merchantId, 'campaign', `Campaign strategy — ${label}`, campaignId)
+  } catch {
+    // Never let billing bookkeeping break a send.
+  }
 }
 
 /**

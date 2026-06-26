@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { syncMerchantAdAudiences } from '@/lib/ad-sync'
+import { PAID_PLAN_IDS } from '@/lib/plans'
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get('authorization')
@@ -23,7 +24,7 @@ export async function GET(request: NextRequest) {
     .from('merchants')
     .select('id, business_name')
     .or('meta_ad_account_id.not.is.null,google_ads_customer_id.not.is.null')
-    .in('plan', ['brain', 'empire'])
+    .in('plan', PAID_PLAN_IDS)
     .eq('subscription_status', 'active')
 
   if (!merchants || merchants.length === 0) {

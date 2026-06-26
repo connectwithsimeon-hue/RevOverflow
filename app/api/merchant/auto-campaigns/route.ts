@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { isPaidPlan } from '@/lib/plans'
 
 export async function POST(request: NextRequest) {
   const supabase = createClient()
@@ -17,10 +18,10 @@ export async function POST(request: NextRequest) {
 
   if (!merchant) return NextResponse.json({ error: 'No merchant' }, { status: 404 })
 
-  // Only Brain and Empire can use autonomous campaigns
-  if (!['brain', 'empire'].includes(merchant.plan || '')) {
+  // Autonomous Yara is included on every paid plan
+  if (!isPaidPlan(merchant.plan)) {
     return NextResponse.json({
-      error: 'Autonomous Yara requires the Brain plan or higher.',
+      error: 'Autonomous Yara requires a paid plan.',
       upgradeUrl: '/pricing',
     }, { status: 403 })
   }

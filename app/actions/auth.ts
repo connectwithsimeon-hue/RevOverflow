@@ -26,7 +26,7 @@ export async function signUp(formData: FormData) {
         auth_user_id: data.user.id,
         business_name: businessName,
         mode: 'data_capture',
-        plan: 'capture',
+        plan: 'starter',
       })
 
     if (merchantError) {

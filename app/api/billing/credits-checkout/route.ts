@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 
-const CREDIT_PACKS: Record<string, { credits: number; price: number; label: string }> = {
-  pack_1000:  { credits: 1000,  price: 15,  label: '1,000 Yara Credits' },
-  pack_5000:  { credits: 5000,  price: 60,  label: '5,000 Yara Credits' },
-  pack_15000: { credits: 15000, price: 150, label: '15,000 Yara Credits' },
-  pack_50000: { credits: 50000, price: 400, label: '50,000 Yara Credits' },
-}
+// Packs come from the single source of truth in lib/plans.ts.
+import { CREDIT_PACKS as PACK_DEFS } from '@/lib/plans'
+
+const CREDIT_PACKS: Record<string, { credits: number; price: number; label: string }> =
+  Object.fromEntries(
+    PACK_DEFS.map((p) => [p.id, {
+      credits: p.credits,
+      price: p.price,
+      label: `${p.credits.toLocaleString()} Yara Credits`,
+    }])
+  )
 
 export async function POST(request: NextRequest) {
   const supabase = createClient()

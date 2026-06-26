@@ -4,12 +4,18 @@ import Link from 'next/link'
 import ReferralLinkWidget from '@/app/components/ReferralLinkWidget'
 import AdSyncWidget from '@/app/components/AdSyncWidget'
 import DashboardSidebar from '@/app/components/DashboardSidebar'
+import { isPaidPlan } from '@/lib/plans'
 
 const PLAN_META: Record<string, { label: string; price: number; credits: number; color: string; features: string[] }> = {
-  capture: { label: 'Capture', price: 147,  credits: 500,   color: '#1d4ed8', features: ['Customer scoring (RFV)', 'Segmentation', '500 Yara credits/mo', 'Square POS'] },
-  core:    { label: 'Core',    price: 397,  credits: 2000,  color: '#15803d', features: ['Everything in Capture', 'Win-back campaigns', 'Revenue attribution', '2,000 Yara credits/mo'] },
-  brain:   { label: 'Brain',   price: 697,  credits: 5000,  color: 'var(--violet-dark)', features: ['Everything in Core', 'Autonomous Yara Autopilot', 'Multi-POS connectors', '5,000 Yara credits/mo'] },
-  empire:  { label: 'Empire',  price: 1497, credits: 15000, color: '#f59e0b', features: ['Everything in Brain', 'White-glove onboarding', 'Unlimited POS', '15,000 Yara credits/mo'] },
+  starter:      { label: 'Free',         price: 0,   credits: 0,    color: '#6b7280', features: ['Sign up & explore', 'Subscribe to put Yara to work'] },
+  business:     { label: 'Business',     price: 97,  credits: 500,  color: 'var(--violet-dark)', features: ['Autonomous Yara + 12 agents', 'SMS + email campaigns', 'Revenue attribution', '500 Yara credits/mo', '3× ROI guarantee', '1 POS · email support'] },
+  business_pro: { label: 'Business Pro', price: 297, credits: 1200, color: '#f59e0b', features: ['Everything in Business', '1,200 Yara credits/mo', 'Up to 3 POS & locations', '24/7 priority support', '3× ROI guarantee'] },
+  custom:       { label: 'Custom',       price: 0,   credits: 0,    color: '#1d4ed8', features: ['Unlimited POS & locations', 'Custom credit pool', 'Dedicated success manager'] },
+  // Legacy plans (existing accounts) → shown as nearest current tier
+  capture: { label: 'Business',     price: 97,  credits: 500,  color: 'var(--violet-dark)', features: ['Autonomous Yara + 12 agents', '500 Yara credits/mo', '3× ROI guarantee'] },
+  core:    { label: 'Business',     price: 97,  credits: 500,  color: 'var(--violet-dark)', features: ['Autonomous Yara + 12 agents', '500 Yara credits/mo', '3× ROI guarantee'] },
+  brain:   { label: 'Business Pro', price: 297, credits: 1200, color: '#f59e0b', features: ['Everything in Business', '1,200 Yara credits/mo', '24/7 support'] },
+  empire:  { label: 'Business Pro', price: 297, credits: 1200, color: '#f59e0b', features: ['Everything in Business', '1,200 Yara credits/mo', '24/7 support'] },
 }
 
 const ACTION_LABELS: Record<string, string> = {
@@ -46,8 +52,8 @@ export default async function AccountPage() {
     .order('created_at', { ascending: false })
     .limit(20)
 
-  const plan = PLAN_META[merchant.plan || 'capture'] || PLAN_META['capture']
-  const isAutopilotPlan = ['brain', 'empire'].includes(merchant.plan || '')
+  const plan = PLAN_META[merchant.plan || 'business'] || PLAN_META['business']
+  const isAutopilotPlan = isPaidPlan(merchant.plan)
 
   const initials = (merchant.business_name || 'R')
     .split(' ').slice(0, 2).map((w: string) => w[0]?.toUpperCase()).join('')

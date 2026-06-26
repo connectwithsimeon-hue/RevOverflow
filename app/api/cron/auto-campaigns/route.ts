@@ -18,7 +18,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { sendWinBackEmail } from '@/lib/email'
 import { sendSms } from '@/lib/sms'
-import { deductCredits, CREDIT_COSTS } from '@/lib/credits'
+import { deductCredits, deductCampaignFee, CREDIT_COSTS } from '@/lib/credits'
+import { PAID_PLAN_IDS } from '@/lib/plans'
 import { generateYaraCopy, type TriggerType } from '@/lib/yara'
 import { preCheckCompliance, recordMessageSent } from '@/lib/compliance'
 import { logCampaignSent } from '@/lib/outcome'
@@ -54,7 +55,7 @@ export async function GET(request: NextRequest) {
   const { data: merchants } = await service
     .from('merchants')
     .select('id, business_name, industry, plan, credit_balance, auto_campaigns_enabled')
-    .in('plan', ['brain', 'empire'])
+    .in('plan', PAID_PLAN_IDS)
     .eq('auto_campaigns_enabled', true)
     .eq('subscription_status', 'active')
 
@@ -241,6 +242,9 @@ async function runTrigger({
       .single()
 
     if (!campaign) return { error: 'Failed to create campaign' }
+
+    // Charge the one-time campaign strategy fee — the "Yara built this" line.
+    await deductCampaignFee(merchant.id, `Auto ${label}`, campaign.id)
 
     let sent  = 0
     let skipped = 0

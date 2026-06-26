@@ -1,11 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 
+// Prices/credits come from the single source of truth in lib/plans.ts.
+import { PLANS as PLAN_DEFS } from '@/lib/plans'
+
 const PLANS: Record<string, { name: string; priceMonthly: number; description: string }> = {
-  capture: { name: 'Capture',  priceMonthly: 147,  description: 'Capture — RFV scoring, segmentation, 500 Yara credits/mo' },
-  core:    { name: 'Core',     priceMonthly: 397,  description: 'Core — Win-back campaigns + attribution, 2,000 Yara credits/mo' },
-  brain:   { name: 'Brain',    priceMonthly: 697,  description: 'Brain — Autonomous Yara + multi-POS, 5,000 Yara credits/mo' },
-  empire:  { name: 'Empire',   priceMonthly: 1497, description: 'Empire — White-glove + unlimited POS, 15,000 Yara credits/mo' },
+  business: {
+    name: PLAN_DEFS.business.name,
+    priceMonthly: PLAN_DEFS.business.priceMonthly!,
+    description: `Business — autonomous Yara + 3× ROI guarantee, ${PLAN_DEFS.business.credits} Yara credits/mo`,
+  },
+  business_pro: {
+    name: PLAN_DEFS.business_pro.name,
+    priceMonthly: PLAN_DEFS.business_pro.priceMonthly!,
+    description: `Business Pro — everything in Business + 24/7 support & more POS/locations, ${PLAN_DEFS.business_pro.credits.toLocaleString()} Yara credits/mo`,
+  },
 }
 
 export async function POST(request: NextRequest) {

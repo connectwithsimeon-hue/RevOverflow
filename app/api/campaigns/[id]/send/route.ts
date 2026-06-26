@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { sendWinBackEmail } from '@/lib/email'
-import { deductEmailBatch } from '@/lib/credits'
+import { deductEmailBatch, deductCampaignFee, CREDIT_COSTS } from '@/lib/credits'
 import { generateYaraCopy, type TriggerType } from '@/lib/yara'
 import { logCampaignSent } from '@/lib/outcome'
 
@@ -56,17 +56,20 @@ export async function POST(
 
   // ── Credit gate ──
   const sendableCustomers = customers.filter(c => !c.control_group)
-  const creditsNeeded     = sendableCustomers.length * 2  // 2 credits per email
+  const creditsNeeded     = sendableCustomers.length * CREDIT_COSTS.email_sent  // 1 credit per email
   const creditsAvailable  = merchant.credit_balance ?? 0
-  if (creditsAvailable < 2) {
+  if (creditsAvailable < CREDIT_COSTS.email_sent) {
     return NextResponse.json({
       error:            'insufficient_credits',
-      message:          `You have ${creditsAvailable} Yara credits — you need at least 2 to send. Buy more credits to continue.`,
+      message:          `You have ${creditsAvailable} Yara credits — you need at least ${CREDIT_COSTS.email_sent} to send. Buy more credits to continue.`,
       creditsAvailable,
       creditsNeeded,
       buyUrl:           '/pricing',
     }, { status: 402 })
   }
+
+  // One-time campaign strategy fee — the "Yara built this" line.
+  await deductCampaignFee(merchant.id, `Email: ${campaign.name}`, campaign.id)
 
   let totalSent = 0
   let totalControl = 0

@@ -6,6 +6,7 @@
  */
 import Link from 'next/link'
 import { logout } from '@/app/actions/auth'
+import { isProPlan } from '@/lib/plans'
 
 type Route = 'dashboard' | 'campaigns' | 'customers' | 'products' | 'membership' | 'reputation' | 'decals' | 'account'
 
@@ -81,7 +82,7 @@ const NAV: { key: Route; label: string; href: string; icon: JSX.Element }[] = [
 ]
 
 export default function DashboardSidebar({ active, plan }: { active: Route; plan?: string | null }) {
-  const isPro = ['brain', 'empire'].includes(plan || '')
+  const isPro = isProPlan(plan)
 
   return (
     <aside style={{

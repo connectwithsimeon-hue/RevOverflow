@@ -83,9 +83,10 @@ export async function computeTrustScore(merchantId: string): Promise<TrustScore>
 
   // Plan cost per month
   const PLAN_COSTS: Record<string, number> = {
-    capture: 97, core: 297, brain: 597, empire: 1197, network: 2997,
+    business: 97, business_pro: 297, custom: 997,
+    capture: 97, core: 97, brain: 297, empire: 297, network: 997,
   }
-  const planCost = PLAN_COSTS[merchant?.plan ?? 'core'] ?? 297
+  const planCost = PLAN_COSTS[merchant?.plan ?? 'business'] ?? 97
   const revenueRatio   = Math.min(1, totalRevenue / (planCost * 10))
   const revenueScore   = Math.round(revenueRatio * 30)
 
