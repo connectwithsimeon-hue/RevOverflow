@@ -30,7 +30,7 @@ import QRCode from 'qrcode'
 import { readFile } from 'fs/promises'
 import path from 'path'
 
-export type DecalProductType = 'table_decal' | 'glass_print'
+export type DecalProductType = 'table_decal' | 'glass_print' | 'review_card'
 
 interface DesignParams {
   businessName: string
@@ -81,6 +81,7 @@ interface ThemeConfig {
   headlineLine2: string
   dividerLabel: string
   bodyText: string
+  ctaText: string
   perks: { icon: 'star' | 'gift' | 'bell'; label: string }[]
   footerNote?: string
   layout: LayoutConfig
@@ -100,6 +101,7 @@ const THEME: Record<DecalProductType, ThemeConfig> = {
     headlineLine2: 'REWARDS',
     dividerLabel: 'Scan to sign up in seconds',
     bodyText: 'Enter your details and start earning perks today.',
+    ctaText: 'SCAN HERE TO JOIN',
     perks: [
       { icon: 'star', label: 'Earn points every visit' },
       { icon: 'gift', label: 'Unlock member-only offers' },
@@ -147,6 +149,7 @@ const THEME: Record<DecalProductType, ThemeConfig> = {
     headlineLine2: 'REWARDS',
     dividerLabel: 'Quick sign-up. Exclusive perks.',
     bodyText: 'Scan the code, fill in your details, and start earning rewards today.',
+    ctaText: 'SCAN HERE TO JOIN',
     perks: [
       { icon: 'star', label: 'Earn Points' },
       { icon: 'gift', label: 'Member Offers' },
@@ -181,6 +184,56 @@ const THEME: Record<DecalProductType, ThemeConfig> = {
       footerFontSize: 11,
       cornerRadius: 18,
       strokeScale: 1.6,
+    },
+  },
+  review_card: {
+    // Same A5 counter card as table_decal — different message + QR points at
+    // the merchant's Google review page instead of the VIP signup.
+    width: 420,
+    height: 595,
+    bg: '#ffffff',
+    headlineColor: '#1a1b2e',
+    bodyColor: '#6b7280',
+    footerColor: '#6b7280',
+    headlineLine1: 'LOVE US?',
+    headlineLine2: 'REVIEW US',
+    dividerLabel: 'Scan to leave a Google review',
+    bodyText: 'It takes 10 seconds and means the world to us.',
+    ctaText: 'SCAN TO REVIEW US',
+    perks: [
+      { icon: 'star', label: 'Rate your visit' },
+      { icon: 'gift', label: 'Earn reward points' },
+      { icon: 'bell', label: 'Help us grow' },
+    ],
+    footerNote: 'Thank you for supporting a local business',
+    layout: {
+      topMargin: 40,
+      badgeSize: 32,
+      wordmarkFontSize: 17.5,
+      logoBoxMaxW: 230,
+      gapAfterLogo: 24,
+      headlineFontSize1: 24,
+      headlineFontSize2: 38,
+      gapHeadlineLines: 3,
+      gapAfterHeadline: 24,
+      dividerFontSize: 13,
+      gapAfterDivider: 24,
+      bodyFontSize: 12,
+      gapAfterBody: 32,
+      perkIconR: 17.5,
+      perkLabelFontSize: 9.5,
+      gapAfterPerks: 32,
+      qrSize: 146,
+      qrBoxPad: 11,
+      gapAfterQr: 22,
+      ctaW: 202,
+      ctaH: 35,
+      ctaFontSize: 13,
+      gapAfterCta: 19,
+      footerNoteFontSize: 10,
+      footerFontSize: 10,
+      cornerRadius: 19,
+      strokeScale: 1.35,
     },
   },
 }
@@ -385,7 +438,7 @@ export async function generateDecalSvg({ vipUrl, productType, logoUrl }: DesignP
 
   <!-- CTA -->
   <rect x="${cx - ctaW / 2}" y="${ctaY}" width="${ctaW}" height="${ctaH}" rx="${ctaH / 2}" fill="${VIOLET}" />
-  <text x="${cx}" y="${ctaY + ctaH / 2 + 4}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="${L.ctaFontSize}" fill="#ffffff">SCAN HERE TO JOIN</text>
+  <text x="${cx}" y="${ctaY + ctaH / 2 + 4}" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="${L.ctaFontSize}" fill="#ffffff">${t.ctaText}</text>
 
   ${footerNoteSvg}
 

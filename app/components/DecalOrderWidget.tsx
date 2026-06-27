@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 interface DecalOrder {
   id: string
-  product_type: 'table_decal' | 'glass_print'
+  product_type: 'table_decal' | 'glass_print' | 'review_card'
   status: string
   tracking_url: string | null
   error_message: string | null
@@ -13,9 +13,15 @@ interface DecalOrder {
 }
 
 const PRODUCT_LABEL: Record<string, string> = {
-  table_decal: 'Counter card',
+  table_decal: 'Rewards card',
+  review_card: 'Review card',
   glass_print: 'Window sticker',
 }
+
+const CARD_OPTIONS: { id: 'table_decal' | 'review_card'; title: string; desc: string }[] = [
+  { id: 'table_decal', title: 'Rewards card', desc: 'QR joins your VIP list — capture every walk-in.' },
+  { id: 'review_card', title: 'Review card', desc: 'QR opens your Google review page — turn visits into reviews.' },
+]
 
 const STATUS_LABEL: Record<string, { label: string; color: string }> = {
   pending:   { label: 'Preparing',  color: '#6b7280' },
@@ -30,7 +36,7 @@ const STATUS_LABEL: Record<string, { label: string; color: string }> = {
 export default function DecalOrderWidget({ merchantBusinessName, eligible }: { merchantBusinessName: string; eligible: boolean }) {
   const [orders, setOrders] = useState<DecalOrder[]>([])
   const [loadingOrders, setLoadingOrders] = useState(true)
-  const productType = 'table_decal' as const
+  const [productType, setProductType] = useState<'table_decal' | 'review_card'>('table_decal')
   const [form, setForm] = useState({
     shippingName: merchantBusinessName || '',
     addressLine1: '', addressLine2: '', city: '', state: '', postCode: '', country: 'US', phone: '', email: '',
@@ -111,14 +117,25 @@ export default function DecalOrderWidget({ merchantBusinessName, eligible }: { m
 
         <div style={{ display: 'flex', gap: '1.75rem', flexWrap: 'wrap' }}>
           <div style={{ flex: '1 1 320px', minWidth: 0 }}>
-            <div style={{
-              marginBottom: '1.5rem', padding: '0.875rem 1rem', borderRadius: '10px',
-              border: '1px solid var(--border)', backgroundColor: 'var(--ink)',
-            }}>
-              <div style={{ fontWeight: 700, fontSize: '0.9375rem', marginBottom: '0.25rem' }}>Counter card · A5</div>
-              <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
-                Sturdy card that sits by the register — no adhesive. We print and ship <strong>2 cards</strong> to you, free with your plan.
-              </div>
+            <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem' }}>
+              {CARD_OPTIONS.map(opt => (
+                <button
+                  key={opt.id}
+                  onClick={() => setProductType(opt.id)}
+                  style={{
+                    flex: 1, padding: '0.875rem 1rem', borderRadius: '10px', cursor: 'pointer', textAlign: 'left',
+                    border: productType === opt.id ? '2px solid var(--violet)' : '1px solid var(--border)',
+                    backgroundColor: productType === opt.id ? 'rgba(124,92,252,0.08)' : 'var(--ink)',
+                    fontFamily: 'inherit',
+                  }}
+                >
+                  <div style={{ fontWeight: 700, fontSize: '0.9375rem', marginBottom: '0.25rem' }}>{opt.title}</div>
+                  <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', lineHeight: 1.4 }}>{opt.desc}</div>
+                </button>
+              ))}
+            </div>
+            <div style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+              Sturdy A5 card, no adhesive — sits by the register. We print and ship <strong>2 cards</strong> to you, free with your plan.
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>

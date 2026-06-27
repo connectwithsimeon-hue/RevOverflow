@@ -40,8 +40,8 @@ export async function POST(request: NextRequest) {
   if (!body) return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
 
   const productType: DecalProductType = body.productType
-  if (productType !== 'table_decal' && productType !== 'glass_print') {
-    return NextResponse.json({ error: 'productType must be table_decal or glass_print' }, { status: 400 })
+  if (productType !== 'table_decal' && productType !== 'glass_print' && productType !== 'review_card') {
+    return NextResponse.json({ error: 'Invalid productType' }, { status: 400 })
   }
 
   const required = ['shippingName', 'addressLine1', 'city', 'postCode', 'country', 'email']
@@ -61,6 +61,17 @@ export async function POST(request: NextRequest) {
   const slug = await ensureVipSlug(service, merchant)
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://revoverflow.com'
   const vipUrl = `${appUrl}/vip/${slug}`
+
+  // The review card's QR points at the merchant's Google review page instead
+  // of the VIP signup. Needs the Google listing connected (Reputation page).
+  let qrUrl = vipUrl
+  if (productType === 'review_card') {
+    const { data: rep } = await service.from('reputation').select('google_place_id').eq('merchant_id', merchant.id).maybeSingle()
+    if (!rep?.google_place_id) {
+      return NextResponse.json({ error: 'Connect your Google listing first (Reputation page) so the review card knows where to send people.' }, { status: 400 })
+    }
+    qrUrl = `https://search.google.com/local/writereview?placeid=${encodeURIComponent(rep.google_place_id)}`
+  }
 
   // 2. Create the decal_orders row first (pending) so we have a stable id
   //    to use as Gelato's orderReferenceId.
@@ -88,7 +99,7 @@ export async function POST(request: NextRequest) {
   }
 
   // 3. Generate the design and upload it somewhere Gelato can fetch via URL
-  const svg = await generateDecalSvg({ businessName: merchant.business_name, vipUrl, productType, logoUrl: merchant.logo_url })
+  const svg = await generateDecalSvg({ businessName: merchant.business_name, vipUrl: qrUrl, productType, logoUrl: merchant.logo_url })
   const path = `${merchant.id}/${order.id}.svg`
 
   // Bucket may not exist yet on a fresh project — create it (public, so

@@ -26,15 +26,25 @@ export async function GET(request: NextRequest) {
   if (!merchant) return NextResponse.json({ error: 'No merchant' }, { status: 404 })
 
   const productType = (request.nextUrl.searchParams.get('productType') || 'table_decal') as DecalProductType
-  if (productType !== 'table_decal' && productType !== 'glass_print') {
-    return NextResponse.json({ error: 'productType must be table_decal or glass_print' }, { status: 400 })
+  if (productType !== 'table_decal' && productType !== 'glass_print' && productType !== 'review_card') {
+    return NextResponse.json({ error: 'Invalid productType' }, { status: 400 })
   }
 
   const slug = await ensureVipSlug(service, merchant)
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://revoverflow.com'
   const vipUrl = `${appUrl}/vip/${slug}`
 
-  const svg = await generateDecalSvg({ businessName: merchant.business_name, vipUrl, productType, logoUrl: merchant.logo_url })
+  // Review card → Google review link (falls back to a sample so the preview
+  // always renders even before the merchant connects their Google listing).
+  let qrUrl = vipUrl
+  if (productType === 'review_card') {
+    const { data: rep } = await service.from('reputation').select('google_place_id').eq('merchant_id', merchant.id).maybeSingle()
+    qrUrl = rep?.google_place_id
+      ? `https://search.google.com/local/writereview?placeid=${encodeURIComponent(rep.google_place_id)}`
+      : 'https://search.google.com/local/writereview?placeid=SAMPLE'
+  }
+
+  const svg = await generateDecalSvg({ businessName: merchant.business_name, vipUrl: qrUrl, productType, logoUrl: merchant.logo_url })
 
   return new NextResponse(svg, {
     headers: {

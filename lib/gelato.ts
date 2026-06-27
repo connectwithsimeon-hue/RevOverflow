@@ -36,7 +36,9 @@ import { DecalProductType } from './decal-design'
 const GELATO_ORDER_URL = 'https://order.gelatoapis.com/v4/orders'
 
 function productUidFor(productType: DecalProductType): string | null {
-  if (productType === 'table_decal') return process.env.GELATO_TABLE_DECAL_PRODUCT_UID || null
+  // The review card is the same physical A5 card as the counter card — just a
+  // different design — so it uses the same Gelato product.
+  if (productType === 'table_decal' || productType === 'review_card') return process.env.GELATO_TABLE_DECAL_PRODUCT_UID || null
   return process.env.GELATO_GLASS_PRINT_PRODUCT_UID || null
 }
 
