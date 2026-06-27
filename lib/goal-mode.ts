@@ -32,6 +32,12 @@ export interface GoalProgress {
   projectedEndOfMonth: number
   weeklyRunRate: number
   plan: GoalAction[]
+  baseline: GoalBaseline
+}
+
+export interface GoalBaseline {
+  avgMonthlyRevenue: number  // trailing 90-day revenue / 3 — for goal realism
+  avgTicket: number          // average sale size — for "visits needed" math
 }
 
 export interface GoalAction {
@@ -51,12 +57,26 @@ export async function computeGoalProgress(merchantId: string): Promise<GoalProgr
     .eq('id', merchantId)
     .single()
 
+  // Baseline from the last 90 days — used to reality-check the goal and to
+  // turn a revenue gap into "visits needed" the merchant can picture.
+  const ninetyAgo = new Date(Date.now() - 90 * 86400000).toISOString()
+  const { data: baseRows } = await service
+    .from('orders')
+    .select('total_amount')
+    .eq('merchant_id', merchantId)
+    .gte('ordered_at', ninetyAgo)
+  const baseTotal = (baseRows ?? []).reduce((s, r) => s + parseFloat(r.total_amount ?? '0'), 0)
+  const baseline: GoalBaseline = {
+    avgMonthlyRevenue: Math.round(baseTotal / 3),
+    avgTicket: baseRows?.length ? Math.round(baseTotal / baseRows.length) : 0,
+  }
+
   const goalAmount = parseFloat(merchant?.goal_amount ?? '0')
   if (!goalAmount) {
     return {
       goalAmount: 0, goalMonth: '', revenueToDate: 0, revenueAttributed: 0,
       percentToGoal: 0, daysLeft: 0, status: 'no_goal',
-      projectedEndOfMonth: 0, weeklyRunRate: 0, plan: [],
+      projectedEndOfMonth: 0, weeklyRunRate: 0, plan: [], baseline,
     }
   }
 
@@ -107,7 +127,7 @@ export async function computeGoalProgress(merchantId: string): Promise<GoalProgr
   return {
     goalAmount, goalMonth, revenueToDate, revenueAttributed,
     percentToGoal: Math.round(pct),
-    daysLeft, status, projectedEndOfMonth, weeklyRunRate, plan,
+    daysLeft, status, projectedEndOfMonth, weeklyRunRate, plan, baseline,
   }
 }
 
