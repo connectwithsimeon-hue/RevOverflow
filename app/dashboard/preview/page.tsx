@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import DashboardSidebar from '@/app/components/DashboardSidebar'
 import GoalHeader from '@/app/components/GoalHeader'
-import YaraPlan from '@/app/components/YaraPlan'
+import YaraGoalPlan from '@/app/components/YaraGoalPlan'
 import TrustScoreWidget from '@/app/components/TrustScoreWidget'
 import ReachableBaseMeter from '@/app/components/ReachableBaseMeter'
 import { computeGoalProgress } from '@/lib/goal-mode'
@@ -88,7 +88,7 @@ export default async function DashboardPreview() {
 
           {/* Plan + KPI rail */}
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 280px', gap: 18, alignItems: 'start' }}>
-            <YaraPlan />
+            <YaraGoalPlan />
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <KpiCard label="Revenue Recovered" value={money(revenueRecovered)} accent="#15803d" spark={spark} />
